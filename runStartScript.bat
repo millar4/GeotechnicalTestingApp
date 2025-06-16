@@ -1,0 +1,6 @@
+@echo off
+echo Launching Node.js start.js...
+node start.js
+echo.
+echo Press any key to close...
+pause > nul
