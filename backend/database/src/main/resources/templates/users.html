@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Table</title>
+</head>
+<body>
+    <h1>User Data</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Test</th>
+                <th>Group</th>
+                <th>Symbol</th>
+                <th>Parameters</th>
+                <th>Test Method</th>
+                <th>Alt1</th>
+                <th>Alt2</th>
+                <th>Alt3</th>
+                <th>Sample Type</th>
+                <th>Field Sample Mass</th>
+                <th>Specimen Type</th>
+                <th>Specimen Mass</th>
+                <th>Specimen Numbers</th>
+                <th>Specimen D</th>
+                <th>Specimen L</th>
+                <th>Specimen W</th>
+                <th>Specimen H</th>
+                <th>Specimen Max Grain Size</th>
+                <th>Specimen Max Grain Fraction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td> <!-- Added ID Column -->
+                <td th:text="${user.test}"></td>
+                <td th:text="${user.group}"></td>
+                <td th:text="${user.symbol}"></td>
+                <td th:text="${user.parameters}"></td>
+                <td th:text="${user.testMethod}"></td>
+                <td th:text="${user.alt1}"></td>
+                <td th:text="${user.alt2}"></td>
+                <td th:text="${user.alt3}"></td>
+                <td th:text="${user.sampleType}"></td>
+                <td th:text="${user.fieldSampleMass}"></td>
+                <td th:text="${user.specimenType}"></td>
+                <td th:text="${user.specimenMass}"></td>
+                <td th:text="${user.specimenNumbers}"></td>
+                <td th:text="${user.specimenD}"></td>
+                <td th:text="${user.specimenL}"></td>
+                <td th:text="${user.specimenW}"></td>
+                <td th:text="${user.specimenH}"></td>
+                <td th:text="${user.specimenMaxGrainSize}"></td>
+                <td th:text="${user.specimenMaxGrainFraction}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
+
