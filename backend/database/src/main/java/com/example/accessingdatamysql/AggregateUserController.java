@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3100")
-@RequestMapping("/rocks")
+@RequestMapping("/aggregate")
 public class AggregateUserController {
 
     @Autowired
@@ -26,13 +26,13 @@ public class AggregateUserController {
 
     // Add new record
     @PostMapping("/add")
-    public AggregateUser addRocksUser(@RequestBody AggregateUser AggregateUser) {
+    public AggregateUser addAggregateUser(@RequestBody AggregateUser AggregateUser) {
         return AggregateUserRepository.save(AggregateUser);
     }
 
     // Update existing record
     @PutMapping("/update/{id}")
-    public AggregateUser updateRocksUser(@PathVariable Long id, @RequestBody AggregateUser updatedUser) {
+    public AggregateUser updateAggregateUser(@PathVariable Long id, @RequestBody AggregateUser updatedUser) {
         Optional<AggregateUser> optionalUser = AggregateUserRepository.findById(id);
         if (optionalUser.isPresent()) {
             AggregateUser existingUser = optionalUser.get();
@@ -52,19 +52,19 @@ public class AggregateUserController {
 
             return AggregateUserRepository.save(existingUser);
         } else {
-            throw new RuntimeException("RocksUser not found with id " + id);
+            throw new RuntimeException("AggregateUser not found with id " + id);
         }
     }
 
     // Delete by ID
     @DeleteMapping("/delete/{id}")
-    public void deleteRocksUser(@PathVariable Long id) {
+    public void deleteAggregateUser(@PathVariable Long id) {
         AggregateUserRepository.deleteById(id);
     }
 
     // Get all records, optional sort
     @GetMapping("/all")
-    public List<AggregateUser> getAllRocksUsers(@RequestParam(required = false) String sort) {
+    public List<AggregateUser> getAllAggregateUsers(@RequestParam(required = false) String sort) {
         if (sort == null || sort.isEmpty()) {
             return AggregateUserRepository.findAll();
         }
