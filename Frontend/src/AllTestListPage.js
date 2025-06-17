@@ -269,7 +269,7 @@ const PaginatedBoxes = () => {
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
 
     // Database type state
-    const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
+    const [databaseType, setDatabaseType] = useState(passedDB || 'soil' || 'aggregate');
 
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
@@ -522,7 +522,7 @@ const PaginatedBoxes = () => {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
                 if (databaseType === "aggregate") {
-                    console.warn("aggregate does not have 'test' endpoint for 'Test name'. Returning empty.");
+                    console.warn("Aggregate does not have 'test' endpoint for 'Test name'. Returning empty.");
                     setData([]);
                     return;
                 } else {
@@ -725,7 +725,7 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "aggregate" ? "active" : ""}`}
                             onClick={() => setDatabaseType("aggregate")}
                         >
-                            aggregate
+                            Aggregate
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
