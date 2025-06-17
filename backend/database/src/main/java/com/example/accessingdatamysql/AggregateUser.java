@@ -11,8 +11,8 @@ import jakarta.persistence.Table;
 
 
 @Entity 
-@Table(name = "RocksTable")
-public class RocksUser {
+@Table(name = "AggregateTable")
+public class AggregateUser {
 
     @Id
     @JsonProperty
