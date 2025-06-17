@@ -14,7 +14,7 @@ services:
     volumes:
       - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
-      - ./backend/database/rockParameters2.csv:/var/lib/mysql-files/rockParameters2.csv
+      - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -37,7 +37,7 @@ services:
     volumes:
       - ./backend/database/target/database-0.0.1-snapshot.jar:/app/app.jar
       - ./backend/database/parameters2.csv:/app/parameters2.csv
-      - ./backend/database/rockParameters2.csv:/app/rockParameters2.csv
+      - ./backend/database/aggregate.csv:/app/aggregate.csv
     ports:
       - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"]

@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS RocksTable (
 -- ============================================
 -- 4) Load CSV data into RocksTable
 -- ============================================
-LOAD DATA INFILE '/var/lib/mysql-files/rockParameters2.csv'
+LOAD DATA INFILE '/var/lib/mysql-files/aggregate.csv'
 INTO TABLE RocksTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
