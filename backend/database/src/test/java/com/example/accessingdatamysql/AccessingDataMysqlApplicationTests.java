@@ -36,7 +36,7 @@ public class AccessingDataMysqlApplicationTests {
     private GeotechnicalEntryRepository geotechnicalEntryRepository;
 
     @Autowired
-    private RocksUserRepository rocksUserRepository;
+    private AggregateUserRepository AggregateUserRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -104,7 +104,7 @@ public class AccessingDataMysqlApplicationTests {
     @Test
     @Order(4)
     void testInsertRockEntry() {
-        RocksUser entry = new RocksUser();
+        AggregateUser entry = new AggregateUser();
         entry.setGroup("Rock_Group_Test_Default");
         entry.setSymbol("ROCK1");
         entry.setParameters("Porosity, Density");
@@ -118,7 +118,7 @@ public class AccessingDataMysqlApplicationTests {
         entry.setSpecimenMaxGrainFraction("30%");
         entry.setSchedulingNotes("Standard rock test");
 
-        RocksUser savedEntry = rocksUserRepository.save(entry);
+        AggregateUser savedEntry = AggregateUserRepository.save(entry);
 
         assertThat(savedEntry).isNotNull();
         assertThat(savedEntry.getId()).isNotNull();
@@ -128,21 +128,21 @@ public class AccessingDataMysqlApplicationTests {
     @Test
     @Order(5)
     void testRockGroup() {
-        List<RocksUser> entries = StreamSupport.stream(rocksUserRepository.findAll().spliterator(), false)
+        List<AggregateUser> entries = StreamSupport.stream(AggregateUserRepository.findAll().spliterator(), false)
                                         .collect(Collectors.toList());
-        RocksUser savedEntry = entries.get(0);
+        AggregateUser savedEntry = entries.get(0);
         assertThat(savedEntry.getGroup()).isEqualTo("Rock_Group_Test_Default");
     }
 
     @Test
     @Order(6)
     void testDeleteRockEntry() {
-        List<RocksUser> entries = StreamSupport.stream(rocksUserRepository.findAll().spliterator(), false)
+        List<AggregateUser> entries = StreamSupport.stream(AggregateUserRepository.findAll().spliterator(), false)
                                         .collect(Collectors.toList());
-        RocksUser entryToDelete = entries.get(0);
-        rocksUserRepository.deleteById(entryToDelete.getId());
+        AggregateUser entryToDelete = entries.get(0);
+        AggregateUserRepository.deleteById(entryToDelete.getId());
 
-        Optional<RocksUser> deletedEntry = rocksUserRepository.findById(entryToDelete.getId());
+        Optional<AggregateUser> deletedEntry = AggregateUserRepository.findById(entryToDelete.getId());
         assertThat(deletedEntry).isEmpty();
     }
 

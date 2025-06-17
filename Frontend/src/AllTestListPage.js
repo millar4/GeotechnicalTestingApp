@@ -269,13 +269,13 @@ const PaginatedBoxes = () => {
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
 
     // Database type state
-    const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
+    const [databaseType, setDatabaseType] = useState(passedDB || 'soil' || 'aggregate');
 
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
 
     // API base URL based on database type
-    const baseUrl = databaseType === "rock" ? "http://localhost:8080/rocks" : "http://localhost:8080/database";
+    const baseUrl = databaseType === "aggregate" ? "http://localhost:8080/aggregate" : "http://localhost:8080/database";
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -443,7 +443,7 @@ const PaginatedBoxes = () => {
 
         // When search content is provided
         if (effectivePattern === "Quick Search") {
-            if (databaseType === "rock") {
+            if (databaseType === "aggregate") {
                 urls = [
                     `${baseUrl}/id?id=${encodedSearch}`,
                     `${baseUrl}/group?group=${encodedSearch}`,
@@ -521,8 +521,8 @@ const PaginatedBoxes = () => {
             } else if (effectivePattern === "Test group") {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
-                if (databaseType === "rock") {
-                    console.warn("Rock does not have 'test' endpoint for 'Test name'. Returning empty.");
+                if (databaseType === "aggregate") {
+                    console.warn("Aggregate does not have 'test' endpoint for 'Test name'. Returning empty.");
                     setData([]);
                     return;
                 } else {
@@ -722,10 +722,10 @@ const PaginatedBoxes = () => {
                             Soil
                         </button>
                         <button
-                            className={`db-button ${databaseType === "rock" ? "active" : ""}`}
-                            onClick={() => setDatabaseType("rock")}
+                            className={`db-button ${databaseType === "aggregate" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("aggregate")}
                         >
-                            Rock
+                            Aggregate
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
