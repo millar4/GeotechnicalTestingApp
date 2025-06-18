@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     specimenW VARCHAR(100),
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
-    specimenMaxGrainFraction VARCHAR(100)
+    specimenMaxGrainFraction VARCHAR(100),
+    schedulingNotes TEXT(300)
 );
 
 -- ============================================
@@ -97,15 +98,16 @@ IGNORE 1 LINES
 -- 4) Load CSV data into RocksTable
 -- ============================================
 LOAD DATA INFILE '/var/lib/mysql-files/rockParameters.csv'
-INTO TABLE AggregateTable
+INTO TABLE RocksTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
     myGroup, test, symbol, parameters, testMethod,
-    sampleType, fieldSampleMass, specimenType,
-    specimenMass, specimenNumbers,
+    alt1, alt2, alt3, sampleType, fieldSampleMass,
+    specimenType, specimenMass, specimenNumbers,
+    specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
     schedulingNotes
 );
