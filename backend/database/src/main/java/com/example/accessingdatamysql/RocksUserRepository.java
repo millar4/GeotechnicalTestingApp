@@ -32,10 +32,12 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
     List<RocksUser> findBySpecimenHContaining(String height);
     List<RocksUser> findBySpecimenMaxGrainSizeContaining(String grainSize);
     List<RocksUser> findBySpecimenMaxGrainFractionContaining(String fraction);
+    List<RocksUser> findBySchedulingNotesContainingIgnoreCase(String schedulingNotes);
 
     // ORDER BY
     List<RocksUser> findAllByOrderByIdAsc();
     List<RocksUser> findAllByOrderByGroupAsc();
     List<RocksUser> findAllByOrderByTestMethodAsc();
     List<RocksUser> findAllByOrderByParametersAsc();
+
 }

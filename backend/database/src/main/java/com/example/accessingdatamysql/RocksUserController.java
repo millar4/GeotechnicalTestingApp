@@ -25,19 +25,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class RocksUserController {
 
     @Autowired
-    private GeotechnicalEntryRepository RocksUserRepository;
+    private RocksUserRepository RocksUserRepository;
 
     @GetMapping(path = "/all/table")
     public String getAllUsersByTable(Model model) {
-        Iterable<GeotechnicalEntry> users = RocksUserRepository.findAll();
+        Iterable<RocksUser> users = RocksUserRepository.findAll();
         model.addAttribute("users", users);
         return "users";
     }
 
     @GetMapping(path = "/all")
-    public @ResponseBody List<GeotechnicalEntry> getAllUsers(@RequestParam(required = false) String sort) {
+    public @ResponseBody List<RocksUser> getAllUsers(@RequestParam(required = false) String sort) {
         if (sort == null || sort.isEmpty()) {
-            return (List<GeotechnicalEntry>) RocksUserRepository.findAll();
+            return (List<RocksUser>) RocksUserRepository.findAll();
         }
 
         switch (sort) {
@@ -50,13 +50,13 @@ public class RocksUserController {
             case "parameter":
                 return RocksUserRepository.findAllByOrderByParametersAsc();
             default:
-                return (List<GeotechnicalEntry>) RocksUserRepository.findAll();
+                return (List<RocksUser>) RocksUserRepository.findAll();
         }
     }
 
     @GetMapping("/id")
     @ResponseBody
-    public List<GeotechnicalEntry> getUserById(@RequestParam String id) {
+    public List<RocksUser> getUserById(@RequestParam String id) {
         Long longId;
         try {
             longId = Long.valueOf(id);
@@ -64,7 +64,7 @@ public class RocksUserController {
             return Collections.emptyList();
         }
 
-        Optional<GeotechnicalEntry> userOpt = RocksUserRepository.findById(longId);
+        Optional<RocksUser> userOpt = RocksUserRepository.findById(longId);
         if (userOpt.isPresent()) {
             return Collections.singletonList(userOpt.get());
         } else {
@@ -74,9 +74,9 @@ public class RocksUserController {
 
     @PostMapping(path = "/add")
     @ResponseBody
-    public ResponseEntity<GeotechnicalEntry> addUser(@RequestBody GeotechnicalEntry newEntry) {
+    public ResponseEntity<RocksUser> addUser(@RequestBody RocksUser newEntry) {
         try {
-            GeotechnicalEntry savedEntry = RocksUserRepository.save(newEntry);
+            RocksUser savedEntry = RocksUserRepository.save(newEntry);
             return ResponseEntity.ok(savedEntry);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
@@ -86,7 +86,7 @@ public class RocksUserController {
     @DeleteMapping(path = "/delete/{id}")
     @ResponseBody
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        Optional<GeotechnicalEntry> entryOpt = RocksUserRepository.findById(id);
+        Optional<RocksUser> entryOpt = RocksUserRepository.findById(id);
         if (entryOpt.isPresent()) {
             RocksUserRepository.delete(entryOpt.get());
             return ResponseEntity.noContent().build();
@@ -97,17 +97,17 @@ public class RocksUserController {
 
     @PutMapping("/update/{id}")
     @ResponseBody
-    public ResponseEntity<GeotechnicalEntry> updateGeotechnicalEntry(
+    public ResponseEntity<RocksUser> updateRocksUser(
             @PathVariable Long id,
-            @RequestBody GeotechnicalEntry updatedEntry) {
+            @RequestBody RocksUser updatedEntry) {
         // 1. Find an existing record in the database based on the primary key id.
-        Optional<GeotechnicalEntry> existingOpt = RocksUserRepository.findById(id);
+        Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
         if (existingOpt.isEmpty()) {
            // Returns 404 if the corresponding record is not found.
             return ResponseEntity.notFound().build();
         }
         // 2. Synchronize the updated fields passed by the front-end into the database.
-        GeotechnicalEntry existing = existingOpt.get();
+        RocksUser existing = existingOpt.get();
         existing.setTest(updatedEntry.getTest());
         existing.setGroup(updatedEntry.getGroup());
         existing.setSymbol(updatedEntry.getSymbol());
@@ -127,10 +127,11 @@ public class RocksUserController {
         existing.setSpecimenH(updatedEntry.getSpecimenH());
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
         // ... More fields can be assigned here as well.
 
         // 3. Preservation of updated entities
-        GeotechnicalEntry saved = RocksUserRepository.save(existing);
+        RocksUser saved = RocksUserRepository.save(existing);
 
     // 4. Return the updated entity to the front end
         return ResponseEntity.ok(saved);
@@ -138,7 +139,7 @@ public class RocksUserController {
 
     @GetMapping(path = "/group")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByGroup(@RequestParam String group) {
+    public List<RocksUser> getUsersByGroup(@RequestParam String group) {
         return RocksUserRepository.findByGroupContaining(group);
     }
 
@@ -150,109 +151,109 @@ public class RocksUserController {
 
     @GetMapping(path = "/test")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByTest(@RequestParam String test) {
+    public List<RocksUser> getUsersByTest(@RequestParam String test) {
         return RocksUserRepository.findByTestContaining(test);
     }
 
     @GetMapping(path = "/symbol")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySymbol(@RequestParam String symbol) {
+    public List<RocksUser> getUsersBySymbol(@RequestParam String symbol) {
         return RocksUserRepository.findBySymbolContaining(symbol);
     }
 
     @GetMapping(path = "/parameters")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByParameters(@RequestParam String parameters) {
+    public List<RocksUser> getUsersByParameters(@RequestParam String parameters) {
         return RocksUserRepository.findByParametersContaining(parameters);
     }
 
     @GetMapping(path = "/testMethod")
     @ResponseBody
-    public List<GeotechnicalEntry> getGeotechnicalEntrysByTestMethod(@RequestParam String testMethod) {
+    public List<RocksUser> getRocksUsersByTestMethod(@RequestParam String testMethod) {
         return RocksUserRepository.findByTestMethodContaining(testMethod);
     }
 
     @GetMapping(path = "/alt1")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByAlt1(@RequestParam String alt1) {
+    public List<RocksUser> getUsersByAlt1(@RequestParam String alt1) {
         return RocksUserRepository.findByAlt1Containing(alt1);
     }
 
     @GetMapping(path = "/alt2")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByAlt2(@RequestParam String alt2) {
+    public List<RocksUser> getUsersByAlt2(@RequestParam String alt2) {
         return RocksUserRepository.findByAlt2Containing(alt2);
     }
 
     @GetMapping(path = "/alt3")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByAlt3(@RequestParam String alt3) {
+    public List<RocksUser> getUsersByAlt3(@RequestParam String alt3) {
         return RocksUserRepository.findByAlt3Containing(alt3);
     }
 
     @GetMapping(path = "/sampleType")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySampleType(@RequestParam String sampleType) {
+    public List<RocksUser> getUsersBySampleType(@RequestParam String sampleType) {
         return RocksUserRepository.findBySampleTypeContaining(sampleType);
     }
 
     @GetMapping(path = "/fieldSampleMassGreaterThan")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByFieldSampleMass(@RequestParam String mass) {
+    public List<RocksUser> getUsersByFieldSampleMass(@RequestParam String mass) {
         return RocksUserRepository.findByFieldSampleMassContaining(mass);
     }
 
     @GetMapping(path = "/specimenType")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenType(@RequestParam String specimenType) {
+    public List<RocksUser> getUsersBySpecimenType(@RequestParam String specimenType) {
         return RocksUserRepository.findBySpecimenTypeContaining(specimenType);
     }
 
     @GetMapping(path = "/specimenMassGreaterThan")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenMass(@RequestParam String mass) {
+    public List<RocksUser> getUsersBySpecimenMass(@RequestParam String mass) {
         return RocksUserRepository.findBySpecimenMassContaining(mass);
     }
 
     @GetMapping(path = "/specimenNumbers")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenNumbers(@RequestParam String numbers) {
+    public List<RocksUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
         return RocksUserRepository.findBySpecimenNumbersContaining(numbers);
     }
 
     @GetMapping(path = "/specimenD")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenD(@RequestParam String diameter) {
+    public List<RocksUser> getUsersBySpecimenD(@RequestParam String diameter) {
         return RocksUserRepository.findBySpecimenDContaining(diameter);
     }
 
     @GetMapping(path = "/specimenL")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenL(@RequestParam String length) {
+    public List<RocksUser> getUsersBySpecimenL(@RequestParam String length) {
         return RocksUserRepository.findBySpecimenLContaining(length);
     }
 
     @GetMapping(path = "/specimenW")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenW(@RequestParam String width) {
+    public List<RocksUser> getUsersBySpecimenW(@RequestParam String width) {
         return RocksUserRepository.findBySpecimenWContaining(width);
     }
 
     @GetMapping(path = "/specimenH")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenH(@RequestParam String height) {
+    public List<RocksUser> getUsersBySpecimenH(@RequestParam String height) {
         return RocksUserRepository.findBySpecimenHContaining(height);
     }
 
     @GetMapping(path = "/specimenMaxGrainSize")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
+    public List<RocksUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
         return RocksUserRepository.findBySpecimenMaxGrainSizeContaining(grainSize);
     }
 
     @GetMapping(path = "/specimenMaxGrainFraction")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
+    public List<RocksUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
         return RocksUserRepository.findBySpecimenMaxGrainFractionContaining(fraction);
     }
 }
