@@ -15,7 +15,7 @@ services:
       - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
       - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
-      - ./backend/database/aggregate.csv:/var/lib/mysql-files/rockParameters.csv
+      - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
 
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
