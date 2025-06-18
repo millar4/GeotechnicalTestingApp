@@ -39,6 +39,7 @@ services:
       - ./database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./parameters2.csv:/var/lib/mysql-files/parameters2.csv
       - ./aggregate.csv:/var/lib/mysql-files/aggregate.csv
+      - ./rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
     networks:
       - database_default
 

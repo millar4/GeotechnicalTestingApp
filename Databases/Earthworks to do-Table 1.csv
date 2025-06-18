@@ -1,0 +1,6 @@
+Group,Test,Abbreviation or symbol,Test parameters,Default test method,Alternative 1,Alternative 2,Alternative 3,Sample type,Field sample mass,Test specimen type / mass and number,,,Test specimen dimensions & grain size requirements,,,,,,Scheduling notes
+,,,,,,,,"Intact (right circular cylinder or rectangular block)
+
+Disturbed (loose material in bags or lumps)","3 x Dmax or 
+4 x test specimen mass",type,mass,number,Diameter (D),Length (L),Width (W),Height (H),Max grain size (Dmax),Fraction,
+,,,,,,,,,kg,,kg,,mm,mm,mm,mm,mm,d /D,
