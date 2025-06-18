@@ -5,37 +5,37 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface RocksUserRepository extends CrudRepository<GeotechnicalEntry, Long> {
+public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
 
-    @Query("SELECT DISTINCT g.group FROM GeotechnicalEntry g ORDER BY g.group ASC")
+    @Query("SELECT DISTINCT g.group FROM RocksUser g ORDER BY g.group ASC")
     List<String> findAllGroups();
 
      // The following methods all use fuzzy queries
 
-    List<GeotechnicalEntry> findByGroupContaining(String group);
-    List<GeotechnicalEntry> findByTestContaining(String test);
-    List<GeotechnicalEntry> findBySymbolContaining(String symbol);
-    List<GeotechnicalEntry> findByParametersContaining(String parameters);
-    List<GeotechnicalEntry> findByTestMethodContaining(String testMethod);
-    List<GeotechnicalEntry> findByAlt1Containing(String alt1);
-    List<GeotechnicalEntry> findByAlt2Containing(String alt2);
-    List<GeotechnicalEntry> findByAlt3Containing(String alt3);
-    List<GeotechnicalEntry> findBySampleTypeContaining(String sampleType);
+    List<RocksUser> findByGroupContaining(String group);
+    List<RocksUser> findByTestContaining(String test);
+    List<RocksUser> findBySymbolContaining(String symbol);
+    List<RocksUser> findByParametersContaining(String parameters);
+    List<RocksUser> findByTestMethodContaining(String testMethod);
+    List<RocksUser> findByAlt1Containing(String alt1);
+    List<RocksUser> findByAlt2Containing(String alt2);
+    List<RocksUser> findByAlt3Containing(String alt3);
+    List<RocksUser> findBySampleTypeContaining(String sampleType);
     
-    List<GeotechnicalEntry> findByFieldSampleMassContaining(String mass);
-    List<GeotechnicalEntry> findBySpecimenTypeContaining(String specimenType);
-    List<GeotechnicalEntry> findBySpecimenMassContaining(String mass);
-    List<GeotechnicalEntry> findBySpecimenNumbersContaining(String numbers);
-    List<GeotechnicalEntry> findBySpecimenDContaining(String diameter);
-    List<GeotechnicalEntry> findBySpecimenLContaining(String length);
-    List<GeotechnicalEntry> findBySpecimenWContaining(String width);
-    List<GeotechnicalEntry> findBySpecimenHContaining(String height);
-    List<GeotechnicalEntry> findBySpecimenMaxGrainSizeContaining(String grainSize);
-    List<GeotechnicalEntry> findBySpecimenMaxGrainFractionContaining(String fraction);
+    List<RocksUser> findByFieldSampleMassContaining(String mass);
+    List<RocksUser> findBySpecimenTypeContaining(String specimenType);
+    List<RocksUser> findBySpecimenMassContaining(String mass);
+    List<RocksUser> findBySpecimenNumbersContaining(String numbers);
+    List<RocksUser> findBySpecimenDContaining(String diameter);
+    List<RocksUser> findBySpecimenLContaining(String length);
+    List<RocksUser> findBySpecimenWContaining(String width);
+    List<RocksUser> findBySpecimenHContaining(String height);
+    List<RocksUser> findBySpecimenMaxGrainSizeContaining(String grainSize);
+    List<RocksUser> findBySpecimenMaxGrainFractionContaining(String fraction);
 
     // ORDER BY
-    List<GeotechnicalEntry> findAllByOrderByIdAsc();
-    List<GeotechnicalEntry> findAllByOrderByGroupAsc();
-    List<GeotechnicalEntry> findAllByOrderByTestMethodAsc();
-    List<GeotechnicalEntry> findAllByOrderByParametersAsc();
+    List<RocksUser> findAllByOrderByIdAsc();
+    List<RocksUser> findAllByOrderByGroupAsc();
+    List<RocksUser> findAllByOrderByTestMethodAsc();
+    List<RocksUser> findAllByOrderByParametersAsc();
 }
