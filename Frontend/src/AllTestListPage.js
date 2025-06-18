@@ -269,13 +269,14 @@ const PaginatedBoxes = () => {
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
 
     // Database type state
-    const [databaseType, setDatabaseType] = useState(passedDB || 'soil' || 'aggregate');
+    const [databaseType, setDatabaseType] = useState(passedDB || 'soil' || 'aggregate' || 'rocks');
 
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
 
     // API base URL based on database type
     const baseUrl = databaseType === "aggregate" ? "http://localhost:8080/aggregate" : "http://localhost:8080/database";
+    const baseUrlRock = databaseType === "rocks" ? "http://localhost:8080/rocks" : "http://localhost:8080/database";
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -451,7 +452,15 @@ const PaginatedBoxes = () => {
                     `${baseUrl}/parameters?parameters=${encodedSearch}`,
                     `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
                 ];
-            } else {
+            } else if(databaseType === "rocks") {
+                urls = [
+                    `${baseUrl}/test?test=${encodedSearch}`,
+                    `${baseUrl}/id?id=${encodedSearch}`,
+                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
+                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
+                    `${baseUrl}/group?group=${encodedSearch}`,
+                ];
+            } else{
                 urls = [
                     `${baseUrl}/test?test=${encodedSearch}`,
                     `${baseUrl}/id?id=${encodedSearch}`,
