@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
 -- ============================================
 -- 2) Create RocksTable
 -- ============================================
-CREATE TABLE IF NOT EXISTS RocksTable (
+CREATE TABLE IF NOT EXISTS RocksTable(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
     test VARCHAR(1000),
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
 );
 
 -- ============================================
--- 4) Load CSV data into RocksTable
+-- 4) Load CSV data into AggregateTable
 -- ============================================
 LOAD DATA INFILE '/var/lib/mysql-files/aggregate.csv'
 INTO TABLE AggregateTable
@@ -92,6 +92,26 @@ IGNORE 1 LINES
     specimenMaxGrainSize, specimenMaxGrainFraction,
     schedulingNotes
 );
+
+-- ============================================
+-- 4) Load CSV data into RocksTable
+-- ============================================
+LOAD DATA INFILE '/var/lib/mysql-files/rockParameters.csv'
+INTO TABLE AggregateTable
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    myGroup, test, symbol, parameters, testMethod,
+    sampleType, fieldSampleMass, specimenType,
+    specimenMass, specimenNumbers,
+    specimenMaxGrainSize, specimenMaxGrainFraction,
+    schedulingNotes
+);
+
+
+
 
 -- ============================================
 -- 5) Load CSV data into GeotechnicalTable
