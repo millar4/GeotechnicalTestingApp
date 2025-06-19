@@ -16,7 +16,7 @@ public class RocksUser {
     private String test;
 
     @Column(name = "myGroup", nullable = false, unique = false)
-    private String group;
+    private String myGroup;
 
     @Column(name = "symbol", nullable = false, unique = true)
     private String symbol;
@@ -79,8 +79,8 @@ public class RocksUser {
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
 
-    public String getGroup() { return group; }
-    public void setGroup(String group) { this.group = group; }
+    public String getmyGroup() { return myGroup; }
+    public void setmyGroup(String myGroup) { this.myGroup = myGroup; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }

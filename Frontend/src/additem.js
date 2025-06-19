@@ -54,6 +54,7 @@ const AddItem = () => {
         databaseTarget === 'database'
           ? 'http://localhost:8080/database/add'
           : 'http://localhost:8080/aggregate/add';
+  
 
       const addResponse = await fetch(url, {
         method: 'POST',
@@ -98,8 +99,9 @@ const AddItem = () => {
             value={databaseTarget}
             onChange={(e) => setDatabaseTarget(e.target.value)}
           >
-            <option value="database">Geotechnical (database)</option>
-            <option value="aggregate">aggregate</option>
+            <option value="database">Soil</option>
+            <option value="aggregate">Aggregate</option>
+            <option value="rocks">Rock</option>
           </select>
         </div>
 
