@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  test-runner:
+    image: maven:3.8.8-eclipse-temurin-17
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock  
+    working_dir: /app
+    command: [ "mvn", "test" ]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DOCKER_TLS_VERIFY=0
+      - TESTCONTAINERS_RYUK_DISABLED=true
+      - TESTCONTAINERS_DOCKER_NETWORK=database_default  
+      - TESTCONTAINERS_WAIT_TIMEOUT=60000 
+    networks:
+      - database_default
+
+  mysql:
+    container_name: 'GeoTechnicalDatabase'
+    image: 'mysql:8'
+    environment:
+      - 'MYSQL_DATABASE=GeotechnicalTests'
+      - 'MYSQL_PASSWORD=secret'
+      - 'MYSQL_ROOT_PASSWORD=rootpassword'
+      - 'MYSQL_USER=myuser'
+    ports:
+      - '3307:3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./parameters2.csv:/var/lib/mysql-files/parameters2.csv
+      - ./aggregate.csv:/var/lib/mysql-files/aggregate.csv
+      - ./rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
+      - ./rockParameters2.csv:/var/lib/mysql:/var/lib/mysql-files/concreteParameters
+    networks:
+      - database_default
+
+  app:
+    container_name: 'GeoTechnicalApp'
+    build: '.'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://GeoTechnicalDatabase:3306/GeotechnicalTests
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: secret
+    volumes:
+      - ./target:/app
+    command: ["java", "-jar", "/app/database-0.0.1-SNAPSHOT.jar"] 
+    ports:
+      - "8080:8080"
+    networks:
+      - database_default
+
+networks:
+  database_default:
+    external: true
+
+volumes:
+  mysql_data:

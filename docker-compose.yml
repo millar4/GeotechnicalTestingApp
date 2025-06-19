@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  mysql:
+    container_name: GeoTechnicalDatabase
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: GeotechnicalTests
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "4000:3306"  # Map MySQL container port 3306 to host 3307
+    volumes:
+      - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
+      - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
+      - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
+      - ./backend/database/concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: GeoTechnicalApp
+    build:
+      context: .
+      # Dockerfile backend/database/Dockerfile
+      dockerfile: ./backend/database/Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://GeoTechnicalDatabase:3306/GeotechnicalTests
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: secret
+    volumes:
+      - ./backend/database/target/database-0.0.1-snapshot.jar:/app/app.jar
+      - ./backend/database/parameters2.csv:/app/parameters2.csv
+      - ./backend/database/aggregate.csv:/app/aggregate.csv
+      - ./backend/database/rockParameters.csv:/app/rockParameters.csv
+       - ./backend/database/rockParameters.csv:/app/concreteParameters.csv
+    ports:
+      - "8080:8080"
+    command: ["java", "-jar", "/app/app.jar"]
+
+  frontend:
+    container_name: GeoTechnicalFrontend
+    build:
+      context: ./frontend
+    ports:
+      - "3100:3000" 
+    environment:
+      - REACT_APP_API_URL=http://GeoTechnicalApp:8080  
+    depends_on:
+      - app

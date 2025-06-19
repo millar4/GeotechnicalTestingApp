@@ -1,0 +1,30 @@
+Group,Test,Abbreviation or symbol,Test parameters,Default test method,Alternative 1,Alternative 2,Alternative 3,Sample type (Intact or Disturbed),Field sample mass( 3x Dmax or 4 x test specimen mass),Test specimen type,Mass(kg),Number,Diameter (D) (mm),NULL,Width (W) (mm),Height (H)(mm),Max grain size (Dmax) (mm),Fraction (d/D0,Scheduling Notes
+Index properties,Geotechnical description,S&D,NULL,BS EN ISO 14689-2:2018,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,NULL,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Index properties,Water content,rWC,water content,ISRM SM 1974–2006,NULL,NULL,NULL,Intact or disturbed,NULL,Pieces of core or irregular ,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Index properties,Porosity & density ,rBD,bulk density (wet & dry) / unit weight (wet & dry) / porosity,ISRM SM 1974–2006,NULL,NULL,NULL,Intact,NULL,Pieces of core or irregular ,NULL,1,35-100,NULL,NULL,(0.5-2.5)D,NULL,NULL,NULL
+Index properties,P- and S-wave velocity,PnS,shear wave velocity / compression wave velocity / Young's modulus / Poisson's ratio,ASTM D2845-08,NULL,NULL,NULL,Intact,NULL,Core or rectangular pieces,NULL,1,≥50,≥50,≥50,≥50,D /10,NULL,NULL
+Strength,Point load index ,PLI,point load index / compressive strength,ISRM SM 1974–2006,NULL,NULL,NULL,Intact,NULL,Core or rectangular pieces,NULL,1-10,30-100,>0.5D,(0.3-1.0)D,-,NULL,NULL,Define number of specimens / i.e. 10 or one
+Strength,Uniaxial compressive strength,UCS,compressive strength,ISRM SM 1974–2006,NULL,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,50-100,NULL,NULL,(2.5-3.0)D,D /10,NULL,NULL
+Strength,Uniaxial compression with Young's modulus & Poisson's ratio,UCS & YMPR,compressive strength / axial & radial strain / Young's modulus / Poisson's ratio,ISRM SM 1974–2006,ASTM D7012-23,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,100,NULL,NULL,(2.5-3.0)D,D /10,NULL,NULL
+Strength,Triaxial compression ,TCS,compressive strength,ISRM SM 1974–2006,ASTM D7012-23,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1 or 3,54,NULL,NULL,(2.0-3.0)D,D /10,NULL,"Test one specimen at 1.0 x σ′vo
+
+Test three specimens at 0.5 x σ′vo / 1.0 x σ′vo and 2.0 x σ′vo"
+Strength,Triaxial compression with Young's modulus & Poisson's ratio,TCS & YMPR,compressive strength / axial & radial strain / Young's modulus / Poisson's ratio,ISRM SM 1974–2006,ASTM D7012-23,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,NULL,NULL,NULL,,D /10,NULL,Test one specimen at 1.0 x σ′vo
+Strength,Indirect tensile strength,ITS,tensile strength,ISRM SM 1974–2006,ASTM D3967-16,NULL,NULL,Intact,NULL,Disk,NULL,1-10,54,NULL,NULL,(0.20-0.75)D,D /10,NULL,
+Strength,Rock shear under constant normal force (CNF) or constant normal stiffness (CNS),rDS,shear strength,ASTM D5706-16,ISRM SM 1974–2006,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1 or 3,50-100,NULL,NULL,2D,D /10,NULL,"Under CNF conditions / test three specimens at 0.5 x σ′vo / 1.0 x σ′vo and 2.0 x σ′vo
+
+Under CNS conditions / test one specimen at σ'vo and define the stiffness rate (kPa /min)"
+Abrasivity - Durability,CERCHAR abrasivity index,CAI,abrasivity,ISRM SM 2007–2014,ASTM D7625-10,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,≥50,≥50,≥50,≥50,NULL,NULL,Wet or dry / or both
+Abrasivity - Durability,Rock abrasiveness using a rotating tool,Abr,abrasivity,In-house based on NF P18–579:2013,NULL,NULL,NULL,Disturbed,NULL,Crushed,0.5,1,NULL,NULL,NULL,NULL,NULL,4 /6.3,Define if abrasivity & breakability are to be tested or only abrasivity 
+Abrasivity - Durability,Swelling (pressure or axial strain),SP,swelling potential,ISRM SM 1974–2006,NULL,NULL,NULL,Intact or disturbed,NULL,Right circular cylinder or powder,0.2,1,35-75,NULL,-,2D,H /6,NULL,NULL
+Abrasivity - Durability,Schimdt hammer,SH,hardness / compressive strength,ISRM SM revised / Int J Rock Mech Mining Sci (2008),NULL,NULL,NULL,Intact,NULL,Right circular cylinder or blocks, ,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Abrasivity - Durability,Slaking (rock),RS,durability,In-house,NULL,NULL,NULL,Disturbed,NULL,Lumps,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Abrasivity - Durability,Slake durability,SD,durability,ISRM SM 1974–2006,ASTM D4644-16,NULL,NULL,Disturbed,NULL,Lumps,0.5,2,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Abrasivity - Durability,Los Angeles,LAV,durability / hardness,BS EN 1097-2,NULL,NULL,NULL,Disturbed,NULL,Crushed,10,1,NULL,NULL,NULL,NULL,NULL,10 /14,Other fractions are possible
+Abrasivity - Durability,Magnesium sulphate,MSV,durability,BS EN 1367-2,NULL,NULL,NULL,Disturbed,NULL,Crushed,0.5,2,NULL,NULL,NULL,NULL,NULL,10 /14,Other fractions are possible
+Chemical - Mineralogy,Thermal resistivity,TR,thermal resistivity / thermal conductivity / heat capacity,ASTM D5334-14,IEE 422-2017,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,38-100,NULL,NULL,(1.0-2.0)D,NULL,NULL,NULL
+Chemical - Mineralogy,Electrical resistivity,ER,electrical resistivity,ASTM G187-18,NULL,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,70 / 100,NULL,NULL,(1.0-2.0)D,NULL,NULL,NULL
+Chemical - Mineralogy,Petrography (optical microscopy),OM,qualitative or quantitative mineral identification and lithological characterisation,Subcontracted,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,Scanning electron microscopy,SEM,mineral identification & composition,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,powder XRD,pXRD,mineral identification & percentages,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,clay XRD,clay XRD,clay minerals identification,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
