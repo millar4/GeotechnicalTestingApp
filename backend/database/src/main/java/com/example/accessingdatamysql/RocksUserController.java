@@ -40,11 +40,12 @@ public class RocksUserController {
             return (List<RocksUser>) RocksUserRepository.findAll();
         }
 
+
         switch (sort) {
             case "default":
                 return RocksUserRepository.findAllByOrderByIdAsc();
             case "name":
-                return RocksUserRepository.findAllByOrderByGroupAsc();
+                return RocksUserRepository.findAllByOrderByMyGroupAsc();
             case "method":
                 return RocksUserRepository.findAllByOrderByTestMethodAsc();
             case "parameter":
@@ -109,7 +110,7 @@ public class RocksUserController {
         // 2. Synchronize the updated fields passed by the front-end into the database.
         RocksUser existing = existingOpt.get();
         existing.setTest(updatedEntry.getTest());
-        existing.setGroup(updatedEntry.getGroup());
+        existing.setmyGroup(updatedEntry.getmyGroup());
         existing.setSymbol(updatedEntry.getSymbol());
         existing.setParameters(updatedEntry.getParameters());
         existing.setTestMethod(updatedEntry.getTestMethod());
@@ -140,7 +141,7 @@ public class RocksUserController {
     @GetMapping(path = "/group")
     @ResponseBody
     public List<RocksUser> getUsersByGroup(@RequestParam String group) {
-        return RocksUserRepository.findByGroupContaining(group);
+        return RocksUserRepository.findByMyGroupContaining(group);
     }
 
     @GetMapping(path = "/groups")
@@ -256,4 +257,10 @@ public class RocksUserController {
     public List<RocksUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
         return RocksUserRepository.findBySpecimenMaxGrainFractionContaining(fraction);
     }
+
+    @GetMapping("/schedulingNotes")
+    public List<RocksUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
+        return RocksUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
+    }
+
 }

@@ -7,12 +7,12 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
 
-    @Query("SELECT DISTINCT g.group FROM RocksUser g ORDER BY g.group ASC")
+    @Query("SELECT DISTINCT g.myGroup FROM RocksUser g ORDER BY g.myGroup ASC")
     List<String> findAllGroups();
 
-     // The following methods all use fuzzy queries
+    // The following methods all use fuzzy queries
 
-    List<RocksUser> findByGroupContaining(String group);
+    List<RocksUser> findByMyGroupContaining(String myGroup);
     List<RocksUser> findByTestContaining(String test);
     List<RocksUser> findBySymbolContaining(String symbol);
     List<RocksUser> findByParametersContaining(String parameters);
@@ -21,7 +21,6 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
     List<RocksUser> findByAlt2Containing(String alt2);
     List<RocksUser> findByAlt3Containing(String alt3);
     List<RocksUser> findBySampleTypeContaining(String sampleType);
-    
     List<RocksUser> findByFieldSampleMassContaining(String mass);
     List<RocksUser> findBySpecimenTypeContaining(String specimenType);
     List<RocksUser> findBySpecimenMassContaining(String mass);
@@ -36,8 +35,7 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
 
     // ORDER BY
     List<RocksUser> findAllByOrderByIdAsc();
-    List<RocksUser> findAllByOrderByGroupAsc();
+    List<RocksUser> findAllByOrderByMyGroupAsc();
     List<RocksUser> findAllByOrderByTestMethodAsc();
     List<RocksUser> findAllByOrderByParametersAsc();
-
 }

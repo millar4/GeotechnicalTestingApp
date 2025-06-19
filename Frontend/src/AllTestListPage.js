@@ -144,7 +144,13 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
           alert('You need ADMIN privileges to edit this item.');
           return;
         }
-        navigate('/edititem', { state: { details } });
+        const databaseType = localStorage.getItem('databaseType') || 'soil';
+        navigate('/edititem', {
+        state: {
+            details,
+            databaseType,
+        }
+        });
       };
     return (
         <Draggable handle=".floating-header">
@@ -269,18 +275,45 @@ const PaginatedBoxes = () => {
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
 
     // Database type state
-    const [databaseType, setDatabaseType] = useState(passedDB || 'soil' || 'aggregate' || 'rocks');
+    const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
 
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
 
     // API base URL based on database type
-    const baseUrl = databaseType === "aggregate" ? "http://localhost:8080/aggregate" : "http://localhost:8080/database";
-    const baseUrlRock = databaseType === "rocks" ? "http://localhost:8080/rocks" : "http://localhost:8080/database";
+    const baseUrl = (databaseType === "aggregate") ? ("http://localhost:8080/aggregate") : ((databaseType === "rocks") ? ("http://localhost:8080/rocks") : ("http://localhost:8080/database"))
+    
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+
+    const getBaseUrl = (type) => {
+        switch (type) {
+            case 'soil': return '/soil';
+            case 'aggregate': return '/aggregate';
+            case 'rocks': return '/rocks';
+            default: return '/soil'; // Fallback to prevent undefined
+        }
+    };
+
+    useEffect(() => {
+        if (!databaseType) return;
+    
+        const fetchData = async () => {
+            try {
+                const baseUrl = getBaseUrl(databaseType); // e.g., returns `/rocks`, `/soil`, etc.
+                const response = await fetch(`${baseUrl}/all`);
+                const data = await response.json();
+                setData(data); // or however you’re storing the fetched data
+            } catch (err) {
+                console.error("Error fetching data for:", databaseType, err);
+            }
+        };
+    
+        fetchData();
+    }, [databaseType]);
+    
 
     useEffect(() => {
     const handleResize = () => {
@@ -453,7 +486,8 @@ const PaginatedBoxes = () => {
                     `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
                 ];
             } else if(databaseType === "rocks") {
-                urls = [
+                urls = 
+                [
                     `${baseUrl}/test?test=${encodedSearch}`,
                     `${baseUrl}/id?id=${encodedSearch}`,
                     `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
@@ -734,7 +768,13 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "aggregate" ? "active" : ""}`}
                             onClick={() => setDatabaseType("aggregate")}
                         >
-                            Aggregate
+                            Agg
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "rocks" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("rocks")}
+                        >
+                            Rock
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
