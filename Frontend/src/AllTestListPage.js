@@ -136,7 +136,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
       return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
   
-    const formatData = (data) => data || 'N/A';
+    const formatData = (data) => data;
   
     const handleEditClick = () => {
         const role = localStorage.getItem('role');

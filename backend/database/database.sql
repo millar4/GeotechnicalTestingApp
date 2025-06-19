@@ -120,7 +120,21 @@ IGNORE 1 LINES
     specimenMass, specimenNumbers,
     specimenMaxGrainSize, specimenMaxGrainFraction,
     schedulingNotes
-);
+)
+SET 
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    sampleType = NULLIF(sampleType, 'NULL'),
+    fieldSampleMass = NULLIF(fieldSampleMass, 'NULL'),
+    specimenType = NULLIF(specimenType, 'NULL'),
+    specimenMass = NULLIF(specimenMass, 'NULL'),
+    specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
+    specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
 
 -- ============================================
 -- 4) Load CSV data into RocksTable
@@ -138,8 +152,28 @@ IGNORE 1 LINES
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
     schedulingNotes
-);
-
+)
+SET 
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    alt1 = NULLIF(alt1, 'NULL'),
+    alt2 = NULLIF(alt2, 'NULL'),
+    alt3 = NULLIF(alt3, 'NULL'),
+    sampleType = NULLIF(sampleType, 'NULL'),
+    fieldSampleMass = NULLIF(fieldSampleMass, 'NULL'),
+    specimenType = NULLIF(specimenType, 'NULL'),
+    specimenMass = NULLIF(specimenMass, 'NULL'),
+    specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
+    specimenD = NULLIF(specimenD, 'NULL'),
+    specimenL = NULLIF(specimenL, 'NULL'),
+    specimenW = NULLIF(specimenW, 'NULL'),
+    specimenH = NULLIF(specimenH, 'NULL'),
+    specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
 
 -- ============================================
 -- 5) Load CSV data into GeotechnicalTable
@@ -156,7 +190,27 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction
-);
+)
+SET 
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    alt1 = NULLIF(alt1, 'NULL'),
+    alt2 = NULLIF(alt2, 'NULL'),
+    alt3 = NULLIF(alt3, 'NULL'),
+    sampleType = NULLIF(sampleType, 'NULL'),
+    fieldSampleMass = NULLIF(fieldSampleMass, 'NULL'),
+    specimenType = NULLIF(specimenType, 'NULL'),
+    specimenMass = NULLIF(specimenMass, 'NULL'),
+    specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
+    specimenD = NULLIF(specimenD, 'NULL'),
+    specimenL = NULLIF(specimenL, 'NULL'),
+    specimenW = NULLIF(specimenW, 'NULL'),
+    specimenH = NULLIF(specimenH, 'NULL'),
+    specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL');
 
 -- ============================================
 -- 5) Load CSV data into ConcreteTable
@@ -174,9 +228,27 @@ IGNORE 1 LINES
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction
     ,schedulingNotes
-);
-
-
+)
+SET 
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    alt1 = NULLIF(alt1, 'NULL'),
+    alt2 = NULLIF(alt2, 'NULL'),
+    alt3 = NULLIF(alt3, 'NULL'),
+    sampleType = NULLIF(sampleType, 'NULL'),
+    fieldSampleMass = NULLIF(fieldSampleMass, 'NULL'),
+    specimenType = NULLIF(specimenType, 'NULL'),
+    specimenMass = NULLIF(specimenMass, 'NULL'),
+    specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
+    specimenD = NULLIF(specimenD, 'NULL'),
+    specimenL = NULLIF(specimenL, 'NULL'),
+    specimenW = NULLIF(specimenW, 'NULL'),
+    specimenH = NULLIF(specimenH, 'NULL'),
+    specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
