@@ -580,13 +580,7 @@ const PaginatedBoxes = () => {
             } else if (effectivePattern === "Test group") {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
-                if (databaseType === "aggregate") {
-                    console.warn("Aggregate does not have 'test' endpoint for 'Test name'. Returning empty.");
-                    setData([]);
-                    return;
-                } else {
                     url = `${baseUrl}/test?test=${encodedSearch}`;
-                }
             }
         }
 
