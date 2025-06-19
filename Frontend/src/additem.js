@@ -142,7 +142,7 @@ const AddItem = () => {
                 {fields.map(field => (
                   <tr key={field}>
                     <td><strong>{formatLabel(field)}:</strong></td>
-                    <td>{formData[field] || 'N/A'}</td>
+                    <td>{formData[field]}</td>
                   </tr>
                 ))}
               </tbody>
