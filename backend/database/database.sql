@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS ConcreteTable(
     alt1 VARCHAR(100),
     alt2 VARCHAR(100),
     alt3 VARCHAR(100),
-    sampleType VARCHAR(30),
+    sampleType VARCHAR(300),
     fieldSampleMass VARCHAR(100),
     specimenType VARCHAR(1000),
     specimenMass VARCHAR(100),
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
     specimenNumbers VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
-    schedulingNotes VARCHAR(300)
+    schedulingNotes TEXT(300)
 );
 
 -- ============================================
@@ -141,8 +141,6 @@ IGNORE 1 LINES
 );
 
 
-
-
 -- ============================================
 -- 5) Load CSV data into GeotechnicalTable
 -- ============================================
@@ -163,7 +161,7 @@ IGNORE 1 LINES
 -- ============================================
 -- 5) Load CSV data into ConcreteTable
 -- ============================================
-LOAD DATA INFILE '/var/lib/mysql-files/concrete.csv'
+LOAD DATA INFILE '/var/lib/mysql-files/concreteParameters.csv'
 INTO TABLE ConcreteTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
@@ -175,6 +173,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction
+    ,schedulingNotes
 );
 
 

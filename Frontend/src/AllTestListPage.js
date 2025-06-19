@@ -281,8 +281,14 @@ const PaginatedBoxes = () => {
     const [searchSort, setSearchSort] = useState(false);
 
     // API base URL based on database type
-    const baseUrl = (databaseType === "aggregate") ? ("http://localhost:8080/aggregate") : ((databaseType === "rocks") ? ("http://localhost:8080/rocks") : ("http://localhost:8080/database"))
-    
+    const baseUrl = (databaseType === "aggregate")
+        ? "http://localhost:8080/aggregate"
+        : (databaseType === "rocks")
+        ? "http://localhost:8080/rocks"
+        : (databaseType === "concrete")
+        ? "http://localhost:8080/concrete"
+        : "http://localhost:8080/database";
+
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -293,6 +299,7 @@ const PaginatedBoxes = () => {
             case 'soil': return '/soil';
             case 'aggregate': return '/aggregate';
             case 'rocks': return '/rocks';
+            case 'concrete': return '/concrete';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
@@ -486,6 +493,15 @@ const PaginatedBoxes = () => {
                     `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
                 ];
             } else if(databaseType === "rocks") {
+                urls = 
+                [
+                    `${baseUrl}/test?test=${encodedSearch}`,
+                    `${baseUrl}/id?id=${encodedSearch}`,
+                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
+                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
+                    `${baseUrl}/group?group=${encodedSearch}`,
+                ];
+            } else if(databaseType === "concrete") {
                 urls = 
                 [
                     `${baseUrl}/test?test=${encodedSearch}`,
@@ -775,6 +791,12 @@ const PaginatedBoxes = () => {
                             onClick={() => setDatabaseType("rocks")}
                         >
                             Rock
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "concrete" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("concrete")}
+                        >
+                            Concrete
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
