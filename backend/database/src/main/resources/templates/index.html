@@ -1,0 +1,18 @@
+<!-- src/main/resources/templates/index.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Welcome Page</title>
+</head>
+<body>
+<h1>Welcome to the Star System!</h1>
+<p>This is our custom home page.</p>
+<ul>
+    <!-- list backend index -->
+    <li><a th:href="@{/database/all}">Go to Thymeleaf user list</a></li>
+    <li><a th:href="@{/database/allJson}">Get all users (JSON)</a></li>
+    <li><a th:href="@{/database/symbol?symbol=ABC}">Search by symbol=ABC</a></li>
+</ul>
+</body>
+</html>

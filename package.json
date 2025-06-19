@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "open": "^10.1.0",
+    "up": "^1.0.2"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+  }
+}
