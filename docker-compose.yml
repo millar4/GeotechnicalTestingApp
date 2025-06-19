@@ -16,6 +16,7 @@ services:
       - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
       - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
       - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
+      - ./backend/database/concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
 
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
@@ -41,6 +42,7 @@ services:
       - ./backend/database/parameters2.csv:/app/parameters2.csv
       - ./backend/database/aggregate.csv:/app/aggregate.csv
       - ./backend/database/rockParameters.csv:/app/rockParameters.csv
+       - ./backend/database/rockParameters.csv:/app/concreteParameters.csv
     ports:
       - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"]
