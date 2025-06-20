@@ -170,8 +170,8 @@ function Theupperbar({
     padding: '0 4%',
     textDecoration: 'none',
     display: 'inline-block',
-    height: '10vh',
-    lineHeight: '10vh',
+    height: '10vh', // Height of the links
+    lineHeight: '10vh', // Vertical alignment within the height of the links
     boxSizing: 'border-box',
   };
 
@@ -181,50 +181,65 @@ function Theupperbar({
   };
 
   return (
-  
     <nav
       style={{
         position: 'fixed',
-        backgroundColor: 'black',
+        backgroundColor: '#8d1d1c',
         top: 0,
         left: 0,
         width: '100%',
-        height: '10%',
+        height: '100px', // Increased navbar height
         zIndex: 20,
-        justifyContent: 'space-between'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start', // Keeps the links at the top
+        padding: '10px 20px', // Adjust padding to give some space inside
       }}
     >
-<button
-      className="login-button"
-      onClick={isLoggedIn ? handleLogout : () => setShowLogin(true)}
-      style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        zIndex: 1000,
-        backgroundColor: isLoggedIn ? 'red' : 'white',
-        color: isLoggedIn ? 'white' : 'black'
-      }}
-    >
-      {isLoggedIn ? 'Logout' : 'Login'}
-    </button>
-
-    <div className="left-buttons" style={{ marginLeft: '120px' }}>
-    {isLoggedIn && (
-      <button onClick={handleManageAccounts} className="account-button">
-        Account Management
+      <button
+        className="login-button"
+        onClick={isLoggedIn ? handleLogout : () => setShowLogin(true)}
+        style={{
+          position: 'fixed',
+          top: '55px',
+          left: '187px',
+          zIndex: 1000,
+          backgroundColor: isLoggedIn ? 'red' : 'white',
+          color: isLoggedIn ? 'white' : 'black'
+        }}
+      >
+        {isLoggedIn ? 'Logout' : 'Login'}
       </button>
-    )}
-    <button onClick={handleCloseProgram} className="stop-button">
-      Stop and log out
-    </button>
-  </div>
+
+      <div className="logo-container">
+        <img src="/LogoNB.png" alt="Company Logo" className="company-logo" />
+      </div>
+
+      <div className="left-buttons" style={{ marginLeft: '120px' }}>
+        {isLoggedIn && (
+          <button onClick={handleManageAccounts} className="account-button">
+            Account Management
+          </button>
+        )}
+        <button onClick={handleCloseProgram} className="stop-button">
+          Stop and log out
+        </button>
+      </div>
 
       {/* Center navigation links */}
-      <div>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start', 
+        width: '100%', 
+        paddingLeft: '30%', 
+      }}>
         <Link
           to="/"
-          style={hovered === 'Home' ? { ...addline, ...buttonhover } : addline}
+          style={{
+            ...(hovered === 'Home' ? { ...addline, ...buttonhover } : addline),
+            fontWeight: 'bold', 
+          }}
           onMouseEnter={() => setHovered('Home')}
           onMouseLeave={() => setHovered('')}
         >
@@ -232,7 +247,10 @@ function Theupperbar({
         </Link>
         <Link
           to="/AllTestListPage"
-          style={hovered === 'TestList' ? { ...addline, ...buttonhover } : addline}
+          style={{
+            ...(hovered === 'TestList' ? { ...addline, ...buttonhover } : addline),
+            fontWeight: 'bold', 
+          }}
           onMouseEnter={() => setHovered('TestList')}
           onMouseLeave={() => setHovered('')}
         >
@@ -240,7 +258,10 @@ function Theupperbar({
         </Link>
         <Link
           to="/about"
-          style={hovered === 'About' ? { ...addline, ...buttonhover } : addline}
+          style={{
+            ...(hovered === 'About' ? { ...addline, ...buttonhover } : addline),
+            fontWeight: 'bold', 
+          }}
           onMouseEnter={() => setHovered('About')}
           onMouseLeave={() => setHovered('')}
         >
@@ -333,3 +354,4 @@ function Theupperbar({
 }
 
 export default Theupperbar;
+

@@ -8,6 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface AggregateUserRepository extends JpaRepository<AggregateUser, Long> {
 
     // Query methods for each field, supporting case-insensitive, partial string matching
+
+    @Query("SELECT DISTINCT a.group FROM AggregateUser a WHERE a.group IS NOT NULL")
+    List<String> findAllGroups();
+    
     List<AggregateUser> findByGroupContainingIgnoreCase(String group);
 
     List<AggregateUser> findBySymbolContainingIgnoreCase(String symbol);
@@ -32,7 +36,6 @@ public interface AggregateUserRepository extends JpaRepository<AggregateUser, Lo
 
     List<AggregateUser> findBySchedulingNotesContainingIgnoreCase(String schedulingNotes);
 
-    //New interface: query all distinct group tags
-    @Query("SELECT DISTINCT r.group FROM AggregateUser r")
-    List<String> findAllGroups();
+    List<AggregateUser> findByTestContainingIgnoreCase(String test);
+
 }
