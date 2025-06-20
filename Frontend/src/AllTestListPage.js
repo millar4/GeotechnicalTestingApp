@@ -1,4 +1,5 @@
 import './AllTestListPage.css';
+import './index.css';
 import React, { useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
@@ -202,34 +203,34 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                         <p><strong>Sample Type:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass:</strong> {formatData(details.fieldSampleMass)}</p>
+                        <p><strong>Field Sample Mass(kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
                         <p><strong>Specimen Type:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass:</strong> {formatData(details.specimenMass)}</p>
+                        <p><strong>Specimen Mass(kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
                         <p><strong>Specimen Numbers:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen D:</strong> {formatData(details.specimenD)}</p>
+                        <p><strong>Specimen D(mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen L:</strong> {formatData(details.specimenL)}</p>
+                        <p><strong>Specimen L(mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen W:</strong> {formatData(details.specimenW)}</p>
+                        <p><strong>Specimen W(mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen H:</strong> {formatData(details.specimenH)}</p>
+                        <p><strong>Specimen H(mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Specimen Max Grain Size:</strong> {formatData(details.specimenMaxGrainSize)}</p>
+                        <p><strong>Specimen Max Grain Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
-                        <p><strong>Specimen Max Grain Fraction:</strong> {formatData(details.specimenMaxGrainFraction)}</p>
+                        <p><strong>Specimen Max Grain Fraction(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
                     )}
 
                 </div>
@@ -486,11 +487,11 @@ const PaginatedBoxes = () => {
         if (effectivePattern === "Quick Search") {
             if (databaseType === "aggregate") {
                 urls = [
+                    `${baseUrl}/test?test=${encodedSearch}`
                     `${baseUrl}/id?id=${encodedSearch}`,
                     `${baseUrl}/group?group=${encodedSearch}`,
                     `${baseUrl}/symbol?symbol=${encodedSearch}`,
                     `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
                 ];
             } else if(databaseType === "rocks") {
                 urls = 
@@ -766,7 +767,7 @@ const PaginatedBoxes = () => {
             )}
             <div className="container">
                 <div className={`sidebar ${isSmallScreen ? (isSidebarOpen ? 'open' : 'closed') : ''}`}>
-                    <h3>Search Order</h3>
+                <h3 className="page-header" style={{ marginTop: '60px' }}>Search Order</h3>
                     <div className="db-switch">
                         <button
                             className={`db-button ${databaseType === "soil" ? "active" : ""}`}
@@ -775,7 +776,7 @@ const PaginatedBoxes = () => {
                             Soil
                         </button>
                         <button
-                            className={`db-button ${databaseType === "aggregate" ? "active" : ""}`}
+                            className={`db-button ${databaseType === "aggregate" ? "active" : ""} `}
                             onClick={() => setDatabaseType("aggregate")}
                         >
                             Agg

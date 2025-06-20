@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'AvenirLTStd-Medium', Arial !important ;
+}
+
+
 .container {
     background-color: white;
     min-height: 100vh;

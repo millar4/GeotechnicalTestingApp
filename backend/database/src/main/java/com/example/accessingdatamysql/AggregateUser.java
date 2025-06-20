@@ -22,6 +22,9 @@ public class AggregateUser {
     @Column(name = "myGroup", nullable = false, unique = false)
     private String group;
 
+    @Column(name = "test", nullable = false, unique = false)
+    private String test;
+
     @Column(name = "symbol", nullable = false, unique = true)
     private String symbol;
 
@@ -60,6 +63,9 @@ public class AggregateUser {
     public String getGroup() { return group; }
     public void setGroup(String group) { this.group = group; }
 
+    public String getTest() { return test; }
+    public void setTest(String test) { this.test= test; }
+
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
 
@@ -89,7 +95,6 @@ public class AggregateUser {
 
     public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
     public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
-
 
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
