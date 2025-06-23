@@ -10,6 +10,7 @@ USE GeotechnicalTests;
 CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
+    classification VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(10),
     parameters VARCHAR(1000),
@@ -134,7 +135,7 @@ SET
     specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
-    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
+    schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL');
 
 -- ============================================
 -- 4) Load CSV data into RocksTable
@@ -185,7 +186,7 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-    myGroup, test, symbol, parameters, testMethod,
+    myGroup, classification, test, symbol, parameters, testMethod,
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
@@ -193,6 +194,7 @@ IGNORE 1 LINES
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
+    classification = NULLIF(classification, 'NULL'),
     test = NULLIF(test, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
@@ -248,7 +250,8 @@ SET
     specimenW = NULLIF(specimenW, 'NULL'),
     specimenH = NULLIF(specimenH, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
-    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL');
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
