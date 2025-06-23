@@ -99,7 +99,6 @@ html, body, * {
   color: black; 
 }
 
-
 /* Search icon */
 .search-icon {
   position: absolute;
@@ -180,6 +179,7 @@ html, body, * {
     color: white;
     cursor: pointer;
     margin-left: 5px; 
+    margin-top: 15px;
 }
 
 
@@ -188,6 +188,8 @@ html, body, * {
   color: black;
   border: 2px solid #1D1D1D1B; 
   outline: 2px solid white;
+  margin-left: 5px; 
+  margin-top: 15px;
 }
 
 .search-bar-form {
@@ -214,6 +216,7 @@ html, body, * {
   border-radius: 8px;
   outline: none;
   background-color: white;
+  margin-top: 15px;
 }
 
 .quick-search-button {

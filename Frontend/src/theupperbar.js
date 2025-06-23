@@ -133,23 +133,6 @@ function Theupperbar({
     }
   };
 
-  // Handle "Close Program" - calls /api/stop
-  const handleCloseProgram = async () => {
-    const confirmClose = window.confirm("Are you sure you want to stop the containers?");
-    if (!confirmClose) return;
-    
-    try {
-      const response = await fetch("http://localhost:8080/api/stop", {
-        method: "POST"
-      });
-      const result = await response.text();
-      alert(result); // e.g. "Stop request recorded."
-    } catch (err) {
-      console.error("Failed to request stop:", err);
-      alert("Error: failed to request container stop.");
-    }
-  };
-
   // Manage accounts
   const handleManageAccounts = () => {
     const role = localStorage.getItem('role');
@@ -221,9 +204,6 @@ function Theupperbar({
             Account Management
           </button>
         )}
-        <button onClick={handleCloseProgram} className="stop-button">
-          Stop and log out
-        </button>
       </div>
 
       {/* Center navigation links */}

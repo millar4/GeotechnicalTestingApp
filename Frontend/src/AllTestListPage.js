@@ -177,6 +177,9 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     {formatData(details.group, searchcontent, pattern, "group") && (
                         <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
+                    {formatData(details.classification, searchcontent, pattern, "classification") && (
+                        <p><strong>Classification:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
+                    )}
                     {formatData(details.id, searchcontent, pattern, "id") && (
                         <p><strong>ID:</strong> {formatData(details.id, searchcontent, pattern, "id")}</p>
                     )}
@@ -231,6 +234,9 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
                         <p><strong>Specimen Max Grain Fraction(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
+                    )}
+                    {formatData(details.schedulingNotes) && (
+                        <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes)}</p>
                     )}
 
                 </div>
@@ -779,7 +785,7 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "aggregate" ? "active" : ""} `}
                             onClick={() => setDatabaseType("aggregate")}
                         >
-                            Agg
+                            <p style={{ fontSize: '12px', margin: 0 }}>Aggregate</p>
                         </button>
                         <button
                             className={`db-button ${databaseType === "rocks" ? "active" : ""}`}
@@ -791,7 +797,7 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "concrete" ? "active" : ""}`}
                             onClick={() => setDatabaseType("concrete")}
                         >
-                            Concrete
+                        <p style={{ fontSize: '12px', margin: 0 }}>Concrete</p>
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
@@ -870,15 +876,6 @@ const PaginatedBoxes = () => {
                         <option value="50">50</option>
                         <option value="100">All Tests</option>
                     </select>
-                    {/* Animation Control Toggle */}
-                    <h3>Animation Control</h3>
-                    <button
-                        onClick={handleAnimationToggle}
-                        style={{ marginTop: '10px', width: '100%' }}
-                    >
-                        {animationEnabled ? "Stop Animation" : "Start Animation"}
-                    </button>
-                    <div style={{ height: "250px" }}></div>
                 </div>
 
                 <div className="box-container">
