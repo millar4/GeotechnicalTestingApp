@@ -841,6 +841,12 @@ const PaginatedBoxes = () => {
                         Group Arrangement
                     </button>
                     <button
+                        className={sortOrder === 'classification' ? 'active' : ''}
+                        onClick={() => handleSortChange('classification')}
+                    >
+                        Classification Arrangement
+                    </button>
+                    <button
                         className={sortOrder === 'method' ? 'active' : ''}
                         onClick={() => handleSortChange('method')}
                     >

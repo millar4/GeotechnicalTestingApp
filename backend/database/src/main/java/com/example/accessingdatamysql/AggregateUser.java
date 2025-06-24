@@ -22,6 +22,9 @@ public class AggregateUser {
     @Column(name = "myGroup", nullable = false, unique = false)
     private String group;
 
+    @Column(name = "classification", nullable = false, unique = false)
+    private String classification;
+
     @Column(name = "test", nullable = false, unique = false)
     private String test;
 
@@ -65,6 +68,9 @@ public class AggregateUser {
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test= test; }
+
+    public String getClassification() { return classification; }
+    public void setClassification(String classification) { this.test= classification; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
