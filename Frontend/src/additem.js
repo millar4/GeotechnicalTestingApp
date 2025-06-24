@@ -6,7 +6,7 @@ const AddItem = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    test: '', group: '', symbol: '', parameters: '', testMethod: '',
+    test: '',classification: '', group: '', symbol: '', parameters: '', testMethod: '',
     alt1: '', alt2: '', alt3: '', sampleType: '', fieldSampleMass: '',
     specimenType: '', specimenMass: '', specimenNumbers: '', specimenD: '',
     specimenL: '', specimenW: '', specimenH: '', specimenMaxGrainSize: '',
@@ -50,11 +50,19 @@ const AddItem = () => {
         throw new Error('Authentication failed: incorrect password');
       }
 
-      const url =
-        databaseTarget === 'database'
-          ? 'http://localhost:8080/database/add'
-          : 'http://localhost:8080/aggregate/add';
-  
+      const url = 
+      databaseTarget === 'database'
+        ? (databaseTarget === 'rocks' 
+            ? 'http://localhost:8080/database/rocks/add' 
+            : (databaseTarget === 'concrete' 
+                ? 'http://localhost:8080/database/concrete/add' 
+                : 'http://localhost:8080/database/add'))
+        : (databaseTarget === 'rocks' 
+            ? 'http://localhost:8080/aggregate/rocks/add' 
+            : (databaseTarget === 'concrete' 
+                ? 'http://localhost:8080/aggregate/concrete/add' 
+                : 'http://localhost:8080/aggregate/add'));
+    
 
       const addResponse = await fetch(url, {
         method: 'POST',
@@ -79,7 +87,7 @@ const AddItem = () => {
   };
 
   const fields = [
-    "test", "group", "symbol", "parameters", "testMethod",
+    "test", "classification" , "group", "symbol", "parameters", "testMethod",
     "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
     "specimenMass", "specimenNumbers", "specimenD", "specimenL",
     "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction"

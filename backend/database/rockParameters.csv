@@ -20,7 +20,7 @@ Abrasivity - Durability,K132,Los Angeles,LAV,durability / hardness,BS EN 1097-2,
 Abrasivity - Durability,K128,Magnesium sulphate,MSV,durability,BS EN 1367-2,NULL,NULL,NULL,Disturbed,NULL,Crushed,0.5,2,NULL,NULL,NULL,NULL,NULL,10 /14,Other fractions are possible
 Chemical - Mineralogy,K26,Thermal resistivity,TR,thermal resistivity / thermal conductivity / heat capacity,ASTM D5334-14,IEE 422-2017,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,38-100,NULL,NULL,(1.0-2.0)D,NULL,NULL,NULL
 Chemical - Mineralogy,K27,Electrical resistivity,ER,electrical resistivity,ASTM G187-18,NULL,NULL,NULL,Intact,NULL,Right circular cylinder,NULL,1,70 / 100,NULL,NULL,(1.0-2.0)D,NULL,NULL,NULL
-Chemical - Mineralogy,,Petrography (optical microscopy),OM,qualitative or quantitative mineral identification and lithological characterisation,Subcontracted,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-Chemical - Mineralogy,,Scanning electron microscopy,SEM,mineral identification & composition,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-Chemical - Mineralogy,,powder XRD,pXRD,mineral identification & percentages,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
-Chemical - Mineralogy,,clay XRD,clay XRD,clay minerals identification,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,NULL,Petrography (optical microscopy),OM,qualitative or quantitative mineral identification and lithological characterisation,Subcontracted,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,NULL,Scanning electron microscopy,SEM,mineral identification & composition,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.05,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,NULL,powder XRD,pXRD,mineral identification & percentages,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Chemical - Mineralogy,NULL,clay XRD,clay XRD,clay minerals identification,NULL,NULL,NULL,NULL,Intact or disturbed,NULL,NULL,0.2,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL

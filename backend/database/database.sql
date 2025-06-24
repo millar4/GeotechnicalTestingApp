@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
 CREATE TABLE IF NOT EXISTS RocksTable(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
+    classification VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(10),
     parameters VARCHAR(1000),
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS RocksTable(
 CREATE TABLE IF NOT EXISTS ConcreteTable(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
+    classification VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(10),
     parameters VARCHAR(1000),
@@ -85,13 +87,13 @@ CREATE TABLE IF NOT EXISTS ConcreteTable(
     schedulingNotes TEXT(300)
 );
 
-
 -- ============================================
 -- 3) Create AggregateTable
 -- ============================================
 CREATE TABLE IF NOT EXISTS AggregateTable (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
+    classification VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(100),
     parameters VARCHAR(1000),
@@ -116,7 +118,7 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-    myGroup, test, symbol, parameters, testMethod,
+    myGroup, classification, test, symbol, parameters, testMethod,
     sampleType, fieldSampleMass, specimenType,
     specimenMass, specimenNumbers,
     specimenMaxGrainSize, specimenMaxGrainFraction,
@@ -124,6 +126,7 @@ IGNORE 1 LINES
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
+    classification = NULLIF(classification, 'NULL'),
     test = NULLIF(test, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
@@ -147,7 +150,7 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-    myGroup, test, symbol, parameters, testMethod,
+    myGroup, classification, test, symbol, parameters, testMethod,
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
@@ -156,6 +159,7 @@ IGNORE 1 LINES
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
+    classification = NULLIF(classification, 'NULL'),
     test = NULLIF(test, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
@@ -228,8 +232,8 @@ IGNORE 1 LINES
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction
-    ,schedulingNotes
+    specimenMaxGrainSize, specimenMaxGrainFraction,
+    schedulingNotes
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
