@@ -7,13 +7,18 @@ import 'react-resizable/css/styles.css';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import lockIcon from './Lock4.png';
 
-// Utility function: format data and add search highlight.
-const formatData = (data, searchcontent, pattern, fieldName) => {
-    if (!data) return null;
+// Helper function to escape special characters in search term for regex
+const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&');
+};
 
+// Function to format and highlight the search content
+const formatData = (data, searchcontent, pattern, fieldName) => {
     if (typeof data === 'string' && searchcontent) {
+        // If pattern is "Quick Search", highlight the search term in the string
         if (pattern === "Quick Search") {
-            const regex = new RegExp(`(${searchcontent})`, 'gi');
+            // Escape the search content to make it regex-safe
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -22,6 +27,8 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
                 />
             );
         }
+
+        // Determine the field based on the selected pattern
         let targetField = "";
         switch (pattern) {
             case "Test name":
@@ -39,11 +46,16 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
             case "Test parameters":
                 targetField = "parameters";
                 break;
+            case "Classification":
+                targetField = "classification";
+                break;
             default:
                 break;
         }
+
+        // If the target field matches the current fieldName, highlight the search term
         if (fieldName === targetField) {
-            const regex = new RegExp(`(${searchcontent})`, 'gi');
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -53,8 +65,9 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
             );
         }
     }
-    return data;
+    return data; // Return data without any changes if no matches
 };
+
 
 // Box component: displays a brief summary of a test item.
 const Box = ({
@@ -93,7 +106,7 @@ const Box = ({
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
-                <p>Classification: {formatData(classification, searchcontent, pattern, "classification")}</p>
+                <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(String(id), searchcontent, pattern, "id") && (
                 <p>Test ID: {formatData(String(id), searchcontent, pattern, "id")}</p>
@@ -182,7 +195,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                         <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
-                        <p><strong>Classification:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
+                        <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.id, searchcontent, pattern, "id") && (
                         <p><strong>ID:</strong> {formatData(details.id, searchcontent, pattern, "id")}</p>
@@ -258,7 +271,8 @@ const PaginatedBoxes = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const isLoggedIn = !!token;
 
-    // Paging and data state
+
+    // State initialization
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -291,6 +305,59 @@ const PaginatedBoxes = () => {
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
 
+    // Effective search content
+    const [effectiveSearchContent, setEffectiveSearchContent] = useState(initialSearchContent || '');
+
+    // Headers for fetch requests
+    const [headers, setHeaders] = useState({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem('token')}` // Retrieve the token from localStorage
+    });
+
+    // Sorting mode (e.g., 'default' or 'classification')
+    const [sortMode, setSortMode] = useState('default');
+
+
+    const alphanumericCompare = (a, b) => {
+        const regex = /([a-zA-Z]+)(\d+)/;
+    
+        const matchA = a.match(regex);
+        const matchB = b.match(regex);
+    
+        console.log(`Comparing: ${a} vs ${b}`);
+    
+        if (!matchA || !matchB) return a.localeCompare(b); // safer fallback
+    
+        const alphaA = matchA[1];
+        const numA = parseInt(matchA[2], 10);
+    
+        const alphaB = matchB[1];
+        const numB = parseInt(matchB[2], 10);
+    
+        if (alphaA < alphaB) return -1;
+        if (alphaA > alphaB) return 1;
+    
+        return numA - numB;
+    };
+    
+    
+    const sortDataByClassification = (data, sortOrder = 'descending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataByClassification: data is not an array", data);
+            return [];
+        }
+    
+        return data.sort((a, b) => {
+            const aClass = a.classification ?? '';
+            const bClass = b.classification ?? '';
+            return sortOrder === 'descending'
+                ? alphanumericCompare(bClass, aClass)
+                : alphanumericCompare(aClass, bClass);
+        });
+    };
+    
+
     // API base URL based on database type
     const baseUrl = (databaseType === "aggregate")
         ? "http://localhost:8080/aggregate"
@@ -314,23 +381,46 @@ const PaginatedBoxes = () => {
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
-
+    let url = ""; 
     useEffect(() => {
-        if (!databaseType) return;
-    
         const fetchData = async () => {
             try {
-                const baseUrl = getBaseUrl(databaseType); // e.g., returns `/rocks`, `/soil`, etc.
-                const response = await fetch(`${baseUrl}/all`);
-                const data = await response.json();
-                setData(data); // or however you’re storing the fetched data
-            } catch (err) {
-                console.error("Error fetching data for:", databaseType, err);
+                let baseUrl = getBaseUrl(databaseType);
+                let url = `${baseUrl}/all`; // or whatever your endpoint is
+    
+                if (effectiveSearchContent) {
+                    url = `${baseUrl}/search?query=${encodeURIComponent(effectiveSearchContent)}`;
+                } else if (selectedGroup) {
+                    url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
+                }
+    
+                console.log("Fetching from URL:", url);
+    
+                const response = await fetch(url);
+                const result = await response.json();
+    
+                console.log("Data before sorting:", result);
+                result.forEach(item => {
+                    console.log(`Item: ${item.id}, Classification: ${item.classification}`);
+                });
+    
+                // Apply sorting if needed
+                let sortedData = result;
+                if (sortMode === "classification") {
+                    sortedData = sortDataByClassification(result, sortOrder);
+                }
+    
+                setData(sortedData);
+    
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
         };
     
         fetchData();
-    }, [databaseType]);
+    }, [databaseType, effectiveSearchContent, selectedGroup, sortMode, sortOrder]);
+    
+    
     
 
     useEffect(() => {
@@ -385,20 +475,10 @@ const PaginatedBoxes = () => {
     // Fetch group data
     const fetchGroups = async () => {
         try {
-            const headers = getAuthHeaders();
-            const response = await fetch(`${baseUrl}/groups`, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include",
-                headers
-            });
-            if (response.status === 401 || response.status === 403) {
-                alert("You are not authorized to view group data. Please login.");
-                return;
-            }
-            if (!response.ok) throw new Error("Failed to fetch groups");
+            const response = await fetch(`${baseUrl}/groups`, { method: "GET", headers: getAuthHeaders() });
             const result = await response.json();
             console.log("Fetched groups:", result);
+            
             if (Array.isArray(result)) {
                 setGroups(result);
             } else if (result.groups) {
@@ -414,50 +494,55 @@ const PaginatedBoxes = () => {
             setGroups([]);
         }
     };
-
+    
     useEffect(() => {
         fetchGroups();
     }, [baseUrl, token]);
+    
+    const getSortedData = (data, sortOrder) => {
+        if (!Array.isArray(data)) {
+            console.error("Expected array data but got:", data);
+            return []; // Return empty array if data is not an array
+        }
+    
+        const sortFunctions = {
+            default: (a, b) => (a.id ?? 0) - (b.id ?? 0),
+            test: (a, b) => (a.test ?? '').localeCompare(b.test ?? ''),
+            name: (a, b) => (a.group ?? '').localeCompare(b.group ?? ''),
+            method: (a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''),
+            parameter: (a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''),
+            classification: (a, b) => alphanumericCompare(a.classification ?? '', b.classification ?? ''),
 
-    // Fetch test data based on viewMode (search results or full test list)
+        };
+    
+        const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
+        return data.sort(sortFunction);
+    };
+    
     const fetchData = async () => {
         if (!token) {
             setData([]);
             return;
-          }
+        }
+    
         console.log("fetchData() triggered");
         setData([]);
         const headers = getAuthHeaders();
-        // Determine effective search content and pattern based on viewMode
         const effectiveSearchContent = viewMode ? lastSearchContent : "";
         const effectivePattern = viewMode ? lastPattern : "";
         const encodedSearch = encodeURIComponent(effectiveSearchContent);
-        let url = "";
         let urls = [];
-
-        // If no search content is provided, fetch all tests or filter by group
+        let url = "";
+    
         if (!effectiveSearchContent) {
             if (selectedGroup) {
                 url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
                 console.log(`Group filter active. GET ${url}`);
                 try {
-                    const response = await fetch(url, {
-                        method: "GET",
-                        mode: "cors",
-                        credentials: "include",
-                        headers
-                    });
-                    if (response.status === 401 || response.status === 403) {
-                        alert("You are not authorized or your token is invalid.");
-                        return;
-                    }
+                    const response = await fetch(url, { method: "GET", headers });
                     if (!response.ok) throw new Error(`Failed to fetch group data. HTTP Status: ${response.status}`);
                     const result = await response.json();
-                    console.log("Group data result:", result);
-                    const filteredResult = result.filter(item =>
-                        item.group &&
-                        item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                    );
+                    const filteredResult = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                     setData(filteredResult);
                     return;
                 } catch (error) {
@@ -465,81 +550,40 @@ const PaginatedBoxes = () => {
                     return;
                 }
             }
+    
             url = `${baseUrl}/all`;
             if (sortOrder !== "default") {
                 url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
             }
+    
             console.log(`Fetching data from: ${url}`);
             try {
-                const response = await fetch(url, {
-                    method: "GET",
-                    mode: "cors",
-                    credentials: "include",
-                    headers
-                });
-                if (response.status === 401 || response.status === 403) {
-                    alert("You are not authorized or your token is invalid.");
-                    return;
-                }
+                const response = await fetch(url, { method: "GET", headers });
                 if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
                 let result = await response.json();
-                if (sortOrder === "default") {
-                    result.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-                }
+                result = getSortedData(result, sortOrder);
                 setData(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
             return;
         }
-
-        // When search content is provided
+    
+        // Handle search queries for specific patterns
         if (effectivePattern === "Quick Search") {
-            if (databaseType === "aggregate") {
-                urls = [
-                    `${baseUrl}/test?test=${encodedSearch}`
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                    `${baseUrl}/symbol?symbol=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                ];
-            } else if(databaseType === "rocks") {
-                urls = 
-                [
-                    `${baseUrl}/test?test=${encodedSearch}`,
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                ];
-            } else if(databaseType === "concrete") {
-                urls = 
-                [
-                    `${baseUrl}/test?test=${encodedSearch}`,
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                ];
-            } else{
-                urls = [
-                    `${baseUrl}/test?test=${encodedSearch}`,
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                ];
-            }
+            const searchUrls = [
+                `${baseUrl}/test?test=${encodedSearch}`,
+                `${baseUrl}/id?id=${encodedSearch}`,
+                `${baseUrl}/classification?classification=${encodedSearch}`,
+                `${baseUrl}/group?group=${encodedSearch}`,
+                `${baseUrl}/symbol?symbol=${encodedSearch}`,
+                `${baseUrl}/parameters?parameters=${encodedSearch}`,
+            ];
+    
             try {
-                const responses = await Promise.all(
-                    urls.map(u => fetch(u, {
-                        method: "GET",
-                        mode: "cors",
-                        credentials: "include",
-                        headers
-                    }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`)))
-                );
+                const responses = await Promise.all(searchUrls.map(u => fetch(u, { method: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
                 console.log("All parallel requests done:", responses);
+                
                 let mergedData = [];
                 const seenIds = new Set();
                 responses.forEach(result => {
@@ -550,37 +594,20 @@ const PaginatedBoxes = () => {
                         }
                     });
                 });
-                if (sortOrder !== "default") {
-                    mergedData.sort((a, b) => {
-                        if (sortOrder === "test") {
-                            return (a.test ?? '').localeCompare(b.test ?? '');
-                        }
-                        if (sortOrder === "name") {
-                            return (a.group ?? '').localeCompare(b.group ?? '');
-                        }
-                        if (sortOrder === "method") {
-                            return (a.testMethod ?? '').localeCompare(b.testMethod ?? '');
-                        }
-                        if (sortOrder === "parameter") {
-                            return (a.parameters ?? '').localeCompare(b.parameters ?? '');
-                        }
-                        return (a.id ?? 0) - (b.id ?? 0);
-                    });
-                }
+                
+                mergedData = getSortedData(mergedData, sortOrder);
+    
                 if (selectedGroup) {
-                    mergedData = mergedData.filter(item =>
-                        item.group &&
-                        item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                    );
+                    mergedData = mergedData.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                 }
                 setData(mergedData);
-                return;
             } catch (error) {
                 console.error("Error fetching data:", error);
-                return;
             }
+            return;
         }
-
+    
+        // Default behavior for search
         if (effectiveSearchContent) {
             if (effectivePattern === "Test method") {
                 url = `${baseUrl}/testMethod?testMethod=${encodedSearch}`;
@@ -591,74 +618,54 @@ const PaginatedBoxes = () => {
             } else if (effectivePattern === "Test group") {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
-                    url = `${baseUrl}/test?test=${encodedSearch}`;
+                url = `${baseUrl}/test?test=${encodedSearch}`;
             }
         }
-
+    
         if (sortOrder !== "default" && sortOrder !== "search") {
             url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
         }
-
+    
         console.log(`Final fetch from: ${url}`);
         try {
-            const response = await fetch(url, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include",
-                headers
-            });
-            if (response.status === 401 || response.status === 403) {
-                alert("You are not authorized or your token is invalid.");
-                return;
-            }
+            const response = await fetch(url, { method: "GET", headers });
             if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
             let result = await response.json();
-            if (sortOrder === "test") {
-                result.sort((a, b) => (a.test ?? '').localeCompare(b.test ?? ''));
-            } else if (sortOrder === "name") {
-                result.sort((a, b) => (a.group ?? '').localeCompare(b.group ?? ''));
-            } else if (sortOrder === "method") {
-                result.sort((a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''));
-            } else if (sortOrder === "parameter") {
-                result.sort((a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''));
-            } else if (sortOrder === "default") {
-                result.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-            }
+            result = getSortedData(result, sortOrder);
+    
             if (selectedGroup) {
-                result = result.filter(item =>
-                    item.group &&
-                    item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                );
+                result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
             }
             setData(result);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-
+    
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line
     }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup, token]);
-
+    
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(data.length / itemsPerPage);
-
+    
     const nextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
             window.scrollTo(0, 0);
         }
     };
-
+    
     const prevPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
             window.scrollTo(0, 0);
         }
     };
+    
 
     const handleJump = () => {
         const page = parseInt(jumpPage, 10);
@@ -670,16 +677,20 @@ const PaginatedBoxes = () => {
 
     const handleSortChange = (order) => {
         setSortOrder(order);
-        setCurrentPage(1);
-        window.scrollTo(0, 0);
+        setCurrentPage(1); // Reset to the first page when sorting changes
+        window.scrollTo(0, 0); // Scroll to the top of the page when sorting changes
+    
+        // Reset search sorting when switching away from 'search' order
         if (order !== 'search') {
             setSearchSort(false);
         }
+    
+        // If sorting by 'name', ensure that the selected group remains consistent
         if (order === "name") {
-            setSelectedGroup(selectedGroup);
+            setSelectedGroup(selectedGroup); // Retain the selected group when sorting by name
         }
     };
-
+    
     // Handler for toggling the canvas nest animation
     const handleAnimationToggle = () => {
         if (animationEnabled) {
