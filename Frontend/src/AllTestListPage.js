@@ -61,6 +61,7 @@ const Box = ({
     id,
     test,
     group,
+    classification,
     symbol,
     parameters,
     testMethod,
@@ -90,6 +91,9 @@ const Box = ({
             )}
             {formatData(group, searchcontent, pattern, "group") && (
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
+            )}
+             {formatData(classification, searchcontent, pattern, "classification") && (
+                <p>Classification: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(String(id), searchcontent, pattern, "id") && (
                 <p>Test ID: {formatData(String(id), searchcontent, pattern, "id")}</p>
