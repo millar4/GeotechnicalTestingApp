@@ -72,6 +72,10 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
     @Query("SELECT r FROM RocksUser r WHERE r.schedulingNotes IS NOT NULL AND r.schedulingNotes <> 'NULL' AND LOWER(r.schedulingNotes) LIKE LOWER(CONCAT('%', ?1, '%'))")
     List<RocksUser> findBySchedulingNotesContainingIgnoreCase(String schedulingNotes);
 
+    @Query("SELECT r FROM RocksUser r WHERE r.classification IS NOT NULL AND r.schedulingNotes <> 'NULL' AND LOWER(r.classification) LIKE LOWER(CONCAT('%', ?1, '%'))")
+    List<RocksUser> findByClassificationContaining(String classification);
+
+
     List<RocksUser> findAllByOrderByIdAsc();
     List<RocksUser> findAllByOrderByMyGroupAsc();
     List<RocksUser> findAllByOrderByTestMethodAsc();

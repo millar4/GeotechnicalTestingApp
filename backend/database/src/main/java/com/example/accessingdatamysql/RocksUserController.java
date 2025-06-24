@@ -162,6 +162,12 @@ public class RocksUserController {
         return RocksUserRepository.findBySymbolContaining(symbol);
     }
 
+    @GetMapping(path = "/classification")
+    @ResponseBody
+    public List<RocksUser> getUsersByClassification(@RequestParam String classification) {
+        return RocksUserRepository.findByClassificationContaining(classification);
+    }
+
     @GetMapping(path = "/parameters")
     @ResponseBody
     public List<RocksUser> getUsersByParameters(@RequestParam String parameters) {

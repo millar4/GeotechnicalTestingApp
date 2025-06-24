@@ -18,6 +18,9 @@ public class RocksUser {
     @Column(name = "myGroup", nullable = false, unique = false)
     private String myGroup;
 
+    @Column(name = "classification", nullable = false, unique = false)
+    private String classification;
+
     @Column(name = "symbol", nullable = false, unique = true)
     private String symbol;
 
@@ -78,6 +81,9 @@ public class RocksUser {
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
+
+    public String getClassification() { return classification; }
+    public void setClassification(String classification) { this.classification = classification; }
 
     public String getmyGroup() { return myGroup; }
     public void setmyGroup(String myGroup) { this.myGroup = myGroup; }

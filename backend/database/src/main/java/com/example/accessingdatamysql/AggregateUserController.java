@@ -127,6 +127,11 @@ public class AggregateUserController {
         return AggregateUserRepository.findByTestMethodContainingIgnoreCase(testMethod);
     }
 
+    @GetMapping("/classification")
+    public List<AggregateUser> getByClassification(@RequestParam String classification) {
+        return AggregateUserRepository.findByTestMethodContainingIgnoreCase(classification);
+    }
+
     @GetMapping("/sampleType")
     public List<AggregateUser> getBySampleType(@RequestParam String sampleType) {
         return AggregateUserRepository.findBySampleTypeContainingIgnoreCase(sampleType);
