@@ -71,6 +71,12 @@ public class MainController {
             return Collections.emptyList();
         }
     }
+        
+    @GetMapping("/classification")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUserByClassification(@RequestParam String classification) {
+        return userRepository.findByClassificationContaining(classification);
+    }
 
     @PostMapping(path = "/add")
     @ResponseBody

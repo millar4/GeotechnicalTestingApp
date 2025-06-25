@@ -5,6 +5,7 @@ USE GeotechnicalTests;
 -- Create the table structure with correct data types
 CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    classification VARCHAR(100),
     myGroup VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(10),
@@ -49,7 +50,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/rockParameters2.csv'
     ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (myGroup, test, symbol, parameters, testMethod, sampleType, fieldSampleMass, specimenType, specimenMass, specimenNumbers, specimenMaxGrainSize, specimenMaxGrainFraction, schedulingNotes);
+    (myGroup, classification, test, symbol, parameters, testMethod, sampleType, fieldSampleMass, specimenType, specimenMass, specimenNumbers, specimenMaxGrainSize, specimenMaxGrainFraction, schedulingNotes);
 
 LOAD DATA INFILE '/var/lib/mysql-files/parameters2.csv'
 INTO TABLE GeotechnicalTable

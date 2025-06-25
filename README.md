@@ -1,5 +1,7 @@
 # Geotechnical Testing Search Application
 
+<img src="Frontend/public/Logo2.png" alt="Alt Text" width="200" height="200">
+
 ## Introduction
 This project is an application designed to assist users, particularly inexperienced clients or engineers, in locating geotechnical tests, standard test methods, testing parameters, and testing specifications. The application integrates three different geotechnical testing databases, allowing the user to search by test names, parameters (e.g., Young's modulus), or standard test methods.
 

@@ -1,10 +1,13 @@
 package com.example.accessingdatamysql;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,150 +17,257 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
 @CrossOrigin(origins = "http://localhost:3100")
-@RequestMapping("/rocks")
+@Controller
+@RequestMapping(path = "/rocks")
 public class RocksUserController {
 
     @Autowired
-    private RocksUserRepository rocksUserRepository;
+    private RocksUserRepository RocksUserRepository;
 
-    // Add new record
-    @PostMapping("/add")
-    public RocksUser addRocksUser(@RequestBody RocksUser rocksUser) {
-        return rocksUserRepository.save(rocksUser);
+    @GetMapping(path = "/all/table")
+    public String getAllUsersByTable(Model model) {
+        Iterable<RocksUser> users = RocksUserRepository.findAll();
+        model.addAttribute("users", users);
+        return "users";
     }
 
-    // Update existing record
-    @PutMapping("/update/{id}")
-    public RocksUser updateRocksUser(@PathVariable Long id, @RequestBody RocksUser updatedUser) {
-        Optional<RocksUser> optionalUser = rocksUserRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            RocksUser existingUser = optionalUser.get();
-
-            existingUser.setGroup(updatedUser.getGroup());
-            existingUser.setSymbol(updatedUser.getSymbol());
-            existingUser.setParameters(updatedUser.getParameters());
-            existingUser.setTestMethod(updatedUser.getTestMethod());
-            existingUser.setSampleType(updatedUser.getSampleType());
-            existingUser.setFieldSampleMass(updatedUser.getFieldSampleMass());
-            existingUser.setSpecimenType(updatedUser.getSpecimenType());
-            existingUser.setSpecimenMass(updatedUser.getSpecimenMass());
-            existingUser.setSpecimenNumbers(updatedUser.getSpecimenNumbers());
-            existingUser.setSpecimenMaxGrainSize(updatedUser.getSpecimenMaxGrainSize());
-            existingUser.setSpecimenMaxGrainFraction(updatedUser.getSpecimenMaxGrainFraction());
-            existingUser.setSchedulingNotes(updatedUser.getSchedulingNotes());
-
-            return rocksUserRepository.save(existingUser);
-        } else {
-            throw new RuntimeException("RocksUser not found with id " + id);
-        }
-    }
-
-    // Delete by ID
-    @DeleteMapping("/delete/{id}")
-    public void deleteRocksUser(@PathVariable Long id) {
-        rocksUserRepository.deleteById(id);
-    }
-
-    // Get all records, optional sort
-    @GetMapping("/all")
-    public List<RocksUser> getAllRocksUsers(@RequestParam(required = false) String sort) {
+    @GetMapping(path = "/all")
+    public @ResponseBody List<RocksUser> getAllUsers(@RequestParam(required = false) String sort) {
         if (sort == null || sort.isEmpty()) {
-            return rocksUserRepository.findAll();
+            return (List<RocksUser>) RocksUserRepository.findAll();
         }
+
+
         switch (sort) {
             case "default":
-                return rocksUserRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+                return RocksUserRepository.findAllByOrderByIdAsc();
             case "name":
-                return rocksUserRepository.findAll(Sort.by(Sort.Direction.ASC, "group"));
+                return RocksUserRepository.findAllByOrderByMyGroupAsc();
             case "method":
-                return rocksUserRepository.findAll(Sort.by(Sort.Direction.ASC, "testMethod"));
+                return RocksUserRepository.findAllByOrderByTestMethodAsc();
             case "parameter":
-                return rocksUserRepository.findAll(Sort.by(Sort.Direction.ASC, "parameters"));
+                return RocksUserRepository.findAllByOrderByParametersAsc();
             default:
-                return rocksUserRepository.findAll();
+                return (List<RocksUser>) RocksUserRepository.findAll();
         }
     }
 
-    // Precise search by ID
     @GetMapping("/id")
-    public List<RocksUser> getById(@RequestParam String id) {
+    @ResponseBody
+    public List<RocksUser> getUserById(@RequestParam String id) {
+        Long longId;
         try {
-            Long longId = Long.parseLong(id);
-            Optional<RocksUser> opt = rocksUserRepository.findById(longId);
-            return opt.map(List::of).orElse(List.of());
+            longId = Long.valueOf(id);
         } catch (NumberFormatException e) {
-            return List.of();
+            return Collections.emptyList();
+        }
+
+        Optional<RocksUser> userOpt = RocksUserRepository.findById(longId);
+        if (userOpt.isPresent()) {
+            return Collections.singletonList(userOpt.get());
+        } else {
+            return Collections.emptyList();
         }
     }
 
-    // Fuzzy search endpoints
-    @GetMapping("/group")
-    public List<RocksUser> getByGroup(@RequestParam String group) {
-        return rocksUserRepository.findByGroupContainingIgnoreCase(group);
+    @PostMapping(path = "/add")
+    @ResponseBody
+    public ResponseEntity<RocksUser> addUser(@RequestBody RocksUser newEntry) {
+        try {
+            RocksUser savedEntry = RocksUserRepository.save(newEntry);
+            return ResponseEntity.ok(savedEntry);
+        } catch (Exception e) {
+            e.printStackTrace();  // Log the error for more visibility
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+    
+    @DeleteMapping(path = "/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        Optional<RocksUser> entryOpt = RocksUserRepository.findById(id);
+        if (entryOpt.isPresent()) {
+            RocksUserRepository.delete(entryOpt.get());
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @GetMapping("/symbol")
-    public List<RocksUser> getBySymbol(@RequestParam String symbol) {
-        return rocksUserRepository.findBySymbolContainingIgnoreCase(symbol);
+    @PutMapping("/update/{id}")
+    @ResponseBody
+    public ResponseEntity<RocksUser> updateRocksUser(
+            @PathVariable Long id,
+            @RequestBody RocksUser updatedEntry) {
+        // 1. Find an existing record in the database based on the primary key id.
+        Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+           // Returns 404 if the corresponding record is not found.
+            return ResponseEntity.notFound().build();
+        }
+        // 2. Synchronize the updated fields passed by the front-end into the database.
+        RocksUser existing = existingOpt.get();
+        existing.setTest(updatedEntry.getTest());
+        existing.setmyGroup(updatedEntry.getmyGroup());
+        existing.setSymbol(updatedEntry.getSymbol());
+        existing.setParameters(updatedEntry.getParameters());
+        existing.setTestMethod(updatedEntry.getTestMethod());
+        existing.setAlt1(updatedEntry.getAlt1());
+        existing.setAlt2(updatedEntry.getAlt2());
+        existing.setAlt3(updatedEntry.getAlt3());
+        existing.setSampleType(updatedEntry.getSampleType());
+        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
+        existing.setSpecimenType(updatedEntry.getSpecimenType());
+        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
+        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
+        existing.setSpecimenD(updatedEntry.getSpecimenD());
+        existing.setSpecimenL(updatedEntry.getSpecimenL());
+        existing.setSpecimenW(updatedEntry.getSpecimenW());
+        existing.setSpecimenH(updatedEntry.getSpecimenH());
+        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
+        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+        // ... More fields can be assigned here as well.
+
+        // 3. Preservation of updated entities
+        RocksUser saved = RocksUserRepository.save(existing);
+
+    // 4. Return the updated entity to the front end
+        return ResponseEntity.ok(saved);
     }
 
-    @GetMapping("/parameters")
-    public List<RocksUser> getByParameters(@RequestParam String parameters) {
-        return rocksUserRepository.findByParametersContainingIgnoreCase(parameters);
+    @GetMapping(path = "/group")
+    @ResponseBody
+    public List<RocksUser> getUsersByGroup(@RequestParam String group) {
+        return RocksUserRepository.findByMyGroupContaining(group);
     }
 
-    @GetMapping("/testMethod")
-    public List<RocksUser> getByTestMethod(@RequestParam String testMethod) {
-        return rocksUserRepository.findByTestMethodContainingIgnoreCase(testMethod);
+    @GetMapping(path = "/groups")
+    @ResponseBody
+    public List<String> getAllGroups() {
+        return RocksUserRepository.findAllGroups();
     }
 
-    @GetMapping("/sampleType")
-    public List<RocksUser> getBySampleType(@RequestParam String sampleType) {
-        return rocksUserRepository.findBySampleTypeContainingIgnoreCase(sampleType);
+    @GetMapping(path = "/test")
+    @ResponseBody
+    public List<RocksUser> getUsersByTest(@RequestParam String test) {
+        return RocksUserRepository.findByTestContaining(test);
     }
 
-    @GetMapping("/fieldSampleMass")
-    public List<RocksUser> getByFieldSampleMass(@RequestParam String fieldSampleMass) {
-        return rocksUserRepository.findByFieldSampleMassContainingIgnoreCase(fieldSampleMass);
+    @GetMapping(path = "/symbol")
+    @ResponseBody
+    public List<RocksUser> getUsersBySymbol(@RequestParam String symbol) {
+        return RocksUserRepository.findBySymbolContaining(symbol);
     }
 
-    @GetMapping("/specimenType")
-    public List<RocksUser> getBySpecimenType(@RequestParam String specimenType) {
-        return rocksUserRepository.findBySpecimenTypeContainingIgnoreCase(specimenType);
+    @GetMapping(path = "/classification")
+    @ResponseBody
+    public List<RocksUser> getUsersByClassification(@RequestParam String classification) {
+        return RocksUserRepository.findByClassificationContaining(classification);
     }
 
-    @GetMapping("/specimenMass")
-    public List<RocksUser> getBySpecimenMass(@RequestParam String specimenMass) {
-        return rocksUserRepository.findBySpecimenMassContainingIgnoreCase(specimenMass);
+    @GetMapping(path = "/parameters")
+    @ResponseBody
+    public List<RocksUser> getUsersByParameters(@RequestParam String parameters) {
+        return RocksUserRepository.findByParametersContaining(parameters);
     }
 
-    @GetMapping("/specimenNumbers")
-    public List<RocksUser> getBySpecimenNumbers(@RequestParam String specimenNumbers) {
-        return rocksUserRepository.findBySpecimenNumbersContainingIgnoreCase(specimenNumbers);
+    @GetMapping(path = "/testMethod")
+    @ResponseBody
+    public List<RocksUser> getRocksUsersByTestMethod(@RequestParam String testMethod) {
+        return RocksUserRepository.findByTestMethodContaining(testMethod);
     }
 
-    @GetMapping("/specimenMaxGrainSize")
-    public List<RocksUser> getBySpecimenMaxGrainSize(@RequestParam String specimenMaxGrainSize) {
-        return rocksUserRepository.findBySpecimenMaxGrainSizeContainingIgnoreCase(specimenMaxGrainSize);
+    @GetMapping(path = "/alt1")
+    @ResponseBody
+    public List<RocksUser> getUsersByAlt1(@RequestParam String alt1) {
+        return RocksUserRepository.findByAlt1Containing(alt1);
     }
 
-    @GetMapping("/specimenMaxGrainFraction")
-    public List<RocksUser> getBySpecimenMaxGrainFraction(@RequestParam String specimenMaxGrainFraction) {
-        return rocksUserRepository.findBySpecimenMaxGrainFractionContainingIgnoreCase(specimenMaxGrainFraction);
+    @GetMapping(path = "/alt2")
+    @ResponseBody
+    public List<RocksUser> getUsersByAlt2(@RequestParam String alt2) {
+        return RocksUserRepository.findByAlt2Containing(alt2);
+    }
+
+    @GetMapping(path = "/alt3")
+    @ResponseBody
+    public List<RocksUser> getUsersByAlt3(@RequestParam String alt3) {
+        return RocksUserRepository.findByAlt3Containing(alt3);
+    }
+
+    @GetMapping(path = "/sampleType")
+    @ResponseBody
+    public List<RocksUser> getUsersBySampleType(@RequestParam String sampleType) {
+        return RocksUserRepository.findBySampleTypeContaining(sampleType);
+    }
+
+    @GetMapping(path = "/fieldSampleMassGreaterThan")
+    @ResponseBody
+    public List<RocksUser> getUsersByFieldSampleMass(@RequestParam String mass) {
+        return RocksUserRepository.findByFieldSampleMassContaining(mass);
+    }
+
+    @GetMapping(path = "/specimenType")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenType(@RequestParam String specimenType) {
+        return RocksUserRepository.findBySpecimenTypeContaining(specimenType);
+    }
+
+    @GetMapping(path = "/specimenMassGreaterThan")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenMass(@RequestParam String mass) {
+        return RocksUserRepository.findBySpecimenMassContaining(mass);
+    }
+
+    @GetMapping(path = "/specimenNumbers")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
+        return RocksUserRepository.findBySpecimenNumbersContaining(numbers);
+    }
+
+    @GetMapping(path = "/specimenD")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenD(@RequestParam String diameter) {
+        return RocksUserRepository.findBySpecimenDContaining(diameter);
+    }
+
+    @GetMapping(path = "/specimenL")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenL(@RequestParam String length) {
+        return RocksUserRepository.findBySpecimenLContaining(length);
+    }
+
+    @GetMapping(path = "/specimenW")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenW(@RequestParam String width) {
+        return RocksUserRepository.findBySpecimenWContaining(width);
+    }
+
+    @GetMapping(path = "/specimenH")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenH(@RequestParam String height) {
+        return RocksUserRepository.findBySpecimenHContaining(height);
+    }
+
+    @GetMapping(path = "/specimenMaxGrainSize")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
+        return RocksUserRepository.findBySpecimenMaxGrainSizeContaining(grainSize);
+    }
+
+    @GetMapping(path = "/specimenMaxGrainFraction")
+    @ResponseBody
+    public List<RocksUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
+        return RocksUserRepository.findBySpecimenMaxGrainFractionContaining(fraction);
     }
 
     @GetMapping("/schedulingNotes")
     public List<RocksUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
-        return rocksUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
+        return RocksUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
 
-    // Get all distinct groups
-    @GetMapping("/groups")
-    public List<String> getAllGroups() {
-        return rocksUserRepository.findAllGroups();
-    }
 }

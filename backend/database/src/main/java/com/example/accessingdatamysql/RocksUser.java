@@ -2,25 +2,24 @@ package com.example.accessingdatamysql;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 
 @Entity 
 @Table(name = "RocksTable")
 public class RocksUser {
-
     @Id
-    @JsonProperty
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  
+    @JsonProperty
+    private Long id;
 
-    @Column(name = "myGroup", nullable = false, unique = false)
-    private String group;
+    @Column(name = "test", nullable = false, unique = false)
+    private String test;
+
+    @Column(name = "myGroup", nullable = true, unique = false)
+    private String myGroup;
+
+    @Column(name = "classification", nullable = true, unique = false)
+    private String classification;
 
     @Column(name = "symbol", nullable = false, unique = true)
     private String symbol;
@@ -31,23 +30,44 @@ public class RocksUser {
     @Column(name = "testMethod", nullable = false, unique = false)
     private String testMethod;
 
+    @Column(name = "alt1", nullable = true, unique = false)
+    private String alt1;
+
+    @Column(name = "alt2", nullable = true, unique = false)
+    private String alt2;
+
+    @Column(name = "alt3", nullable = true, unique = false)
+    private String alt3;
+
     @Column(name = "sampleType", nullable = true, unique = false)
     private String sampleType;
 
     @Column(name = "fieldSampleMass", nullable = false, unique = false)
-    private String fieldSampleMass;  // Changed to String
+    private String fieldSampleMass;
 
     @Column(name = "specimenType", nullable = true, unique = false)
     private String specimenType;
 
     @Column(name = "specimenMass", nullable = true, unique = false)
-    private String specimenMass;  // Changed to String
+    private String specimenMass;
 
     @Column(name = "specimenNumbers", nullable = true, unique = false)
-    private String specimenNumbers;  // Changed to String
+    private String specimenNumbers;
+
+    @Column(name = "specimenD", nullable = true, unique = false)
+    private String specimenD;
+
+    @Column(name = "specimenL", nullable = true, unique = false)
+    private String specimenL;
+
+    @Column(name = "specimenW", nullable = true, unique = false)
+    private String specimenW;
+
+    @Column(name = "specimenH", nullable = true, unique = false)
+    private String specimenH;
 
     @Column(name = "specimenMaxGrainSize", nullable = true, unique = false)
-    private String specimenMaxGrainSize;  // Changed to String
+    private String specimenMaxGrainSize;
 
     @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
     private String specimenMaxGrainFraction;
@@ -55,10 +75,18 @@ public class RocksUser {
     @Column(name = "schedulingNotes", nullable = true, unique = false)
     private String schedulingNotes;
 
-    // Getters and setters for all fields
-    public Long getId() {return id;}
-    public String getGroup() { return group; }
-    public void setGroup(String group) { this.group = group; }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getTest() { return test; }
+    public void setTest(String test) { this.test = test; }
+
+    public String getClassification() { return classification; }
+    public void setClassification(String classification) { this.classification = classification; }
+
+    public String getmyGroup() { return myGroup; }
+    public void setmyGroup(String myGroup) { this.myGroup = myGroup; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
@@ -68,6 +96,15 @@ public class RocksUser {
 
     public String getTestMethod() { return testMethod; }
     public void setTestMethod(String testMethod) { this.testMethod = testMethod; }
+
+    public String getAlt1() { return alt1; }
+    public void setAlt1(String alt1) { this.alt1 = alt1; }
+
+    public String getAlt2() { return alt2; }
+    public void setAlt2(String alt2) { this.alt2 = alt2; }
+
+    public String getAlt3() { return alt3; }
+    public void setAlt3(String alt3) { this.alt3 = alt3; }
 
     public String getSampleType() { return sampleType; }
     public void setSampleType(String sampleType) { this.sampleType = sampleType; }
@@ -84,15 +121,24 @@ public class RocksUser {
     public String getSpecimenNumbers() { return specimenNumbers; }
     public void setSpecimenNumbers(String specimenNumbers) { this.specimenNumbers = specimenNumbers; }
 
+    public String getSpecimenD() { return specimenD; }
+    public void setSpecimenD(String specimenD) { this.specimenD = specimenD; }
+
+    public String getSpecimenL() { return specimenL; }
+    public void setSpecimenL(String specimenL) { this.specimenL = specimenL; }
+
+    public String getSpecimenW() { return specimenW; }
+    public void setSpecimenW(String specimenW) { this.specimenW = specimenW; }
+
+    public String getSpecimenH() { return specimenH; }
+    public void setSpecimenH(String specimenH) { this.specimenH = specimenH; }
+
     public String getSpecimenMaxGrainSize() { return specimenMaxGrainSize; }
     public void setSpecimenMaxGrainSize(String specimenMaxGrainSize) { this.specimenMaxGrainSize = specimenMaxGrainSize; }
 
     public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
     public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
 
-
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
-
 }
-

@@ -146,7 +146,9 @@ function Home() {
               {/* NEW: Database type selection */}
               <select className="selector" value={databaseType} onChange={handleDatabaseChange}>
                 <option value="soil">Soil</option>
-                <option value="rock">Rock</option>
+                <option value="aggregate">Aggregate</option>
+                <option value="rocks">Rock</option>
+                <option value="concrete">Concrete</option>
               </select>
             </div>
             <div className="input-wrapper">

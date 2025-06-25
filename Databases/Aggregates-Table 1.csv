@@ -1,0 +1,90 @@
+Group,Test,Abbreviation or symbol,Test parameters,Default test method,Alternative 1,Alternative 2,Alternative 3,Sample type,Field sample mass,Test specimen type / mass and number,,,,,Scheduling notes
+,,,,,,,,Bulk (loose or crushed material),6 x √Dmax (mm) x loose bulk density (Mg /m3),type,mass,number,Max grain size (Dmax),Fraction,
+,,,,,,,,,kg,,kg,,mm,d /D,
+Physical & Geometrical Properties,Water content,w,,BS EN 1097-5:2008,,,,Bulk (loose material),,Bulk,"0.2
+0.2Dmax",1,"<1
+>1",,
+,Particle size distribution,%fines / G,,BS EN 933-1:2012,,,,Bulk (loose material),,Bulk,"1
+2
+3
+30
+80",1,"4
+8
+16
+32
+90",,
+,Flakiness index,FI,,BS EN 933-3:2012,,,,Bulk (loose material),,Bulk,"5
+10
+20
+40
+80",,"8
+16
+32
+63
+100",4 /100,
+,Methylene blue,MB,,BS EN 933-9:2022,,,,Bulk (loose material),,Bulk,"0.2
+0.03",2,"2
+0.125","0 /2
+0 /0.125",
+,Bulk density & voids,ρb / v,,BS EN 1097-3:1998,,,,Bulk (loose material),,Bulk,"2
+8
+15
+30",3,"4
+16
+32
+63",,
+,Particle density & water absorption,ρa / ρrd / ρssd / Wa24,,BS EN 1097-6:2022,,,,Bulk (loose material),,Bulk,"0.5
+1
+2
+5
+7
+15",1,"4
+8
+16
+32
+45
+63","0 /4
+4 /32
+32 /63",Define the fraction to be tested
+,Constituents of recycled aggregates,Rc / Ru / Rb / Ra / Rg / X,,BS EN 933-11:2009,,,,Bulk (loose material),,Bulk,"20
+50",1,"32
+63",4 /63,
+,Metal content of municipal incinerator bottom ash aggregates,PF / PNF,,BS EN 1744-8:2012,,,,Bulk (loose material),,Bulk,,,,,
+Strength & Durability,Resistance to wear (micro-Deval coefficient),MDE / MDS / MDRB,Micro-Deval coefficient,BS EN 1097-1:2023,,,,Bulk (loose material),,Bulk,0.5,2,,10 /14,alternative fractions are 0.2 /2 / 0.2 /4 / 0.2 /5.6 / 4 /6.3 / 4 /8 / 6.3 /10 / 8 /11.2 and 11.2 /16
+,Resistance to fragmentation (Los Angeles coefficient) ,LA / LARB,LA coefficient,BS EN 1097-2:2020,,,,Bulk (loose material),,Bulk,15,1,,10 /14,alternative fractions are 4 /6.3 / 4 /8 / 6.3 /10 / 8 /11.2 and 11.2 /16
+,Magnesium sulphate value,MS,Magnesium sulphate value,BS 1367-2:2009,,,,Bulk (loose material),,Bulk,0.5,2,,10 /14,Alternative fractions are 20 /28 / 14 /20 / 6 /10 / 5 /6 / 3 /5 / 2 /3 / 1 /2 / and 0.3 /0.6
+,Aggregate crushing value,ACV,Aggregate crushing value,BS 812:110,,,,Bulk (loose material),,Bulk,"45
+60",3,"20
+40",10 /14,
+,Ten percent fines value ,TFV,Ten percent fines value ,BS 812:111,,,,Bulk (loose material),,Bulk,"45
+60",3,"20
+40",,
+,Aggregate abrasion value ,AAV,Aggregate abrasion value ,BS EN 1097-8:2020,,,,Bulk (loose material),,Bulk,2,2,,10 /14,
+,Polished stone value ,PSV,Polished stone value ,BS EN 1097-8:2020,,,,Bulk (loose material),,Bulk,2,2,,10 /14,
+Chemical & Petrography,Water-soluble chloride content,C,Water-soluble chloride content,BS EN 1744-1:8 (2009+A1:2012),,,,Bulk (loose material),,Bulk,"5
+15
+35
+50",2,"22
+32
+45
+63",,
+,Acid-soluble chloride content,C,Acid-soluble chloride content,BS EN 1744-1:9 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Water-soluble sulphate content,soluble SO3,Water-soluble sulphate content,BS EN 1744-1:10 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Total sulphur,S,Total sulphur,BS EN 1744-1:11 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Acid-soluble sulphate content,sulphate content,Acid-soluble sulphate content,BS EN 1744-1:12 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Acid-soluble sulphide ,S,Acid-soluble sulphide ,BS EN 1744-1:13 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Carbonate content,CaO / CO2,Carbonate content,BS EN 196-2:2013,,,,Bulk (loose material),,Bulk,,2,,,
+,Lightweight contaminators,mLPC,Lightweight contaminators,BS EN 1744-1:14.2 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Humus content,H,Humus content,BS EN 1744-1:15.1  (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Fulvo acid content,FA,Fulvo acid content,BS EN 1744-1:15.2 (2009+A1:2012),,,,Bulk (loose material),,Bulk,,2,,,
+,Petrography (optical microscopy),OM,qualitative or quantitative mineral identification and lithological characterisation,BS EN 932-3:2022,,,,Bulk (loose material),,Bulk,"0.5
+2
+8
+25
+50",1,"4
+8
+16
+32
+63",,
+,Scanning electron microscopy,SEM,mineral identification & composition,,,,,Bulk (loose material),,Bulk,0.2,1,,,
+,Powder XRD,pXRD,mineral identification & percentages,,,,,Bulk (loose material),,Bulk,0.2,1,,,

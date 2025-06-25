@@ -6,11 +6,11 @@ const AddItem = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    test: '', group: '', symbol: '', parameters: '', testMethod: '',
+    test: '',classification: '', group: '', symbol: '', parameters: '', testMethod: '',
     alt1: '', alt2: '', alt3: '', sampleType: '', fieldSampleMass: '',
     specimenType: '', specimenMass: '', specimenNumbers: '', specimenD: '',
     specimenL: '', specimenW: '', specimenH: '', specimenMaxGrainSize: '',
-    specimenMaxGrainFraction: ''
+    specimenMaxGrainFraction: '', schdedulingNotes: ''
   });
 
   const [databaseTarget, setDatabaseTarget] = useState('database');
@@ -50,10 +50,8 @@ const AddItem = () => {
         throw new Error('Authentication failed: incorrect password');
       }
 
-      const url =
-        databaseTarget === 'database'
-          ? 'http://localhost:8080/database/add'
-          : 'http://localhost:8080/rocks/add';
+      const url = `http://localhost:8080/${databaseTarget}/add`;
+
 
       const addResponse = await fetch(url, {
         method: 'POST',
@@ -78,10 +76,10 @@ const AddItem = () => {
   };
 
   const fields = [
-    "test", "group", "symbol", "parameters", "testMethod",
+    "test", "classification" , "group", "symbol", "parameters", "testMethod",
     "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
     "specimenMass", "specimenNumbers", "specimenD", "specimenL",
-    "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction"
+    "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction", "schedulingNotes"
   ];
 
   const formatLabel = (label) =>
@@ -98,8 +96,10 @@ const AddItem = () => {
             value={databaseTarget}
             onChange={(e) => setDatabaseTarget(e.target.value)}
           >
-            <option value="database">Geotechnical (database)</option>
-            <option value="rocks">Rocks</option>
+            <option value="database">Soil</option>
+            <option value="aggregate">Aggregate</option>
+            <option value="rocks">Rock</option>
+            <option value="concrete">Concrete</option>
           </select>
         </div>
 
@@ -139,7 +139,7 @@ const AddItem = () => {
                 {fields.map(field => (
                   <tr key={field}>
                     <td><strong>{formatLabel(field)}:</strong></td>
-                    <td>{formData[field] || 'N/A'}</td>
+                    <td>{formData[field]}</td>
                   </tr>
                 ))}
               </tbody>

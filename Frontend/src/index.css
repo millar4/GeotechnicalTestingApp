@@ -1,14 +1,22 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+}
+
+html, body, * {
+  font-family: 'AvenirLTStd-Medium', Arial, sans-serif !important;
+}
+
+
+/* Global body styles */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'AvenirLTStd-Medium' !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Code font family */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-

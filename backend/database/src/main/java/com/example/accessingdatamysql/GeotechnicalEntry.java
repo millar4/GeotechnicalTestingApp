@@ -18,6 +18,9 @@ public class GeotechnicalEntry {
     @Column(name = "myGroup", nullable = false, unique = false)
     private String group;
 
+    @Column(name = "classification", nullable = false, unique = false)
+    private String classification;
+
     @Column(name = "symbol", nullable = false, unique = true)
     private String symbol;
 
@@ -77,6 +80,9 @@ public class GeotechnicalEntry {
 
     public String getGroup() { return group; }
     public void setGroup(String group) { this.group = group; }
+
+    public String getClassification() { return classification; }
+    public void setClassification(String classification) { this.classification = classification; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
