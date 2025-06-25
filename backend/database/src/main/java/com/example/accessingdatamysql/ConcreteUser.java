@@ -12,10 +12,10 @@ public class ConcreteUser {
     @JsonProperty
     private Long id;
 
-    @Column(name = "myGroup", nullable = false, unique = false)
+    @Column(name = "myGroup", nullable = true, unique = false)
     private String myGroup;
 
-    @Column(name = "test", nullable = false, unique = false)
+    @Column(name = "test", nullable = true, unique = false)
     private String test;
 
     @Column(name = "symbol", nullable = false, unique = true)

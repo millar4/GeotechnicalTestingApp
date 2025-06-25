@@ -10,14 +10,14 @@ services:
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
-      - "4000:3306"  # Map MySQL container port 3306 to host 3307
+      - "4000:3306"
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
       - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
       - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
       - ./backend/database/concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
-
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -28,7 +28,6 @@ services:
     container_name: GeoTechnicalApp
     build:
       context: .
-      # Dockerfile backend/database/Dockerfile
       dockerfile: ./backend/database/Dockerfile
     depends_on:
       mysql:
@@ -42,7 +41,7 @@ services:
       - ./backend/database/parameters2.csv:/app/parameters2.csv
       - ./backend/database/aggregate.csv:/app/aggregate.csv
       - ./backend/database/rockParameters.csv:/app/rockParameters.csv
-       - ./backend/database/rockParameters.csv:/app/concreteParameters.csv
+      - ./backend/database/concreteParameters.csv:/app/concreteParameters.csv
     ports:
       - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"]
@@ -52,8 +51,11 @@ services:
     build:
       context: ./frontend
     ports:
-      - "3100:3000" 
+      - "3100:3000"
     environment:
-      - REACT_APP_API_URL=http://GeoTechnicalApp:8080  
+      - REACT_APP_API_URL=http://GeoTechnicalApp:8080
     depends_on:
       - app
+
+volumes:
+  mysql_data:

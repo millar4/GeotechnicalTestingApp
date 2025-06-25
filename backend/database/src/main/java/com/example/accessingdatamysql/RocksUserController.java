@@ -80,10 +80,11 @@ public class RocksUserController {
             RocksUser savedEntry = RocksUserRepository.save(newEntry);
             return ResponseEntity.ok(savedEntry);
         } catch (Exception e) {
+            e.printStackTrace();  // Log the error for more visibility
             return ResponseEntity.status(500).body(null);
         }
     }
-
+    
     @DeleteMapping(path = "/delete/{id}")
     @ResponseBody
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
