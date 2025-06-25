@@ -1,20 +1,29 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+}
+
+html, body, * {
+  font-family: 'AvenirLTStd-Medium', Arial, sans-serif !important;
+}
+
+
 .App {
   text-align: center;
 }
 
 .sidebar {
-  width: 200px;
-  background-color: #f4f4f4;
+  width: 300px;
+  background-color: #E7E7E8;
   padding: 20px;
   position: fixed;
   top: 60px;
   overflow-y: auto;
   height: 100%;
-
 }
 
 .sidebar button {
-  background-color: #dddddd;
+  background-color: #E7E7E8;
   border: none;
   padding: 20px 10%;
   margin: 3px 0;
@@ -27,12 +36,12 @@
 }
 
 .sidebar button.active {
-  background-color: #bbbbbb;
+  background-color: #E7E7E8;
   box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar button:not(.db-button):hover {
-  background-color: #bbbbbb;
+  background-color: #E7E7E8;
 }
 
 .sidebar select {
@@ -41,13 +50,13 @@
   font-size: 1em;
   border: none; 
   border-radius: 4px; 
-  background-color: #dddddd;
+  background-color: #E7E7E8;
   cursor: pointer;
   transition: background-color 0.5s, box-shadow 0.5s;
 }
 
 .sidebar select:hover {
-  background-color: #cccccc;
+  background-color: #E7E7E8;
 }
 
 .sidebar select:focus {
@@ -59,7 +68,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  margin-left: 220px;
+  margin-left: 300px;
   padding: 20px;
 }
 
@@ -67,20 +76,20 @@
   flex-basis: 45%;
   max-width: 40%;
   height: 250px;
-  border: 1px solid #ddd;
+  border: 1px solid #E7E7E8;
   padding: 30px;
   margin: 15px 0;
-  background-color: #f9f9f9;
+  background-color: #E7E7E8;
   border-radius: 4px;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .box:hover {
-  background-color: #e0e0e0;
+  background-color: #E7E7E8;
 }
 
 .box.active {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px #1D1D1D1B;
 }
 
 .box h3 {
@@ -107,8 +116,7 @@
 }
 
 .pagination button {
-  background-color: #000000;
-  /*background-color: #61dafb;*/
+  background-color: #8d1d1c;
   border: none;
   color: white;
   padding: 10px;
@@ -122,7 +130,7 @@
 }
 
 .pagination button:disabled {
-  background-color: #aaa;
+  background-color: #E7E7E8;
   cursor: not-allowed;
 }
 
@@ -150,26 +158,46 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 6px #1D1D1D1B;
 }
 
 .db-button:nth-child(1) {
-  background-color: #d4a017;
+  background-color: #E7E7E8;
   color: #333;
 }
 
 .db-button:nth-child(2) {
-  background-color: #505050;
+  background-color: #737373;
+  color: white;
+}
+
+.db-button:nth-child(3) {
+  background-color: #8d1d1c;
+  color: white;
+}
+
+.db-button:nth-child(4) {
+  background-color: #8d1e1c68;
   color: white;
 }
 
 .db-button.active:nth-child(1) {
-  background-color: #b8860b;
+  background-color: #E7E7E8;
   transform: scale(1.2);
 }
 
 .db-button.active:nth-child(2) {
-  background-color: #333;
+  background-color: #737373;
+  transform: scale(1.2);
+}
+
+.db-button.active:nth-child(3) {
+  background-color: #8d1d1c;
+  transform: scale(1.2);
+}
+
+.db-button.active:nth-child(4) {
+  background-color: #8d1e1c68;
   transform: scale(1.2);
 }
 
@@ -187,7 +215,7 @@
 
   .box-container {
     grid-template-columns: 1fr;
-}
+  }
 }
 
 .floating-header {
@@ -217,15 +245,17 @@
   overflow: hidden; 
   display: flex;
   flex-direction: column;
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, .5);
-    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
-  }
+}
+
+.floating-details::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.floating-details::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: #8d1c1c;
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
 
 .floating-content {
@@ -236,13 +266,12 @@
   min-height: 100px; 
 }
 
-
 .fixed-placeholder {
   width: calc(100% - 40px);
   height: 250px;
   margin: 10px auto;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+  background-color: white;
+  border: 1px solid white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -256,15 +285,14 @@
 .fixed-placeholder h2 {
   font-size: 2rem; 
   margin-bottom: 10px; 
-  color: #333;
+  color: #737373;
 }
 
 .placeholder-text p {
   font-size: 1.25rem; 
-  color: #555; 
+  color: #737373; 
   margin: 5px 0; 
 }
-
 
 .fixed-placeholder .search-text {
   font-size: 16px; 
@@ -275,14 +303,12 @@
   word-wrap: break-word; 
 }
 
-
 .fixed-placeholder .search-content {
   font-size: 20px; 
   font-weight: bold; 
   display: block;
-  margin-top: 10px; 
+  margin-top: 20px; 
 }
-
 
 .fixed-placeholder .search-pattern {
   font-size: 20px; 
@@ -296,9 +322,9 @@
   padding: 10px 16px;    
   font-size: 1rem;
   font-weight: normal;    
-  border: 2px solid black; 
+  border: 2px solid #1D1D1B;; 
   border-radius: 8px;
-  background-color: black !important; 
+  background-color: #8d1d1c !important; 
   color: white !important ;            
   cursor: pointer;
   width: 100%;          
@@ -308,17 +334,17 @@
 
 .toggle-button:hover {
   background-color: white !important;
-  color: black !important;
+  color: #1D1D1B !important;
 }
 
 .add-item-button {
-  background-color: black;
+  background-color: #8d1d1c;
   color: white;
   font-size: 16px;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px #1D1D1B;
   cursor: pointer;
 }
 
@@ -328,19 +354,19 @@
 }
 
 .delete-button {
-  background-color: black;
+  background-color: #8d1d1c;
   color: white;
   font-size: 12px;
   padding: 18px 12px;
   border: none;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px #1D1D1B;;
   cursor: pointer;
 }
 
 .delete-button:hover {
   background-color: white;
-  color: black;
+  color: #1D1D1B;;
 }
 
 .edit-button {
@@ -349,18 +375,17 @@
   padding: 4px 8px;            
   font-size: 1rem;         
   font-weight: bold;      
-  border: 2px solid black; 
+  border: 2px solid white; 
   border-radius: 8px;      
-  background-color: black; 
+  background-color: #8d1d1c; 
   color: white;
   cursor: pointer; 
 }
 
 .edit-button:hover {
   background-color: white; 
-  color: black; 
+  color: #1D1D1B;; 
 }
-
 
 .close-button {
   position: absolute;
@@ -369,12 +394,11 @@
   font-size: 30px;
   cursor: pointer;
   border: none;
-  color: red;
+  color: #8d1d1c;
   background-color: white;
   z-index: 1000; 
 }
 
-/* === Small Screen: Sidebar Hidden & Drawer Style === */
 @media (max-width: 768px) {
   .sidebar {
     transition: transform 0.3s ease-in-out;
@@ -384,7 +408,7 @@
     width: 100%; 
     height: 100%; 
     box-sizing: border-box;
-    background-color: #f4f4f4;
+    background-color:#8d1d1c;
     z-index: 1000;
     padding: 20px;
     overflow-y: auto;
@@ -402,7 +426,7 @@
     padding: 10px !important;
   }
 
-  .add-item-button{
+  .add-item-button {
     display: none;
   }
   
@@ -418,7 +442,7 @@
     position: fixed;
     top: 12%;
     left: 15px;
-    background-color: black;
+    background-color: #8d1d1c;
     color: white;
     border: none;
     padding: 10px 16px;
@@ -426,14 +450,14 @@
     z-index: 2000; 
     border-radius: 6px;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px #1D1D1B;;
     transition: background-color 0.3s, color 0.3s, border 0.3s;
   }
 
   .sidebar-toggle.open {
     background-color: white;
     color: black;
-    border: 2px solid black;
+    border: 2px solid #1D1D1B;
   }
 
   .box-container {
@@ -455,18 +479,14 @@
     overflow: hidden;
   }
 
-  .db-switch {
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 16px;
+  .logo-container {
+    padding: 10px 20px; /* space around logo */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* push to the left */
   }
-
-  /* .sidebar button:not(.db-button) {
-    padding: 10px 5% !important;
-    font-size: 0.95rem !important;
-    width: 80% !important;
-    margin: 6px auto !important;
-    box-sizing: border-box;
-  } */
+  
+  .page-header {
+    margin-top: 10px; 
+  }
 }
-

@@ -1,3 +1,14 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'AvenirLTStd-Medium', Arial !important;
+}
+
 .edit-item-container {
     padding: 25px;
     max-width: 750px;
@@ -12,7 +23,7 @@
   .edit-item-container h2 {
     margin-bottom: 20px;
     text-align: center;
-    color: #333;
+    color: #737373;
   }
   
   .edit-item-container form {
@@ -31,7 +42,7 @@
     font-weight: bold;
     text-align: right;
     margin-right: 15px;
-    color: #555;
+    color: #737373;
   }
   
   .edit-item-container input {
@@ -39,13 +50,13 @@
     padding: 8px;
     font-size: 1rem;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #E7E7E8;
     box-sizing: border-box;
   }
   
   .edit-item-container input::placeholder {
     font-style: italic;
-    color: #aaa;
+    color: #E7E7E8;
   }
   
   .edit-item-container .button-group {
@@ -69,12 +80,12 @@
   }
   
   .edit-item-container button[type="submit"] {
-    background-color: #000000;
+    background-color: #1D1D1D1B;
     color: white;
   }
   
   .edit-item-container button[type="button"] {
-    background-color: #888888;
+    background-color: #E7E7E8;
     color: white;
   }
   
@@ -98,7 +109,7 @@
     padding: 20px;
     max-width: 500px;
     width: 90%;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 16px #1D1D1D1B;
     text-align: center;
     animation: scaleUp 0.3s ease-in-out;
   }
@@ -124,12 +135,12 @@
   }
   
   .modal-buttons button:first-child {
-    background-color: #000000;
+    background-color: #1D1D1D1B;
     color: white;
   }
   
   .modal-buttons button:last-child {
-    background-color: #888888;
+    background-color: #E7E7E8;
     color: white;
   }
   

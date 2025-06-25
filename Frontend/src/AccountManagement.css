@@ -1,85 +1,167 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'AvenirLTStd-Medium', Arial, sans-serif;
+  background-color: #f5f7fa;
+  color: #1D1D1D;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
-    background-color: white;
-    min-height: 100vh;
-    width: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  
-  .account-management {
-    font-family: Arial, sans-serif;
-    color: #333;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .account-management h1 {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .add-account, .account-list, .change-password {
-    margin-bottom: 30px;
-  }
-  
-  .add-account h2,
-  .account-list h2,
-  .change-password h2 {
-    margin-bottom: 15px;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: inline-block;
-    width: 150px;
-    font-weight: bold;
-  }
-  
-  .form-group input,
-  .form-group select {
-    padding: 8px;
-    width: calc(100% - 160px);
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: 2px solid #333;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin-right: 10px;
-  }
-  
-  .btn:hover {
-    background-color: #333;
-    color: #fff;
-  }
-  
-  .account-list ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  
-  .account-list li {
-    padding: 10px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .account-list li span {
-    flex: 1;
-  }
-  
+  background-color: #fff;
+  min-height: 100vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.account-management {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #1D1D1D;
+}
+
+.account-management h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2rem;
+  color: #8d1d1c;
+}
+
+section {
+  margin-bottom: 40px;
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  border: 1px solid #E7E7E8;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+section h2 {
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  color: #8d1d1c;
+  border-bottom: 2px solid #E7E7E8;
+  padding-bottom: 8px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-group label {
+  flex: 0 0 140px;
+  font-weight: 600;
+  color: #333;
+  margin-right: 10px;
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #E7E7E8;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #ffffff;
+  transition: border 0.3s;
+  max-width: 400px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #8d1d1c;
+  outline: none;
+  background-color: #fff;
+}
+
+.btn {
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: #8d1d1c;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid white;
+}
+
+.account-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.account-list li {
+  background-color: #fefefe;
+  padding: 12px 16px;
+  border: 1px solid #E7E7E8;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.account-list li span {
+  flex: 1;
+  font-size: 1rem;
+  color: #1D1D1D;
+  font-weight: 500;
+}
+
+.account-list button {
+  background-color: #8d1d1c;
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.account-list button:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid white;
+}
+
+.spaced-section {
+  margin-bottom: 40px;
+}
+
+.form-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 0;
+}
+
+.input-field {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}

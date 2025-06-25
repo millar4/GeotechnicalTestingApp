@@ -78,6 +78,12 @@ public class SecurityConfig {
                 // Only ADMIN can write to Aggregate database
                 .requestMatchers("/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**").hasRole("ADMIN")
 
+                // USER and ADMIN can read Rocks database
+                .requestMatchers(HttpMethod.GET, "/rocks**").hasAnyRole("USER", "ADMIN")
+
+                // Only ADMIN can write to Aggregate database
+                .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
+
                 // All other requests must be authenticated
                 .anyRequest().authenticated()
                 .and()
