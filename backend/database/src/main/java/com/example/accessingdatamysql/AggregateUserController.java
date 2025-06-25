@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,6 +31,12 @@ public class AggregateUserController {
         return AggregateUserRepository.save(AggregateUser);
     }
 
+    @GetMapping(path = "/groups")
+    @ResponseBody
+    public List<String> getAllGroups() {
+        return AggregateUserRepository.findAllGroups();
+    }
+
     // Update existing record
     @PutMapping("/update/{id}")
     public AggregateUser updateAggregateUser(@PathVariable Long id, @RequestBody AggregateUser updatedUser) {
@@ -38,6 +45,7 @@ public class AggregateUserController {
             AggregateUser existingUser = optionalUser.get();
 
             existingUser.setGroup(updatedUser.getGroup());
+            existingUser.setClassification(updatedUser.getClassification());
             existingUser.setSymbol(updatedUser.getSymbol());
             existingUser.setParameters(updatedUser.getParameters());
             existingUser.setTestMethod(updatedUser.getTestMethod());
@@ -100,6 +108,11 @@ public class AggregateUserController {
         return AggregateUserRepository.findByGroupContainingIgnoreCase(group);
     }
 
+    @GetMapping("/test")
+    public List<AggregateUser> getByTest(@RequestParam String test) {
+        return AggregateUserRepository.findByTestContainingIgnoreCase(test);
+    }
+
     @GetMapping("/symbol")
     public List<AggregateUser> getBySymbol(@RequestParam String symbol) {
         return AggregateUserRepository.findBySymbolContainingIgnoreCase(symbol);
@@ -113,6 +126,11 @@ public class AggregateUserController {
     @GetMapping("/testMethod")
     public List<AggregateUser> getByTestMethod(@RequestParam String testMethod) {
         return AggregateUserRepository.findByTestMethodContainingIgnoreCase(testMethod);
+    }
+
+    @GetMapping("/classification")
+    public List<AggregateUser> getByClassification(@RequestParam String classification) {
+        return AggregateUserRepository.findByClassification(classification);
     }
 
     @GetMapping("/sampleType")
@@ -153,11 +171,5 @@ public class AggregateUserController {
     @GetMapping("/schedulingNotes")
     public List<AggregateUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
         return AggregateUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
-    }
-
-    // Get all distinct groups
-    @GetMapping("/groups")
-    public List<String> getAllGroups() {
-        return AggregateUserRepository.findAllGroups();
     }
 }
