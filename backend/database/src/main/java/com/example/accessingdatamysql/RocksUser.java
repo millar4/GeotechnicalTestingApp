@@ -15,10 +15,10 @@ public class RocksUser {
     @Column(name = "test", nullable = false, unique = false)
     private String test;
 
-    @Column(name = "myGroup", nullable = false, unique = false)
+    @Column(name = "myGroup", nullable = true, unique = false)
     private String myGroup;
 
-    @Column(name = "classification", nullable = false, unique = false)
+    @Column(name = "classification", nullable = true, unique = false)
     private String classification;
 
     @Column(name = "symbol", nullable = false, unique = true)

@@ -22,7 +22,7 @@ public class AggregateUser {
     @Column(name = "myGroup", nullable = false, unique = false)
     private String group;
 
-    @Column(name = "classification", nullable = false, unique = false)
+    @Column(name = "classification", nullable = true, unique = false)
     private String classification;
 
     @Column(name = "test", nullable = false, unique = false)

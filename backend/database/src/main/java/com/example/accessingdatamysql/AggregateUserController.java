@@ -45,6 +45,7 @@ public class AggregateUserController {
             AggregateUser existingUser = optionalUser.get();
 
             existingUser.setGroup(updatedUser.getGroup());
+            existingUser.setClassification(updatedUser.getClassification());
             existingUser.setSymbol(updatedUser.getSymbol());
             existingUser.setParameters(updatedUser.getParameters());
             existingUser.setTestMethod(updatedUser.getTestMethod());
@@ -129,7 +130,7 @@ public class AggregateUserController {
 
     @GetMapping("/classification")
     public List<AggregateUser> getByClassification(@RequestParam String classification) {
-        return AggregateUserRepository.findByTestMethodContainingIgnoreCase(classification);
+        return AggregateUserRepository.findByClassification(classification);
     }
 
     @GetMapping("/sampleType")

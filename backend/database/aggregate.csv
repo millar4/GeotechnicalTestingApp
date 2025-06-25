@@ -3,8 +3,8 @@ Physical & Geometrical Properties,NULL,Water content,w,NULL,BS EN 1097-5:2008,Bu
 Physical & Geometrical Properties,NULL,Particle size distribution,%fines G,NULL,BS EN 933-1:2012,Bulk (loose material),NULL,Bulk,1 2 3 30 80,1,4 8 16 32 90,NULL,NULL
 Physical & Geometrical Properties,NULL,Flakiness index,FI,NULL,BS EN 933-3:2012,Bulk (loose material),NULL,Bulk,5 10 20 40 80,NULL,8 16 32 63 100,4/100,NULL
 Physical & Geometrical Properties,K5,Methylene blue,MB,NULL,BS EN 933-9:2022,Bulk (loose material),NULL,Bulk,0.2 0.03,2,2 0.125,0/2 0/0.125,NULL
-Physical & Geometrical Properties,K132,Bulk density & voids,?b v,NULL,BS EN 1097-3:1998,Bulk (loose material),NULL,Bulk,2 8 15 30,3,4 16 32 63,NULL,NULL
-Physical & Geometrical Properties,NULL,Particle density & water absorption,?a ?rd ?ssd Wa24,NULL,BS EN 1097-6:2022,Bulk (loose material),NULL,Bulk,0.5 1 2 5 7 15,1,4 8 16 32 45 63,0/4 4/32 32/63,Define the fraction to be tested
+Physical & Geometrical Properties,K132,Bulk density & voids,BDV,NULL,BS EN 1097-3:1998,Bulk (loose material),NULL,Bulk,2 8 15 30,3,4 16 32 63,NULL,NULL
+Physical & Geometrical Properties,NULL,Particle density & water absorption,PD&WA,NULL,BS EN 1097-6:2022,Bulk (loose material),NULL,Bulk,0.5 1 2 5 7 15,1,4 8 16 32 45 63,0/4 4/32 32/63,Define the fraction to be tested
 Physical & Geometrical Properties,NULL,Constituents of recycled aggregates,Rc Ru Rb Ra Rg X,NULL,BS EN 933-11:2009,Bulk (loose material),NULL,Bulk,20 50,1,32 63,4/63,NULL
 Physical & Geometrical Properties,NULL,Metal content of municipal incinerator bottom ash aggregates,PF PNF,NULL,BS EN 1744-8:2012,Bulk (loose material),NULL,Bulk,NULL,NULL,NULL,NULL,NULL
 Strength & Durability,K133,Resistance to wear (micro-Deval coefficient),MDE MDS MDRB,Micro-Deval coefficient,BS EN 1097-1:2023,Bulk (loose material),NULL,Bulk,0.5,2,NULL,10/14,alternative fractions are 0.2/2 0.2/4 0.2/5.6 4/6.3 4/8 6.3/10 8/11.2 and 11.2/16

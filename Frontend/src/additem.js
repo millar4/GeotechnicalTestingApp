@@ -10,7 +10,7 @@ const AddItem = () => {
     alt1: '', alt2: '', alt3: '', sampleType: '', fieldSampleMass: '',
     specimenType: '', specimenMass: '', specimenNumbers: '', specimenD: '',
     specimenL: '', specimenW: '', specimenH: '', specimenMaxGrainSize: '',
-    specimenMaxGrainFraction: ''
+    specimenMaxGrainFraction: '', schdedulingNotes: ''
   });
 
   const [databaseTarget, setDatabaseTarget] = useState('database');
@@ -50,19 +50,8 @@ const AddItem = () => {
         throw new Error('Authentication failed: incorrect password');
       }
 
-      const url = 
-      databaseTarget === 'database'
-        ? (databaseTarget === 'rocks' 
-            ? 'http://localhost:8080/database/rocks/add' 
-            : (databaseTarget === 'concrete' 
-                ? 'http://localhost:8080/database/concrete/add' 
-                : 'http://localhost:8080/database/add'))
-        : (databaseTarget === 'rocks' 
-            ? 'http://localhost:8080/aggregate/rocks/add' 
-            : (databaseTarget === 'concrete' 
-                ? 'http://localhost:8080/aggregate/concrete/add' 
-                : 'http://localhost:8080/aggregate/add'));
-    
+      const url = `http://localhost:8080/${databaseTarget}/add`;
+
 
       const addResponse = await fetch(url, {
         method: 'POST',
@@ -90,7 +79,7 @@ const AddItem = () => {
     "test", "classification" , "group", "symbol", "parameters", "testMethod",
     "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
     "specimenMass", "specimenNumbers", "specimenD", "specimenL",
-    "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction"
+    "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction", "schedulingNotes"
   ];
 
   const formatLabel = (label) =>
