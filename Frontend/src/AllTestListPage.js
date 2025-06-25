@@ -342,20 +342,29 @@ const PaginatedBoxes = () => {
     };
     
     
-    const sortDataByClassification = (data, sortOrder = 'descending') => {
+    const sortDataByClassification = (data, sortOrder = 'ascending') => {
         if (!Array.isArray(data)) {
             console.error("sortDataByClassification: data is not an array", data);
             return [];
         }
     
-        return data.sort((a, b) => {
-            const aClass = a.classification ?? '';
-            const bClass = b.classification ?? '';
-            return sortOrder === 'descending'
-                ? alphanumericCompare(bClass, aClass)
-                : alphanumericCompare(aClass, bClass);
+        const classifiedItems = data.filter(item => item.classification?.trim());
+        const unclassifiedItems = data.filter(item => !item.classification?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.classification.trim();
+            const bClass = b.classification.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
         });
+    
+        return [...sortedClassified, ...unclassifiedItems];
     };
+    
+    
+    
+    
     
 
     // API base URL based on database type
@@ -511,7 +520,11 @@ const PaginatedBoxes = () => {
             name: (a, b) => (a.group ?? '').localeCompare(b.group ?? ''),
             method: (a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''),
             parameter: (a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''),
-            classification: (a, b) => alphanumericCompare(a.classification ?? '', b.classification ?? ''),
+            classification: (a, b) => {
+                const aClass = a.classification ?? '';
+                const bClass = b.classification ?? '';
+                return alphanumericCompare(bClass, aClass); // descending
+            },
 
         };
     
@@ -560,8 +573,15 @@ const PaginatedBoxes = () => {
             try {
                 const response = await fetch(url, { method: "GET", headers });
                 if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+                
                 let result = await response.json();
-                result = getSortedData(result, sortOrder);
+            
+                if (sortOrder === 'classification' || sortOrder === 'classification-desc') {
+                    result = sortDataByClassification(result, 'ascending');
+                } else {
+                    result = getSortedData(result, sortOrder);
+                }
+            
                 setData(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
