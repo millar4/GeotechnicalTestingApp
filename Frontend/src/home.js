@@ -106,8 +106,8 @@ function Home() {
       case 'Test name':
         updatePlaceholder('Please enter test name to search');
         break;
-      case 'Test ID':
-        updatePlaceholder('Please enter test ID to search');
+      case 'Classification':
+        updatePlaceholder('Please enter AGS to search');
         break;
       case 'Test group':
         updatePlaceholder('Please enter test group to search');
@@ -138,7 +138,7 @@ function Home() {
               <select className="selector" value={pattern} onChange={handlePatternChange}>
                 <option value="Quick Search">Quick Search</option>
                 <option value="Test name">Test name</option>
-                <option value="Test ID">Test ID</option>
+                <option value="Classification">AGS Value</option>
                 <option value="Test group">Test group</option>
                 <option value="Test parameters">Test parameters</option>
                 <option value="Test method">Test method</option>
