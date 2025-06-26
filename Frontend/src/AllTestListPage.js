@@ -34,9 +34,6 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
             case "Test name":
                 targetField = "test";
                 break;
-            case "Test ID":
-                targetField = "id";
-                break;
             case "Test group":
                 targetField = "group";
                 break;
@@ -107,9 +104,6 @@ const Box = ({
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
                 <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
-            )}
-            {formatData(String(id), searchcontent, pattern, "id") && (
-                <p>Test ID: {formatData(String(id), searchcontent, pattern, "id")}</p>
             )}
             {formatData(symbol, searchcontent, pattern, "symbol") && (
                 <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol")}</p>
@@ -196,9 +190,6 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
                         <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
-                    )}
-                    {formatData(details.id, searchcontent, pattern, "id") && (
-                        <p><strong>ID:</strong> {formatData(details.id, searchcontent, pattern, "id")}</p>
                     )}
                     {formatData(details.symbol, searchcontent, pattern, "symbol") && (
                         <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol")}</p>
@@ -410,7 +401,7 @@ const PaginatedBoxes = () => {
     
                 console.log("Data before sorting:", result);
                 result.forEach(item => {
-                    console.log(`Item: ${item.id}, Classification: ${item.classification}`);
+                    console.log(`Item: ${item.id}, AGS Code: ${item.classification}`);
                 });
     
                 // Apply sorting if needed
@@ -633,8 +624,8 @@ const PaginatedBoxes = () => {
                 url = `${baseUrl}/testMethod?testMethod=${encodedSearch}`;
             } else if (effectivePattern === "Test parameters") {
                 url = `${baseUrl}/parameters?parameters=${encodedSearch}`;
-            } else if (effectivePattern === "Test ID") {
-                url = `${baseUrl}/id?id=${encodedSearch}`;
+            } else if (effectivePattern === "Classification") {
+                url = `${baseUrl}/classification?classification=${encodedSearch}`;
             } else if (effectivePattern === "Test group") {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
@@ -854,12 +845,6 @@ const PaginatedBoxes = () => {
                         </button>
                     )}
                     <button
-                        className={sortOrder === 'default' ? 'active' : ''}
-                        onClick={() => handleSortChange('default')}
-                    >
-                        Id Arrangement
-                    </button>
-                    <button
                         className={sortOrder === 'test' ? 'active' : ''}
                         onClick={() => handleSortChange('test')}
                     >
@@ -875,7 +860,7 @@ const PaginatedBoxes = () => {
                         className={sortOrder === 'classification' ? 'active' : ''}
                         onClick={() => handleSortChange('classification')}
                     >
-                        Classification Arrangement
+                        AGS Code Arrangement
                     </button>
                     <button
                         className={sortOrder === 'method' ? 'active' : ''}

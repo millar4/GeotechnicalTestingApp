@@ -129,6 +129,10 @@ const EditTest = () => {
           <input id="group" name="group" value={formData.group} onChange={handleChange} placeholder="Enter group" />
         </div>
         <div className="form-row">
+          <label htmlFor="classification">AGS Value:</label>
+          <input id="classification" name="classification" value={formData.group} onChange={handleChange} placeholder="Enter AGS Value" />
+        </div>
+        <div className="form-row">
           <label htmlFor="symbol">Symbol:</label>
           <input id="symbol" name="symbol" value={formData.symbol} onChange={handleChange} placeholder="Enter symbol" />
         </div>

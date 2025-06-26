@@ -18,13 +18,13 @@ public class InSituUser {
     @Column(name = "test", nullable = true, unique = false)
     private String test;
 
-    @Column(name = "symbol", nullable = false, unique = true)
+    @Column(name = "symbol", nullable = true, unique = true)
     private String symbol;
 
-    @Column(name = "parameters", nullable = false, unique = false)
+    @Column(name = "parameters", nullable = true, unique = false)
     private String parameters;
 
-    @Column(name = "testMethod", nullable = false, unique = false)
+    @Column(name = "testMethod", nullable = true, unique = false)
     private String testMethod;
 
     @Column(name = "alt1", nullable = true, unique = false)
@@ -39,7 +39,7 @@ public class InSituUser {
     @Column(name = "sampleType", nullable = true, unique = false)
     private String sampleType;
 
-    @Column(name = "fieldSampleMass", nullable = false, unique = false)
+    @Column(name = "fieldSampleMass", nullable = true, unique = false)
     private String fieldSampleMass;
 
     @Column(name = "specimenType", nullable = true, unique = false)

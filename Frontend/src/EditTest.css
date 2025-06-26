@@ -50,13 +50,13 @@ body {
     padding: 8px;
     font-size: 1rem;
     border-radius: 5px;
-    border: 1px solid #E7E7E8;
+    border: 1px solid #e7e7e8;
     box-sizing: border-box;
   }
   
   .edit-item-container input::placeholder {
     font-style: italic;
-    color: #E7E7E8;
+    color: #737373;
   }
   
   .edit-item-container .button-group {
@@ -80,12 +80,12 @@ body {
   }
   
   .edit-item-container button[type="submit"] {
-    background-color: #1D1D1D1B;
+    background-color: #8d1d1c;
     color: white;
   }
   
   .edit-item-container button[type="button"] {
-    background-color: #E7E7E8;
+    background-color: #8d1d1c;
     color: white;
   }
   
@@ -135,12 +135,12 @@ body {
   }
   
   .modal-buttons button:first-child {
-    background-color: #1D1D1D1B;
+    background-color: #8d1d1c;
     color: white;
   }
   
   .modal-buttons button:last-child {
-    background-color: #E7E7E8;
+    background-color: #8d1d1c;
     color: white;
   }
   
@@ -149,7 +149,7 @@ body {
     padding: 8px;
     margin-top: 10px;
     font-size: 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid #e7e7e8;
     border-radius: 6px;
   }
   
@@ -163,7 +163,7 @@ body {
   .modal-content table td {
     padding: 4px 8px;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ffffff;
   }
   
   @keyframes fadeIn {
