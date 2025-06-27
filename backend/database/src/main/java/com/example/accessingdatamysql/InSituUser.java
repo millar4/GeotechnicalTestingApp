@@ -5,21 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity 
-@Table(name = "RocksTable")
-public class RocksUser {
+@Table(name = "InSituTable")
+public class InSituUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
     private Long id;
 
-    @Column(name = "test", nullable = true, unique = false)
-    private String test;
-
     @Column(name = "myGroup", nullable = true, unique = false)
     private String myGroup;
 
-    @Column(name = "classification", nullable = true, unique = false)
-    private String classification;
+    @Column(name = "test", nullable = true, unique = false)
+    private String test;
 
     @Column(name = "symbol", nullable = true, unique = true)
     private String symbol;
@@ -81,9 +78,6 @@ public class RocksUser {
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
-
-    public String getClassification() { return classification; }
-    public void setClassification(String classification) { this.classification = classification; }
 
     public String getmyGroup() { return myGroup; }
     public void setmyGroup(String myGroup) { this.myGroup = myGroup; }
