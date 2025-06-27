@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @CrossOrigin(origins = "http://localhost:3100")
 @Controller
 @RequestMapping(path = "/concrete")
-public class ConcreteUserController {
+public class ConcreteUserController{
 
     @Autowired
     private ConcreteUserRepository ConcreteUserRepository;
