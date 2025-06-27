@@ -44,7 +44,7 @@ public class AggregateUserController {
         Optional<AggregateUser> optionalUser = AggregateUserRepository.findById(id);
         if (optionalUser.isPresent()) {
             AggregateUser existingUser = optionalUser.get();
-
+            existingUser.setTest(updatedUser.getTest());
             existingUser.setGroup(updatedUser.getGroup());
             existingUser.setClassification(updatedUser.getClassification());
             existingUser.setSymbol(updatedUser.getSymbol());
@@ -67,7 +67,6 @@ public class AggregateUserController {
 
     // Delete by ID
     @DeleteMapping(path = "/delete/{id}")
-    @ResponseBody
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         Optional<AggregateUser> entryOpt = AggregateUserRepository.findById(id);
         if (entryOpt.isPresent()) {
@@ -77,6 +76,7 @@ public class AggregateUserController {
             return ResponseEntity.notFound().build();
         }
     }
+    
 
     // Get all records, optional sort
     @GetMapping("/all")
