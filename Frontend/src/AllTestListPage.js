@@ -350,12 +350,25 @@ const PaginatedBoxes = () => {
                 : alphanumericCompare(bClass, aClass);
         });
     
+        // Return sorted classified items first, then unclassified items last
         return [...sortedClassified, ...unclassifiedItems];
     };
     
     
-    
-    
+        
+    // Function to toggle sort order in search mode (ascending/descending)
+    const toggleSearchSortOrder = () => {
+        setSearchSort(prevSort => !prevSort); // Toggle searchSort state
+    };
+
+    // Ensure that you handle the sort order in the page render or data fetching
+    useEffect(() => {
+        if (viewMode && effectiveSearchContent) {
+            // Adjust sorting based on the current search mode
+            const sortedData = sortDataByClassification(data, searchSort ? 'ascending' : 'descending');
+            setData(sortedData);
+        }
+    }, [searchSort, viewMode, effectiveSearchContent]);  // Re-run whenever the searchSort or search content changes
     
 
     // API base URL based on database type
@@ -384,45 +397,46 @@ const PaginatedBoxes = () => {
     let url = ""; 
     useEffect(() => {
         const fetchData = async () => {
+            if (!token) {
+                setData([]);
+                return;
+            }
+    
+            setData([]);
+            const headers = getAuthHeaders();
+            const effectiveSearchContent = viewMode ? lastSearchContent : "";
+            const encodedSearch = encodeURIComponent(effectiveSearchContent);
+            let url = `${baseUrl}/all`; // Default URL, might change based on search
+    
+            if (effectiveSearchContent) {
+                // You can modify the URL based on the `effectiveSearchContent` if you are performing a search
+                url = `${baseUrl}/search?query=${encodedSearch}`;
+            }
+    
             try {
-                let baseUrl = getBaseUrl(databaseType);
-                let url = `${baseUrl}/all`; // or whatever your endpoint is
+                const response = await fetch(url, { method: "GET", headers });
+                if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+                
+                let result = await response.json();
     
-                if (effectiveSearchContent) {
-                    url = `${baseUrl}/search?query=${encodeURIComponent(effectiveSearchContent)}`;
-                } else if (selectedGroup) {
-                    url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
+                // Sort based on the selected sortOrder
+                result = sortDataByClassification(result, sortOrder);
+                
+                // Apply group filtering if needed
+                if (selectedGroup) {
+                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                 }
     
-                console.log("Fetching from URL:", url);
-    
-                const response = await fetch(url);
-                const result = await response.json();
-    
-                console.log("Data before sorting:", result);
-                result.forEach(item => {
-                    console.log(`Item: ${item.id}, AGS Code: ${item.classification}`);
-                });
-    
-                // Apply sorting if needed
-                let sortedData = result;
-                if (sortMode === "classification") {
-                    sortedData = sortDataByClassification(result, sortOrder);
-                }
-    
-                setData(sortedData);
-    
+                setData(result); // Set the sorted data
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
     
         fetchData();
-    }, [databaseType, effectiveSearchContent, selectedGroup, sortMode, sortOrder]);
+    }, [viewMode, lastSearchContent, sortOrder, selectedGroup, token]);
     
     
-    
-
     useEffect(() => {
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 768);
@@ -512,11 +526,21 @@ const PaginatedBoxes = () => {
             method: (a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''),
             parameter: (a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''),
             classification: (a, b) => {
-                const aClass = a.classification ?? '';
-                const bClass = b.classification ?? '';
-                return alphanumericCompare(bClass, aClass); // descending
-            },
-
+                const aClass = a.classification?.trim();
+                const bClass = b.classification?.trim();
+            
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+            
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass); 
+                }
+            
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+            
+                return 0;
+            },     
         };
     
         const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
