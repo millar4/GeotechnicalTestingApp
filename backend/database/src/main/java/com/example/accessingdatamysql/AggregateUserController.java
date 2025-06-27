@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,7 @@ public class AggregateUserController {
         Optional<AggregateUser> optionalUser = AggregateUserRepository.findById(id);
         if (optionalUser.isPresent()) {
             AggregateUser existingUser = optionalUser.get();
-
+            existingUser.setTest(updatedUser.getTest());
             existingUser.setGroup(updatedUser.getGroup());
             existingUser.setClassification(updatedUser.getClassification());
             existingUser.setSymbol(updatedUser.getSymbol());
@@ -65,10 +66,17 @@ public class AggregateUserController {
     }
 
     // Delete by ID
-    @DeleteMapping("/delete/{id}")
-    public void deleteAggregateUser(@PathVariable Long id) {
-        AggregateUserRepository.deleteById(id);
+    @DeleteMapping(path = "/delete/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        Optional<AggregateUser> entryOpt = AggregateUserRepository.findById(id);
+        if (entryOpt.isPresent()) {
+            AggregateUserRepository.delete(entryOpt.get());
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+    
 
     // Get all records, optional sort
     @GetMapping("/all")
