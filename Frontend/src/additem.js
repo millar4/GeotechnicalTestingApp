@@ -52,14 +52,14 @@ const AddItem = () => {
 
       const url = `http://localhost:8080/${databaseTarget}/add`;
 
-
       const addResponse = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, databaseBelongsTo: databaseTarget })
+
       });
 
       if (!addResponse.ok) {

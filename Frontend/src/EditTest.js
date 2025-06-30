@@ -6,16 +6,16 @@ const EditTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state;
-
+  console.log(location.state);
   // Determine entityType from state or fallback to path
   const getEntityType = () => {
-    const knownTypes = ['aggregate', 'rock', 'concrete'];
+    const knownTypes = ['aggregate', 'rock', 'concrete', 'database'];
     const fromState = state?.type;
     if (fromState) return fromState;
 
     const path = location.pathname.toLowerCase();
     const matchedType = knownTypes.find(type => path.includes(type));
-    return matchedType || 'aggregate'; // default fallback
+    return matchedType; 
   };
 
   const entityType = getEntityType();
@@ -40,10 +40,12 @@ const EditTest = () => {
     specimenW: initialData.specimenW || '',
     specimenH: initialData.specimenH || '',
     specimenMaxGrainSize: initialData.specimenMaxGrainSize || '',
-    specimenMaxGrainFraction: initialData.specimenMaxGrainFraction || ''
+    specimenMaxGrainFraction: initialData.specimenMaxGrainFraction || '',
+    databaseBelongsTo: initialData.databaseBelongsTo || ''
   });
 
   const testId = initialData.id;
+  const targetDatabase = formData.databaseBelongsTo;
 
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
@@ -81,7 +83,7 @@ const EditTest = () => {
 
       if (actionType === 'update') {
         // Handle Update Request
-        const updateResponse = await fetch(`http://localhost:8080/aggregate/update/${testId}`, {
+        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -102,7 +104,7 @@ const EditTest = () => {
           if (!confirmed) return;
         }
 
-        const deleteResponse = await fetch(`http://localhost:8080/aggregate/delete/${testId}`, {
+        const deleteResponse = await fetch(`http://localhost:8080/${targetDatabase}/delete/${testId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -132,22 +134,27 @@ const EditTest = () => {
     }
   };
 
+  // Define dynamic form fields for each entity type
+  const dynamicFields = {
+    aggregate: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'],
+    rock: ['test', 'group', 'symbol', 'parameters', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass'],
+    concrete: ['test', 'group', 'symbol', 'parameters', 'specimenType', 'specimenMass', 'specimenNumbers'],
+    database: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'specimenType', 'specimenMass', 'specimenD', 'specimenL', 'specimenW', 'specimenH']
+  };
+
+  const selectedFields = dynamicFields[entityType] || dynamicFields.aggregate;
+
   return (
     <div className="edit-item-container">
       <h2>Edit Test</h2>
       <form onSubmit={handleSubmit}>
-        {[
-          'Test', 'Group', 'Symbol', 'Parameters', 'Test Method',
-          'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass',
-          'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Diameter',
-          'Length', 'Width', 'Height', 'Max Grain Size', 'Max Grain Fraction'
-        ].map(field => (
+        {selectedFields.map(field => (
           <div className="form-row" key={field}>
             <label htmlFor={field}>{field.replace(/([A-Z])/g, ' $1')}:</label>
             <input
               id={field}
               name={field}
-              value={formData[field]}
+              value={formData[field] || ''}
               onChange={handleChange}
               placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
             />
