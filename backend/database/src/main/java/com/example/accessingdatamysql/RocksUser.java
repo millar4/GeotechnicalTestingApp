@@ -75,6 +75,9 @@ public class RocksUser {
     @Column(name = "schedulingNotes", nullable = true, unique = false)
     private String schedulingNotes;
 
+    @Column(name = "databaseBelongsTo", nullable = true, unique = false)
+    private String databaseBelongsTo;
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -141,4 +144,7 @@ public class RocksUser {
 
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
+
+    public String getDatabaseBelongsTo() { return databaseBelongsTo; }
+    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
 }
