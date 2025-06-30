@@ -72,6 +72,9 @@ public class GeotechnicalEntry {
     @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
     private String specimenMaxGrainFraction;
 
+    @Column(name = "databaseBelongsTo", nullable = true, unique = false)
+    private String databaseBelongsTo;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -134,4 +137,7 @@ public class GeotechnicalEntry {
 
     public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
     public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
+
+    public String getDatabaseBelongsTo() { return databaseBelongsTo; }
+    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo;}
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.object.MappingSqlQuery;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -78,15 +79,10 @@ public class MainController {
         return userRepository.findByClassificationContaining(classification);
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping("/add")
     @ResponseBody
-    public ResponseEntity<GeotechnicalEntry> addUser(@RequestBody GeotechnicalEntry newEntry) {
-        try {
-            GeotechnicalEntry savedEntry = userRepository.save(newEntry);
-            return ResponseEntity.ok(savedEntry);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+    public GeotechnicalEntry addGeotechnicalEntry (@RequestBody GeotechnicalEntry GeotechnicalEntry) {
+        return userRepository.save(GeotechnicalEntry);
     }
 
     @DeleteMapping(path = "/delete/{id}")
@@ -260,5 +256,11 @@ public class MainController {
     @ResponseBody
     public List<GeotechnicalEntry> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
         return userRepository.findBySpecimenMaxGrainFractionContaining(fraction);
+    }
+
+    @GetMapping(path = "/databaseBelongsTo")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
+        return userRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
     }
 }

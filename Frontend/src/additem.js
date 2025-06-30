@@ -6,11 +6,11 @@ const AddItem = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    test: '',classification: '', group: '', symbol: '', parameters: '', testMethod: '',
+    test: '', classification: '', group: '', symbol: '', parameters: '', testMethod: '',
     alt1: '', alt2: '', alt3: '', sampleType: '', fieldSampleMass: '',
     specimenType: '', specimenMass: '', specimenNumbers: '', specimenD: '',
     specimenL: '', specimenW: '', specimenH: '', specimenMaxGrainSize: '',
-    specimenMaxGrainFraction: '', schdedulingNotes: ''
+    specimenMaxGrainFraction: '', schedulingNotes: ''
   });
 
   const [databaseTarget, setDatabaseTarget] = useState('database');
@@ -34,9 +34,8 @@ const AddItem = () => {
   };
 
   const handleFinalSubmit = async () => {
-    const token = localStorage.getItem('token');
-
     try {
+      // Authenticate the user
       const authResponse = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,10 +45,16 @@ const AddItem = () => {
         })
       });
 
-      if (!authResponse.ok) {
-        throw new Error('Authentication failed: incorrect password');
+      const authData = await authResponse.json();
+
+      if (!authResponse.ok || !authData.token) {
+        throw new Error('Authentication failed: incorrect password or missing token');
       }
 
+      const token = authData.token;
+      localStorage.setItem('token', token); // Store token for reuse
+
+      // POST the form data
       const url = `http://localhost:8080/${databaseTarget}/add`;
 
       const addResponse = await fetch(url, {
@@ -59,7 +64,6 @@ const AddItem = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ ...formData, databaseBelongsTo: databaseTarget })
-
       });
 
       if (!addResponse.ok) {
@@ -76,7 +80,7 @@ const AddItem = () => {
   };
 
   const fields = [
-    "test", "classification" , "group", "symbol", "parameters", "testMethod",
+    "test", "classification", "group", "symbol", "parameters", "testMethod",
     "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
     "specimenMass", "specimenNumbers", "specimenD", "specimenL",
     "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction", "schedulingNotes"

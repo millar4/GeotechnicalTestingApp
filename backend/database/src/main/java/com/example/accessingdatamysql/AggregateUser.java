@@ -61,6 +61,9 @@ public class AggregateUser {
     @Column(name = "schedulingNotes", nullable = true, unique = false)
     private String schedulingNotes;
 
+    @Column(name = "databaseBelongsTo", nullable = true, unique = false)
+    private String databaseBelongsTo;
+
     // Getters and setters for all fields
     public Long getId() {return id;}
     public String getGroup() { return group; }
@@ -104,6 +107,10 @@ public class AggregateUser {
 
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
+
+
+    public String getDatabaseBelongsTo() { return databaseBelongsTo; }
+    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
 
 }
 
