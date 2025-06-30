@@ -81,7 +81,8 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
-    schedulingNotes TEXT(300)
+    schedulingNotes TEXT(300),
+    databaseBelongsTo VARCHAR(100)
 );
 
 -- ============================================
@@ -180,7 +181,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes
+    schedulingNotes, databaseBelongsTo
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -203,7 +204,8 @@ SET
     specimenH = NULLIF(specimenH, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
-    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
 
 -- ============================================
 -- 5) Load CSV data into GeotechnicalTable
