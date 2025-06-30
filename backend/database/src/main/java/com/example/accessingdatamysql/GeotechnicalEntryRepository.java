@@ -40,4 +40,6 @@ public interface GeotechnicalEntryRepository extends CrudRepository<Geotechnical
     List<GeotechnicalEntry> findAllByOrderByTestMethodAsc();
     List<GeotechnicalEntry> findAllByOrderByParametersAsc();
     List<GeotechnicalEntry> findAllByOrderByClassificationAsc();
+
+    List<GeotechnicalEntry> findByDatabaseBelongsToContaining(String databaseBelongsTo);
 }

@@ -129,6 +129,7 @@ public class ConcreteUserController{
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
         existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
         // ... More fields can be assigned here as well.
 
         // 3. Preservation of updated entities
@@ -261,6 +262,11 @@ public class ConcreteUserController{
     @GetMapping("/schedulingNotes")
     public List<ConcreteUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
         return ConcreteUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
+    }
+
+    @GetMapping("/databaseBelongsTo")
+    public List<ConcreteUser> getByDatabaseBelongsTo(@RequestParam String schedulingNotes) {
+        return ConcreteUserRepository.findByDatabaseBelongsToContainingIgnoreCase(schedulingNotes);
     }
 
 }

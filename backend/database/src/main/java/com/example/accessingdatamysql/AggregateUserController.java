@@ -180,4 +180,9 @@ public class AggregateUserController {
     public List<AggregateUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
         return AggregateUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
+
+    @GetMapping("/databaseBelongsTo")
+    public List<AggregateUser> getByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
+        return AggregateUserRepository.findByDatabaseBelongsToContainingIgnoreCase(databaseBelongsTo);
+    }
 }
