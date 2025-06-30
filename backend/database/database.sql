@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     specimenW VARCHAR(100),
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
-    specimenMaxGrainFraction VARCHAR(100)
+    specimenMaxGrainFraction VARCHAR(100),
+    databaseBelongsTo VARCHAR(100)
 );
 
 
@@ -53,7 +54,8 @@ CREATE TABLE IF NOT EXISTS InSituUser (
     specimenW VARCHAR(100),
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
-    specimenMaxGrainFraction VARCHAR(100)
+    specimenMaxGrainFraction VARCHAR(100),
+    databaseBelongsTo VARCHAR(100)
 );
 
 -- ============================================
@@ -81,7 +83,8 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
-    schedulingNotes TEXT(300)
+    schedulingNotes TEXT(300),
+    databaseBelongsTo VARCHAR(100),
 );
 
 -- ============================================
@@ -109,7 +112,8 @@ CREATE TABLE IF NOT EXISTS ConcreteTable(
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
-    schedulingNotes TEXT(300)
+    schedulingNotes TEXT(300),
+    databaseBelongsTo VARCHAR(100)
 );
 
 -- ============================================
@@ -131,6 +135,7 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300)
+    databaseBelongsTo VARCHAR(100)
 );
 
 -- ============================================
@@ -147,7 +152,7 @@ IGNORE 1 LINES
     sampleType, fieldSampleMass, specimenType,
     specimenMass, specimenNumbers,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes
+    schedulingNotes, databaseBelongsTo
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -180,7 +185,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes
+    schedulingNotes, databaseBelongsTo
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -203,7 +208,8 @@ SET
     specimenH = NULLIF(specimenH, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
-    schedulingNotes = NULLIF(schedulingNotes, 'NULL');
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
 
 -- ============================================
 -- 5) Load CSV data into GeotechnicalTable
@@ -219,7 +225,7 @@ IGNORE 1 LINES
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction
+    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -258,7 +264,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes
+    schedulingNotes, databaseBelongsTo
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),

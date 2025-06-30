@@ -102,13 +102,13 @@ public class RocksUserController {
     public ResponseEntity<RocksUser> updateRocksUser(
             @PathVariable Long id,
             @RequestBody RocksUser updatedEntry) {
-        // 1. Find an existing record in the database based on the primary key id.
+        // 1. Find an existing record in the databaseBelongsTo based on the primary key id.
         Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
         if (existingOpt.isEmpty()) {
            // Returns 404 if the corresponding record is not found.
             return ResponseEntity.notFound().build();
         }
-        // 2. Synchronize the updated fields passed by the front-end into the database.
+        // 2. Synchronize the updated fields passed by the front-end into the databaseBelongsTo.
         RocksUser existing = existingOpt.get();
         existing.setTest(updatedEntry.getTest());
         existing.setmyGroup(updatedEntry.getmyGroup());
@@ -130,6 +130,7 @@ public class RocksUserController {
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
         existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
         // ... More fields can be assigned here as well.
 
         // 3. Preservation of updated entities
@@ -268,6 +269,11 @@ public class RocksUserController {
     @GetMapping("/schedulingNotes")
     public List<RocksUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
         return RocksUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
+    }
+
+    @GetMapping("/databaseBelongsTo")
+    public List<RocksUser> getBydatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
+        return RocksUserRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
     }
 
 }
