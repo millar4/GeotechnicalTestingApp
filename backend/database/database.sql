@@ -291,7 +291,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
     myGroup, test, symbol, parameters, testMethod,
-    alt1, alt2, alt3, materials, applications,databaseBelongsTo
+    alt1, alt2, alt3, materials, applications, databaseBelongsTo
 )
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),

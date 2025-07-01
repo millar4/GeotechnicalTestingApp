@@ -117,18 +117,6 @@ public class InSituUserController{
         existing.setAlt1(updatedEntry.getAlt1());
         existing.setAlt2(updatedEntry.getAlt2());
         existing.setAlt3(updatedEntry.getAlt3());
-        existing.setSampleType(updatedEntry.getSampleType());
-        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
-        existing.setSpecimenType(updatedEntry.getSpecimenType());
-        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
-        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
-        existing.setSpecimenD(updatedEntry.getSpecimenD());
-        existing.setSpecimenL(updatedEntry.getSpecimenL());
-        existing.setSpecimenW(updatedEntry.getSpecimenW());
-        existing.setSpecimenH(updatedEntry.getSpecimenH());
-        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
-        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
-        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
         existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
         // ... More fields can be assigned here as well.
 
@@ -191,77 +179,6 @@ public class InSituUserController{
     @ResponseBody
     public List<InSituUser> getUsersByAlt3(@RequestParam String alt3) {
         return InSituUserRepository.findByAlt3Containing(alt3);
-    }
-
-    @GetMapping(path = "/sampleType")
-    @ResponseBody
-    public List<InSituUser> getUsersBySampleType(@RequestParam String sampleType) {
-        return InSituUserRepository.findBySampleTypeContaining(sampleType);
-    }
-
-    @GetMapping(path = "/fieldSampleMassGreaterThan")
-    @ResponseBody
-    public List<InSituUser> getUsersByFieldSampleMass(@RequestParam String mass) {
-        return InSituUserRepository.findByFieldSampleMassContaining(mass);
-    }
-
-    @GetMapping(path = "/specimenType")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenType(@RequestParam String specimenType) {
-        return InSituUserRepository.findBySpecimenTypeContaining(specimenType);
-    }
-
-    @GetMapping(path = "/specimenMassGreaterThan")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenMass(@RequestParam String mass) {
-        return InSituUserRepository.findBySpecimenMassContaining(mass);
-    }
-
-    @GetMapping(path = "/specimenNumbers")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
-        return InSituUserRepository.findBySpecimenNumbersContaining(numbers);
-    }
-
-    @GetMapping(path = "/specimenD")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenD(@RequestParam String diameter) {
-        return InSituUserRepository.findBySpecimenDContaining(diameter);
-    }
-
-    @GetMapping(path = "/specimenL")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenL(@RequestParam String length) {
-        return InSituUserRepository.findBySpecimenLContaining(length);
-    }
-
-    @GetMapping(path = "/specimenW")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenW(@RequestParam String width) {
-        return InSituUserRepository.findBySpecimenWContaining(width);
-    }
-
-    @GetMapping(path = "/specimenH")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenH(@RequestParam String height) {
-        return InSituUserRepository.findBySpecimenHContaining(height);
-    }
-
-    @GetMapping(path = "/specimenMaxGrainSize")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
-        return InSituUserRepository.findBySpecimenMaxGrainSizeContaining(grainSize);
-    }
-
-    @GetMapping(path = "/specimenMaxGrainFraction")
-    @ResponseBody
-    public List<InSituUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
-        return InSituUserRepository.findBySpecimenMaxGrainFractionContaining(fraction);
-    }
-
-    @GetMapping("/schedulingNotes")
-    public List<InSituUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
-        return InSituUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
 
     @GetMapping("/databaseBelongsTo")
