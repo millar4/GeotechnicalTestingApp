@@ -9,6 +9,7 @@ COPY ./backend/database/parameters2.csv /parameters2.csv
 COPY ./backend/database/aggregate.csv /aggregate.csv
 COPY ./backend/database/rockParameters.csv /rockParameters.csv
 COPY ./backend/database/concreteParameters.csv /concreteParameters.csv
+COPY ./backend/database/inSituParameters.csv /inSituParameters.csv
 
 EXPOSE 8080
 

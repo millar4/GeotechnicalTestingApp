@@ -5,37 +5,39 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-public interface InSituUserRepository extends CrudRepository<ConcreteUser, Long> {
+public interface InSituUserRepository extends CrudRepository<InSituUser, Long> {
 
-    @Query("SELECT DISTINCT g.myGroup FROM ConcreteUser g ORDER BY g.myGroup ASC")
+    @Query("SELECT DISTINCT g.myGroup FROM InSituUser g ORDER BY g.myGroup ASC")
     List<String> findAllGroups();
 
     // The following methods all use fuzzy queries
 
-    List<ConcreteUser> findByMyGroupContaining(String myGroup);
-    List<ConcreteUser> findByTestContaining(String test);
-    List<ConcreteUser> findBySymbolContaining(String symbol);
-    List<ConcreteUser> findByParametersContaining(String parameters);
-    List<ConcreteUser> findByTestMethodContaining(String testMethod);
-    List<ConcreteUser> findByAlt1Containing(String alt1);
-    List<ConcreteUser> findByAlt2Containing(String alt2);
-    List<ConcreteUser> findByAlt3Containing(String alt3);
-    List<ConcreteUser> findBySampleTypeContaining(String sampleType);
-    List<ConcreteUser> findByFieldSampleMassContaining(String mass);
-    List<ConcreteUser> findBySpecimenTypeContaining(String specimenType);
-    List<ConcreteUser> findBySpecimenMassContaining(String mass);
-    List<ConcreteUser> findBySpecimenNumbersContaining(String numbers);
-    List<ConcreteUser> findBySpecimenDContaining(String diameter);
-    List<ConcreteUser> findBySpecimenLContaining(String length);
-    List<ConcreteUser> findBySpecimenWContaining(String width);
-    List<ConcreteUser> findBySpecimenHContaining(String height);
-    List<ConcreteUser> findBySpecimenMaxGrainSizeContaining(String grainSize);
-    List<ConcreteUser> findBySpecimenMaxGrainFractionContaining(String fraction);
-    List<ConcreteUser> findBySchedulingNotesContainingIgnoreCase(String schedulingNotes);
+    List<InSituUser> findByMyGroupContaining(String myGroup);
+    List<InSituUser> findByTestContaining(String test);
+    List<InSituUser> findBySymbolContaining(String symbol);
+    List<InSituUser> findByParametersContaining(String parameters);
+    List<InSituUser> findByTestMethodContaining(String testMethod);
+    List<InSituUser> findByAlt1Containing(String alt1);
+    List<InSituUser> findByAlt2Containing(String alt2);
+    List<InSituUser> findByAlt3Containing(String alt3);
+    List<InSituUser> findBySampleTypeContaining(String sampleType);
+    List<InSituUser> findByFieldSampleMassContaining(String mass);
+    List<InSituUser> findBySpecimenTypeContaining(String specimenType);
+    List<InSituUser> findBySpecimenMassContaining(String mass);
+    List<InSituUser> findBySpecimenNumbersContaining(String numbers);
+    List<InSituUser> findBySpecimenDContaining(String diameter);
+    List<InSituUser> findBySpecimenLContaining(String length);
+    List<InSituUser> findBySpecimenWContaining(String width);
+    List<InSituUser> findBySpecimenHContaining(String height);
+    List<InSituUser> findBySpecimenMaxGrainSizeContaining(String grainSize);
+    List<InSituUser> findBySpecimenMaxGrainFractionContaining(String fraction);
+    List<InSituUser> findBySchedulingNotesContainingIgnoreCase(String schedulingNotes);
 
     // ORDER BY
-    List<ConcreteUser> findAllByOrderByIdAsc();
-    List<ConcreteUser> findAllByOrderByMyGroupAsc();
-    List<ConcreteUser> findAllByOrderByTestMethodAsc();
-    List<ConcreteUser> findAllByOrderByParametersAsc();
+    List<InSituUser> findAllByOrderByIdAsc();
+    List<InSituUser> findAllByOrderByMyGroupAsc();
+    List<InSituUser> findAllByOrderByTestMethodAsc();
+    List<InSituUser> findAllByOrderByParametersAsc();
+
+    List<InSituUser> findByDatabaseBelongsToContainingIgnoreCase(String schedulingNotes);
 }

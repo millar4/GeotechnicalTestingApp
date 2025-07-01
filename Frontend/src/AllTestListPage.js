@@ -419,6 +419,8 @@ const PaginatedBoxes = () => {
         ? "http://localhost:8080/rocks"
         : (databaseType === "concrete")
         ? "http://localhost:8080/concrete"
+        : (databaseType === "inSituTest")
+        ? "http://localhost:8080/inSituTest"
         : "http://localhost:8080/database";
 
 
@@ -432,6 +434,7 @@ const PaginatedBoxes = () => {
             case 'aggregate': return '/aggregate';
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
+            case 'inSituTest': return '/inSituTest';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
@@ -598,7 +601,7 @@ const PaginatedBoxes = () => {
                 return 0;
             },          
         
-            parameter: (a, b) => {
+            parameters: (a, b) => {
                 const aClass = a.testMethod?.trim();
                 const bClass = b.testMethod?.trim();
         
@@ -947,6 +950,12 @@ const PaginatedBoxes = () => {
                             onClick={() => setDatabaseType("concrete")}
                         >
                         <p style={{ fontSize: '12px', margin: 0 }}>Concrete</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("inSituTest")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>inSituTest</p>
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
