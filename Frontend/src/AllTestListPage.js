@@ -12,31 +12,13 @@ const escapeRegExp = (string) => {
     return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&');
 };
 
-const fieldMappings = {
-    default: {
-        test: 'test',
-        group: 'group',
-        testMethod: 'testMethod',
-        parameters: 'parameters',
-        classification: 'classification',
-    },
-    inSitu: {
-        test: 'testName',
-        group: 'category',
-        testMethod: 'methodType',
-        parameters: 'paramSet',
-        classification: 'soilType',
-    }
-};
-
-
 // Function to format and highlight the search content
-const formatData = (data, searchcontent, pattern, fieldName, schemaType = "default") => {
-    const map = fieldMappings[schemaType] || fieldMappings.default;
-
+const formatData = (data, searchcontent, pattern, fieldName) => {
     if (typeof data === 'string' && searchcontent) {
+        // If pattern is "Quick Search", highlight the search term in the string
         if (pattern === "Quick Search") {
-            const regex = new RegExp(`${escapeRegExp(searchcontent)}`, 'gi');
+            // Escape the search content to make it regex-safe
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -46,29 +28,31 @@ const formatData = (data, searchcontent, pattern, fieldName, schemaType = "defau
             );
         }
 
+        // Determine the field based on the selected pattern
         let targetField = "";
         switch (pattern) {
             case "Test name":
-                targetField = map.test;
+                targetField = "test";
                 break;
             case "Test group":
-                targetField = map.group;
+                targetField = "group";
                 break;
             case "Test method":
-                targetField = map.testMethod;
+                targetField = "testMethod";
                 break;
             case "Test parameters":
-                targetField = map.parameters;
+                targetField = "parameters";
                 break;
             case "Classification":
-                targetField = map.classification;
+                targetField = "classification";
                 break;
             default:
                 break;
         }
 
+        // If the target field matches the current fieldName, highlight the search term
         if (fieldName === targetField) {
-            const regex = new RegExp(`${escapeRegExp(searchcontent)}`, 'gi');
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -78,10 +62,8 @@ const formatData = (data, searchcontent, pattern, fieldName, schemaType = "defau
             );
         }
     }
-
-    return data;
+    return data; // Return data without any changes if no matches
 };
-
 
 
 // Box component: displays a brief summary of a test item.
@@ -112,26 +94,25 @@ const Box = ({
     searchcontent,
     pattern
 }) => {
-    const schemaType = localStorage.getItem('databaseType') || 'default';
     return (
         <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>
             {formatData(test, searchcontent, pattern, "test") && (
-                <h3>Test: {formatData(test, searchcontent, pattern, "test", schemaType)}</h3>
+                <h3>Test: {formatData(test, searchcontent, pattern, "test")}</h3>
             )}
             {formatData(group, searchcontent, pattern, "group") && (
-                <p>Group: {formatData(group, searchcontent, pattern, "group", schemaType)}</p>
+                <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
-                <p>AGS: {formatData(classification, searchcontent, pattern, "classification", schemaType)}</p>
+                <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(symbol, searchcontent, pattern, "symbol") && (
-                <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol", schemaType)}</p>
+                <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
-                <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters", schemaType)}</p>
+                <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
             )}
             {formatData(testMethod, searchcontent, pattern, "testMethod") && (
-                <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod", schemaType)}</p>
+                <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
             )}
         </button>
     );
@@ -150,8 +131,6 @@ const getAuthHeaders = () => {
 
 // FloatingDetails component: displays detailed info in a draggable/resizable window.
 const FloatingDetails = ({ details, onClose, position, searchcontent, pattern }) => {
-    const schemaType = localStorage.getItem('databaseType') || 'default';
-
     const [isLoggedIn, setIsLoggedIn] = useState(() =>
       JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
@@ -204,70 +183,75 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     )}
                     </div>
                     {formatData(details.test, searchcontent, pattern, "test") && (
-                        <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test", schemaType)}</p>
+                        <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
                     )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
-                        <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group", schemaType)}</p>
+                        <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
-                        <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification", schemaType)}</p>
+                        <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.symbol, searchcontent, pattern, "symbol") && (
-                        <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol", schemaType)}</p>
+                        <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
-                        <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters", schemaType)}</p>
+                        <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
                     )}
                     {formatData(details.testMethod, searchcontent, pattern, "testMethod") && (
-                        <p><strong>Test Method:</strong> {formatData(details.method, searchcontent, pattern, "testMethod",)}</p>
+                        <p><strong>Test Method:</strong> {formatData(details.method, searchcontent, pattern, "testMethod")}</p>
                     )}
                     <h4>Additional Fields</h4>
                     {formatData(details.alt1) && (
-                        <p><strong>Alt1:</strong> {formatData(details.alt1, schemaType)}</p>
+                        <p><strong>Alt1:</strong> {formatData(details.alt1)}</p>
                     )}
                     {formatData(details.alt2) && (
-                        <p><strong>Alt2:</strong> {formatData(details.alt2, schemaType)}</p>
+                        <p><strong>Alt2:</strong> {formatData(details.alt2)}</p>
                     )}
                     {formatData(details.alt3) && (
-                        <p><strong>Alt3:</strong> {formatData(details.alt3, schemaType)}</p>
+                        <p><strong>Alt3:</strong> {formatData(details.alt3)}</p>
                     )}
                     {formatData(details.sampleType) && (
-                        <p><strong>Sample Type:</strong> {formatData(details.sampleType, schemaType)}</p>
+                        <p><strong>Sample Type:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass(kg):</strong> {formatData(details.fieldSampleMass, schemaType)}</p>
+                        <p><strong>Field Sample Mass(kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
-                        <p><strong>Specimen Type:</strong> {formatData(details.specimenType, schemaType)}</p>
+                        <p><strong>Specimen Type:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass(kg):</strong> {formatData(details.specimenMass, schemaType)}</p>
+                        <p><strong>Specimen Mass(kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
-                        <p><strong>Specimen Numbers:</strong> {formatData(details.specimenNumbers, schemaType)}</p>
+                        <p><strong>Specimen Numbers:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen D(mm):</strong> {formatData(details.specimenD, schemaType)}</p>
+                        <p><strong>Specimen D(mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen L(mm):</strong> {formatData(details.specimenL, schemaType)}</p>
+                        <p><strong>Specimen L(mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen W(mm):</strong> {formatData(details.specimenW, schemaType)}</p>
+                        <p><strong>Specimen W(mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen H(mm):</strong> {formatData(details.specimenH, schemaType)}</p>
+                        <p><strong>Specimen H(mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Specimen Max Grain Size(mm):</strong> {formatData(details.specimenMaxGrainSize, schemaType)}</p>
+                        <p><strong>Specimen Max Grain Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
-                        <p><strong>Specimen Max Grain Fraction(d/D):</strong> {formatData(details.specimenMaxGrainFraction, schemaType)}</p>
+                        <p><strong>Specimen Max Grain Fraction(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
                     )}
                     {formatData(details.schedulingNotes) && (
-                        <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes, schemaType)}</p>
+                        <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes)}</p>
                     )}
-
+                    {formatData(details.materials) && (
+                        <p><strong>Materials:</strong> {formatData(details.materials)}</p>
+                    )}
+                    {formatData(details.applications) && (
+                        <p><strong>Applications:</strong> {formatData(details.applications)}</p>
+                    )}
                 </div>
             </ResizableBox>
         </Draggable>
