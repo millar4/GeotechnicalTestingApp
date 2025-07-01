@@ -149,6 +149,7 @@ function Home() {
                 <option value="aggregate">Aggregate</option>
                 <option value="rocks">Rock</option>
                 <option value="concrete">Concrete</option>
+                <option value="inSituTest">InSituTest</option>
               </select>
             </div>
             <div className="input-wrapper">
