@@ -135,4 +135,12 @@ public class InSituUser {
 
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
+    public Object getDatabaseBelongsTo() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDatabaseBelongsTo'");
+    }
+    public void setDatabaseBelongsTo(Object databaseBelongsTo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDatabaseBelongsTo'");
+    }
 }

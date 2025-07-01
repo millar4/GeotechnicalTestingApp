@@ -33,10 +33,9 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
 );
 
 
-CREATE TABLE IF NOT EXISTS InSituUser (
+CREATE TABLE IF NOT EXISTS InSituTable (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     myGroup VARCHAR(100),
-    classification VARCHAR(100),
     test VARCHAR(1000),
     symbol VARCHAR(10),
     parameters VARCHAR(1000),
@@ -44,18 +43,9 @@ CREATE TABLE IF NOT EXISTS InSituUser (
     alt1 VARCHAR(100),
     alt2 VARCHAR(100),
     alt3 VARCHAR(100),
-    sampleType VARCHAR(30),
-    fieldSampleMass VARCHAR(100),
-    specimenType VARCHAR(1000),
-    specimenMass VARCHAR(100),
-    specimenNumbers VARCHAR(100),
-    specimenD VARCHAR(100),
-    specimenL VARCHAR(100),
-    specimenW VARCHAR(100),
-    specimenH VARCHAR(100),
-    specimenMaxGrainSize VARCHAR(100),
-    specimenMaxGrainFraction VARCHAR(100),
-    databaseBelongsTo VARCHAR(100)
+    materials VARCHAR(1000),
+    applications VARCHAR(1000),
+    databaseBelongsTo VARCHAR(1000)
 );
 
 -- ============================================
@@ -288,6 +278,32 @@ SET
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+
+-- ============================================
+-- 5 Load CSV data into InSituTable
+-- ============================================
+LOAD DATA INFILE '/var/lib/mysql-files/inSituParameters.csv'
+INTO TABLE InSituTable
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    myGroup, test, symbol, parameters, testMethod,
+    alt1, alt2, alt3, materials, applications,databaseBelongsTo
+)
+SET  
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    alt1 = NULLIF(alt1, 'NULL'),
+    alt2 = NULLIF(alt2, 'NULL'),
+    alt3 = NULLIF(alt3, 'NULL'),
+    materials = NULLIF(materials, 'NULL'),
+    applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
 
 CREATE TABLE IF NOT EXISTS users (
