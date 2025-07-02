@@ -47,7 +47,8 @@ jobs:
           file: ./backend/database/Dockerfile
           push: true
           tags: |
-            ghcr.io/spe-uob/2024-geotechnicaltestingguidance:${{ github.sha }}
-            ghcr.io/spe-uob/2024-geotechnicaltestingguidance:dev
+            tags: ghcr.io/millar4/geotechnicaltestingapp:${{ github.sha }}
+
+            
 
 
