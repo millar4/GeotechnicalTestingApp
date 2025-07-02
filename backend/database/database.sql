@@ -48,6 +48,32 @@ CREATE TABLE IF NOT EXISTS InSituTable (
     databaseBelongsTo VARCHAR(1000)
 );
 
+CREATE TABLE IF NOT EXISTS EarthworksTable (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    myGroup VARCHAR(100),
+    classification VARCHAR(100),
+    test VARCHAR(1000),
+    symbol VARCHAR(10),
+    parameters VARCHAR(1000),
+    testMethod VARCHAR(100),
+    alt1 VARCHAR(100),
+    alt2 VARCHAR(100),
+    alt3 VARCHAR(100),
+    sampleType VARCHAR(30),
+    fieldSampleMass VARCHAR(100),
+    specimenType VARCHAR(1000),
+    specimenMass VARCHAR(100),
+    specimenNumbers VARCHAR(100),
+    specimenD VARCHAR(100),
+    specimenL VARCHAR(100),
+    specimenW VARCHAR(100),
+    specimenH VARCHAR(100),
+    specimenMaxGrainSize VARCHAR(100),
+    specimenMaxGrainFraction VARCHAR(100),
+    schedulingNotes TEXT(300),
+    databaseBelongsTo VARCHAR(100)
+);
+
 -- ============================================
 -- 2 Create RocksTable
 -- ============================================
@@ -305,6 +331,46 @@ SET
     materials = NULLIF(materials, 'NULL'),
     applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+LOAD DATA INFILE '/var/lib/mysql-files/earthworksParameters.csv'
+INTO TABLE EarthworksTable
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(
+    myGroup,Test,symbol,parameters,testMethod,alt1,alt2,alt3,sampleType,fieldSampleMass,specimenType,SpecimenMass,specimenNumbers,specimenD,specimenL,specimenW,specimenH,specimenMaxGrainSize ,specimenMaxGrainFraction,schedulingNotes,databaseBelongsTo
+)
+SET  
+    myGroup = NULLIF(myGroup, 'NULL'),
+    test = NULLIF(test, 'NULL'),
+    symbol = NULLIF(symbol, 'NULL'),
+    parameters = NULLIF(parameters, 'NULL'),
+    testMethod = NULLIF(testMethod, 'NULL'),
+    alt1 = NULLIF(alt1, 'NULL'),
+    alt2 = NULLIF(alt2, 'NULL'),
+    alt3 = NULLIF(alt3, 'NULL'),
+    sampleType = NULLIF(sampleType, 'NULL'),
+    fieldSampleMass = NULLIF(fieldSampleMass, 'NULL'),
+    specimenType = NULLIF(specimenType, 'NULL'),
+    specimenMass = NULLIF(specimenMass, 'NULL'),
+    specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
+    specimenD = NULLIF(specimenD, 'NULL'),
+    specimenL = NULLIF(specimenL, 'NULL'),
+    specimenW = NULLIF(specimenW, 'NULL'),
+    specimenH = NULLIF(specimenH, 'NULL'),
+    specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
+    specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
+    schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');    
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,

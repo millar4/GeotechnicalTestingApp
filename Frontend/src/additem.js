@@ -104,6 +104,8 @@ const AddItem = () => {
             <option value="aggregate">Aggregate</option>
             <option value="rocks">Rock</option>
             <option value="concrete">Concrete</option>
+            <option value="inSituTest">Concrete</option>
+            <option value="earthworks">Concrete</option>
           </select>
         </div>
 

@@ -426,6 +426,8 @@ const PaginatedBoxes = () => {
         ? "http://localhost:8080/concrete"
         : (databaseType === "inSituTest")
         ? "http://localhost:8080/inSituTest"
+        : (databaseType === "earthworks")
+        ? "http://localhost:8080/earthworks"
         : "http://localhost:8080/database";
 
 
@@ -440,6 +442,7 @@ const PaginatedBoxes = () => {
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
             case 'inSituTest': return '/inSituTest';
+            case 'earthworks': return 'earthworks';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
@@ -960,7 +963,13 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
                             onClick={() => setDatabaseType("inSituTest")}
                         >
-                        <p style={{ fontSize: '12px', margin: 0 }}>inSituTest</p>
+                        <p style={{ fontSize: '12px', margin: 0 }}>In-Situ</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "earthworks" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("earthworks")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>Earthworks</p>
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
@@ -988,7 +997,7 @@ const PaginatedBoxes = () => {
                         Name Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'name' ? 'active' : ''}
+                        className={sortOrder === 'group' ? 'active' : ''}
                         onClick={() => handleSortChange('group')}
                     >
                         Group Arrangement

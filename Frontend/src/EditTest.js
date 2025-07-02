@@ -9,7 +9,7 @@ const EditTest = () => {
   console.log(location.state);
   // Determine entityType from state or fallback to path
   const getEntityType = () => {
-    const knownTypes = ['aggregate', 'rock', 'concrete', 'inSituTest','database'];
+    const knownTypes = ['aggregate', 'rock', 'concrete', 'inSituTest','database','earthworks'];
     const fromState = state?.type;
     if (fromState) return fromState;
 
@@ -140,7 +140,8 @@ const EditTest = () => {
     rock: ['test', 'group', 'symbol', 'parameters', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass'],
     concrete: ['test', 'group', 'symbol', 'parameters', 'specimenType', 'specimenMass', 'specimenNumbers'],
     database: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'specimenType', 'specimenMass', 'specimenD', 'specimenL', 'specimenW', 'specimenH'],
-    inSituTest: ['Group','Test','Abbreviation or symbol','Test', 'parameters',' Default test method' ,'Alternative 1','Alternative 2','Alternative 3','Materials','Applications','databaseBelongsTo']
+    inSituTest: ['Group','Test','Abbreviation or symbol','Test', 'parameters',' Default test method' ,'Alternative 1','Alternative 2','Alternative 3','Materials','Applications','databaseBelongsTo'],
+    earthworks: ['Group','Test','Abbreviation or symbol','Test', 'parameters',' Default test method' ,'Alternative 1','Alternative 2','Alternative 3','Materials','Applications','databaseBelongsTo']
   };
 
   const selectedFields = dynamicFields[entityType] || dynamicFields.aggregate;

@@ -139,28 +139,30 @@ html, body, * {
   font-size: 1.1em;
 }
 
+/* Main grid layout for buttons */
 .db-switch {
-  display: flex;
-  justify-content: center;
-  gap: 20px; 
-  margin-bottom: 10px;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr); /* 3 buttons per row */
+  gap: 10px; /* spacing between buttons */
+  margin-bottom: 10px; /* margin under buttons */
 }
 
+/* Style for individual buttons in the grid */
 .db-button {
-  width: 60px !important; 
-  border: none;
-  cursor: pointer;
-  border-radius: 50% !important;
-  font-size: 1em;
+  width: 100% !important; /* Ensure the button fills the entire grid cell */
+  padding: 10px;
   text-align: center;
-  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1em;
+  border-radius: 50% !important; /* Keep circular buttons */
+  box-sizing: border-box;
   transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
   box-shadow: 3px 3px 6px #1D1D1D1B;
 }
 
+/* Specific button styles */
 .db-button:nth-child(1) {
   background-color: #E7E7E8;
   color: #333;
@@ -181,31 +183,65 @@ html, body, * {
   color: white;
 }
 
+.db-button:nth-child(5) {
+  background-color: #e4737368;
+  color: white;
+}
+
+.db-button:nth-child(6) {
+  background-color: #e6adad68;
+  color: white;
+}
+
+/* Active button styles */
+.db-button.active {
+  transform: scale(1.2);
+}
+
 .db-button.active:nth-child(1) {
   background-color: #E7E7E8;
-  transform: scale(1.2);
 }
 
 .db-button.active:nth-child(2) {
   background-color: #737373;
-  transform: scale(1.2);
 }
 
 .db-button.active:nth-child(3) {
   background-color: #8d1d1c;
-  transform: scale(1.2);
 }
 
 .db-button.active:nth-child(4) {
   background-color: #8d1e1c68;
-  transform: scale(1.2);
+}
+.db-button.active:nth-child(5) {
+  background-color: #e4737368;
+}
+.db-button.active:nth-child(6) {
+  background-color: #e6adad68;
 }
 
-.db-switch .db-button:hover {
-  filter: brightness(85%) !important; 
+/* Hover effect for buttons */
+.db-button:hover {
+  filter: brightness(85%) !important;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
   transform: scale(1.2);
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* Stack the buttons vertically on smaller screens */
+  .db-switch {
+    grid-template-columns: 1fr; /* Stack buttons in a single column */
+    gap: 10px; /* spacing between buttons */
+  }
+
+  .db-button {
+    width: 100% !important; /* Ensure the buttons take up full width in the grid */
+    font-size: 14px; /* Adjust font size for smaller screens */
+    height: auto; /* Remove any height restrictions */
+  }
+}
+
 
 /* Responsive Design */
 @media (max-width: 600px) {
@@ -229,7 +265,6 @@ html, body, * {
   cursor: move;
   padding: 0 10px;
 }
-
 .floating-details {
   position: fixed;
   top: 50%;
@@ -237,26 +272,69 @@ html, body, * {
   transform: translate(-50%, -50%);
   background-color: white;
   padding: 20px;
-  width: 100%;  
-  height: 100%; 
+  width: 80vw; /* Set width to make sure it doesn't overflow */
+  height: 80vh; /* Set height to make sure it doesn't overflow */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   border-radius: 8px;
-  overflow: hidden; 
+  overflow: scroll; /* Forces both horizontal and vertical scrollbars to appear */
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
+/* Ensuring that the content of the box is always large enough to require a scrollbar */
+.floating-content {
+  min-height: 120%; /* Make content overflow, which forces a scrollbar */
+}
+.floating-details {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  width: 80vw; /* Adjust width for your design */
+  height: 80vh; /* Adjust height for your design */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  border-radius: 8px;
+  overflow: scroll; /* Force scrollbars to always be visible */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Ensure content is large enough to overflow */
+.floating-content {
+  min-height: 120%; /* Force overflow to ensure scrollbars are necessary */
+}
+
+/* Webkit-based browsers (Chrome, Safari, Edge) - Customize scrollbar */
 .floating-details::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
+  width: 12px;  /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
 }
 
-.floating-details::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: #8d1c1c;
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+/* Webkit scrollbar track (background) */
+.floating-details::-webkit-scrollbar-track {
+  background-color: #f0f0f0; /* Lighter background for the scrollbar track */
+  border-radius: 10px;
+  margin: 4px; /* Optional: Adds space around the scrollbar */
 }
+
+/* Webkit scrollbar thumb (the draggable part) */
+.floating-details::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);  /* Darker thumb color */
+  border-radius: 10px;
+  border: 3px solid rgba(255, 255, 255, 0.5); /* Optional: White border to make thumb stand out */
+}
+
+/* Webkit scrollbar thumb on hover */
+.floating-details::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);  /* Darker thumb color on hover */
+}
+
 
 .floating-content {
   flex: 1; 
@@ -370,8 +448,8 @@ html, body, * {
 }
 
 .edit-button {
-  margin-left: 10px;
-  margin-right: 10px;      
+  margin-left: 100px;
+  margin-right: 50px;      
   padding: 4px 8px;            
   font-size: 1rem;         
   font-weight: bold;      
@@ -384,10 +462,13 @@ html, body, * {
 
 .edit-button:hover {
   background-color: white; 
+  margin-left: 100px;
+  margin-right: 50px;
   color: #1D1D1B;; 
 }
 
 .close-button {
+  margin-right: 20px;
   position: absolute;
   top: 15px;
   right: 15px;
@@ -490,3 +571,43 @@ html, body, * {
     margin-top: 10px; 
   }
 }
+
+.floating-details {
+  position: relative;
+  overflow: hidden; /* Prevents content from spilling out */
+}
+
+/* Style the resizable box */
+.floating-details {
+  position: relative;
+  overflow: hidden; /* Prevents content from spilling out */
+}
+
+/* Style the resize handle (bottom-right corner) */
+.react-resizable-handle {
+  background-color: rgba(239, 123, 123, 0.7); /* Dark background for better visibility */
+  width: 150px; /* Larger size for the resize handle */
+  height: 150px; /* Larger size for the resize handle */
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: se-resize; /* Indicates the direction the user can resize */
+  border-radius: 50%; /* Optional: Make the handle circular */
+  border: 2px solid white; /* Optional: Add a border for better contrast */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add some shadow for better visibility */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+/* Hover effect for the resize handle */
+.react-resizable-handle:hover {
+  background-color: rgba(108, 26, 26, 0.9); /* Darker when hovered */
+  transform: scale(1.2); /* Make the handle slightly larger on hover */
+}
+
+/* Focus effect for accessibility (important for users with keyboard navigation) */
+.react-resizable-handle:focus {
+  outline: 2px solid #3a8dff; /* Highlight the handle when focused */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Optional: Add a subtle shadow when focused */
+}
+
+
