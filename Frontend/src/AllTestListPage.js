@@ -198,7 +198,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                         <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
                     )}
                     {formatData(details.testMethod, searchcontent, pattern, "testMethod") && (
-                        <p><strong>Test Method:</strong> {formatData(details.method, searchcontent, pattern, "testMethod")}</p>
+                        <p><strong>Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
                     )}
                     <h4>Additional Fields</h4>
                     {formatData(details.alt1) && (
@@ -459,7 +459,7 @@ const PaginatedBoxes = () => {
             const effectiveSearchContent = viewMode ? lastSearchContent : "";
             const encodedSearch = encodeURIComponent(effectiveSearchContent);
             let url = `${baseUrl}/all`; // Default URL, might change based on search
-    
+            
             if (effectiveSearchContent) {
                 // You can modify the URL based on the `effectiveSearchContent` if you are performing a search
                 url = `${baseUrl}/search?query=${encodedSearch}`;
@@ -474,7 +474,7 @@ const PaginatedBoxes = () => {
                 if (selectedGroup) {
                     result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                 }
-    
+                const sortedData = sortOrder(result, sortOrder);
                 setData(result); // Set the sorted data
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -610,8 +610,8 @@ const PaginatedBoxes = () => {
             },          
         
             parameters: (a, b) => {
-                const aClass = a.testMethod?.trim();
-                const bClass = b.testMethod?.trim();
+                const aClass = a.parameters?.trim();
+                const bClass = b.parameters?.trim();
         
                 const aHasClass = !!aClass;
                 const bHasClass = !!bClass;
@@ -754,7 +754,7 @@ const PaginatedBoxes = () => {
     
         // Default behavior for search
         if (effectiveSearchContent) {
-            if (effectivePattern === "Test testMethod") {
+            if (effectivePattern === "Test method") {
                 url = `${baseUrl}/testMethod?testMethod=${encodedSearch}`;
             } else if (effectivePattern === "Test parameters") {
                 url = `${baseUrl}/parameters?parameters=${encodedSearch}`;
@@ -828,11 +828,6 @@ const PaginatedBoxes = () => {
         // Reset search sorting when switching away from 'search' order
         if (order !== 'search') {
             setSearchSort(false);
-        }
-    
-        // If sorting by 'name', ensure that the selected group remains consistent
-        if (order === "name") {
-            setSelectedGroup(selectedGroup); // Retain the selected group when sorting by name
         }
     };
     
