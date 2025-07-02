@@ -184,7 +184,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     </div>
                     {formatData(details.test, searchcontent, pattern, "test") && (
                         <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
-                    )}
+                    )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
                         <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
@@ -246,7 +246,12 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                     {formatData(details.schedulingNotes) && (
                         <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes)}</p>
                     )}
-
+                    {formatData(details.materials) && (
+                        <p><strong>Materials:</strong> {formatData(details.materials)}</p>
+                    )}
+                    {formatData(details.applications) && (
+                        <p><strong>Applications:</strong> {formatData(details.applications)}</p>
+                    )}
                 </div>
             </ResizableBox>
         </Draggable>
@@ -353,7 +358,48 @@ const PaginatedBoxes = () => {
         // Return sorted classified items first, then unclassified items last
         return [...sortedClassified, ...unclassifiedItems];
     };
+
+    const sortDataByTestMethod = (data, sortOrder = 'ascending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataBytestMethod: data is not an array", data);
+            return [];
+        }
     
+        const classifiedItems = data.filter(item => item.testMethod?.trim());
+        const unclassifiedItems = data.filter(item => !item.testMethod?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.testMethod.trim();
+            const bClass = b.testMethod.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
+        });
+    
+        // Return sorted classified items first, then unclassified items last
+        return [...sortedClassified, ...unclassifiedItems];
+    };
+    
+    const sortDataByParameter = (data, sortOrder = 'ascending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataBytestMethod: data is not an array", data);
+            return [];
+        }
+    
+        const classifiedItems = data.filter(item => item.parameters?.trim());
+        const unclassifiedItems = data.filter(item => !item.parameters?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.parameters.trim();
+            const bClass = b.parameters.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
+        });
+    
+        // Return sorted classified items first, then unclassified items last
+        return [...sortedClassified, ...unclassifiedItems];
+    };
     
         
     // Function to toggle sort order in search mode (ascending/descending)
@@ -378,6 +424,10 @@ const PaginatedBoxes = () => {
         ? "http://localhost:8080/rocks"
         : (databaseType === "concrete")
         ? "http://localhost:8080/concrete"
+        : (databaseType === "inSituTest")
+        ? "http://localhost:8080/inSituTest"
+        : (databaseType === "earthworks")
+        ? "http://localhost:8080/earthworks"
         : "http://localhost:8080/database";
 
 
@@ -391,6 +441,8 @@ const PaginatedBoxes = () => {
             case 'aggregate': return '/aggregate';
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
+            case 'inSituTest': return '/inSituTest';
+            case 'earthworks': return 'earthworks';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
@@ -407,26 +459,22 @@ const PaginatedBoxes = () => {
             const effectiveSearchContent = viewMode ? lastSearchContent : "";
             const encodedSearch = encodeURIComponent(effectiveSearchContent);
             let url = `${baseUrl}/all`; // Default URL, might change based on search
-    
+            
             if (effectiveSearchContent) {
                 // You can modify the URL based on the `effectiveSearchContent` if you are performing a search
                 url = `${baseUrl}/search?query=${encodedSearch}`;
             }
     
             try {
-                const response = await fetch(url, { method: "GET", headers });
+                const response = await fetch(url, { testMethod: "GET", headers });
                 if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
                 
                 let result = await response.json();
-    
-                // Sort based on the selected sortOrder
-                result = sortDataByClassification(result, sortOrder);
-                
                 // Apply group filtering if needed
                 if (selectedGroup) {
                     result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                 }
-    
+                const sortedData = sortOrder(result, sortOrder);
                 setData(result); // Set the sorted data
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -489,7 +537,7 @@ const PaginatedBoxes = () => {
     // Fetch group data
     const fetchGroups = async () => {
         try {
-            const response = await fetch(`${baseUrl}/groups`, { method: "GET", headers: getAuthHeaders() });
+            const response = await fetch(`${baseUrl}/groups`, { testMethod: "GET", headers: getAuthHeaders() });
             const result = await response.json();
             console.log("Fetched groups:", result);
             
@@ -518,30 +566,84 @@ const PaginatedBoxes = () => {
             console.error("Expected array data but got:", data);
             return []; // Return empty array if data is not an array
         }
+
+    function debounce(fn, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn(...args), delay);
+        };
+    }
     
         const sortFunctions = {
             default: (a, b) => (a.id ?? 0) - (b.id ?? 0),
-            test: (a, b) => (a.test ?? '').localeCompare(b.test ?? ''),
+            
+            test: (a, b) => {
+                const aVal = a.test?.trim();
+                const bVal = b.test?.trim();
+        
+                const aHas = !!aVal;
+                const bHas = !!bVal;
+        
+                if (aHas && bHas) return aVal.localeCompare(bVal);
+                if (aHas) return -1;
+                if (bHas) return 1;
+                return 0;
+            },
+        
             name: (a, b) => (a.group ?? '').localeCompare(b.group ?? ''),
-            method: (a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''),
-            parameter: (a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''),
+            testMethod: (a, b) => {
+                const aClass = a.testMethod?.trim();
+                const bClass = b.testMethod?.trim();
+        
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+        
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass);
+                }
+        
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+        
+                return 0;
+            },          
+        
+            parameters: (a, b) => {
+                const aClass = a.parameters?.trim();
+                const bClass = b.parameters?.trim();
+        
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+        
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass);
+                }
+        
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+        
+                return 0;
+            },
+        
             classification: (a, b) => {
                 const aClass = a.classification?.trim();
                 const bClass = b.classification?.trim();
-            
+        
                 const aHasClass = !!aClass;
                 const bHasClass = !!bClass;
-            
+        
                 if (aHasClass && bHasClass) {
-                    return alphanumericCompare(aClass, bClass); 
+                    return alphanumericCompare(aClass, bClass);
                 }
-            
+        
                 if (aHasClass) return -1;
                 if (bHasClass) return 1;
-            
+        
                 return 0;
-            },     
+            },
         };
+            
     
         const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
         return data.sort(sortFunction);
@@ -567,7 +669,7 @@ const PaginatedBoxes = () => {
                 url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
                 console.log(`Group filter active. GET ${url}`);
                 try {
-                    const response = await fetch(url, { method: "GET", headers });
+                    const response = await fetch(url, { testMethod: "GET", headers });
                     if (!response.ok) throw new Error(`Failed to fetch group data. HTTP Status: ${response.status}`);
                     const result = await response.json();
                     const filteredResult = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
@@ -586,14 +688,22 @@ const PaginatedBoxes = () => {
     
             console.log(`Fetching data from: ${url}`);
             try {
-                const response = await fetch(url, { method: "GET", headers });
+                const response = await fetch(url, { testMethod: "GET", headers });
                 if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
                 
                 let result = await response.json();
+
+                if (selectedGroup) {
+                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
+                }
             
-                if (sortOrder === 'classification' || sortOrder === 'classification-desc') {
+                if (sortOrder === 'classification') {
                     result = sortDataByClassification(result, 'ascending');
-                } else {
+                } else if (sortOrder === 'testMethod')
+                    result = sortDataByTestMethod(result, 'ascending');
+                  else if(sortOrder === 'parameters')
+                    result = sortDataByParameter(result, 'ascending');
+                else {
                     result = getSortedData(result, sortOrder);
                 }
             
@@ -616,7 +726,7 @@ const PaginatedBoxes = () => {
             ];
     
             try {
-                const responses = await Promise.all(searchUrls.map(u => fetch(u, { method: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
+                const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
                 console.log("All parallel requests done:", responses);
                 
                 let mergedData = [];
@@ -663,7 +773,7 @@ const PaginatedBoxes = () => {
     
         console.log(`Final fetch from: ${url}`);
         try {
-            const response = await fetch(url, { method: "GET", headers });
+            const response = await fetch(url, { testMethod: "GET", headers });
             if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
             let result = await response.json();
             result = getSortedData(result, sortOrder);
@@ -718,11 +828,6 @@ const PaginatedBoxes = () => {
         // Reset search sorting when switching away from 'search' order
         if (order !== 'search') {
             setSearchSort(false);
-        }
-    
-        // If sorting by 'name', ensure that the selected group remains consistent
-        if (order === "name") {
-            setSelectedGroup(selectedGroup); // Retain the selected group when sorting by name
         }
     };
     
@@ -849,6 +954,18 @@ const PaginatedBoxes = () => {
                         >
                         <p style={{ fontSize: '12px', margin: 0 }}>Concrete</p>
                         </button>
+                        <button
+                            className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("inSituTest")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>In-Situ</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "earthworks" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("earthworks")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>Earthworks</p>
+                        </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
                     {lastSearchContent && (
@@ -875,8 +992,8 @@ const PaginatedBoxes = () => {
                         Name Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'name' ? 'active' : ''}
-                        onClick={() => handleSortChange('name')}
+                        className={sortOrder === 'group' ? 'active' : ''}
+                        onClick={() => handleSortChange('group')}
                     >
                         Group Arrangement
                     </button>
@@ -887,14 +1004,14 @@ const PaginatedBoxes = () => {
                         AGS Code Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'method' ? 'active' : ''}
-                        onClick={() => handleSortChange('method')}
+                        className={sortOrder === 'testMethod' ? 'active' : ''}
+                        onClick={() => handleSortChange('testMethod')}
                     >
                         Method Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'parameter' ? 'active' : ''}
-                        onClick={() => handleSortChange('parameter')}
+                        className={sortOrder === 'parameters' ? 'active' : ''}
+                        onClick={() => handleSortChange('parameters')}
                     >
                         Parameter Arrangement
                     </button>

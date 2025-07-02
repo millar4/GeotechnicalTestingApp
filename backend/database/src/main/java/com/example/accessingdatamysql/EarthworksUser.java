@@ -2,24 +2,31 @@ package com.example.accessingdatamysql;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 
 @Entity 
-@Table(name = "GeotechnicalTable")
-public class GeotechnicalEntry {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty
-    private Long id;
+@Table(name = "EarthworksTable")
+public class EarthworksUser {
 
-    @Column(name = "test", nullable = true, unique = false)
-    private String test;
+    @Id
+    @JsonProperty
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;  
 
     @Column(name = "myGroup", nullable = true, unique = false)
     private String group;
 
     @Column(name = "classification", nullable = true, unique = false)
     private String classification;
+
+    @Column(name = "test", nullable = true, unique = false)
+    private String test;
 
     @Column(name = "symbol", nullable = true, unique = true)
     private String symbol;
@@ -30,62 +37,43 @@ public class GeotechnicalEntry {
     @Column(name = "testMethod", nullable = true, unique = false)
     private String testMethod;
 
-    @Column(name = "alt1", nullable = true, unique = false)
-    private String alt1;
-
-    @Column(name = "alt2", nullable = true, unique = false)
-    private String alt2;
-
-    @Column(name = "alt3", nullable = true, unique = false)
-    private String alt3;
-
     @Column(name = "sampleType", nullable = true, unique = false)
     private String sampleType;
 
     @Column(name = "fieldSampleMass", nullable = true, unique = false)
-    private String fieldSampleMass;
+    private String fieldSampleMass;  // Changed to String
 
     @Column(name = "specimenType", nullable = true, unique = false)
     private String specimenType;
 
     @Column(name = "specimenMass", nullable = true, unique = false)
-    private String specimenMass;
+    private String specimenMass;  // Changed to String
 
     @Column(name = "specimenNumbers", nullable = true, unique = false)
-    private String specimenNumbers;
-
-    @Column(name = "specimenD", nullable = true, unique = false)
-    private String specimenD;
-
-    @Column(name = "specimenL", nullable = true, unique = false)
-    private String specimenL;
-
-    @Column(name = "specimenW", nullable = true, unique = false)
-    private String specimenW;
-
-    @Column(name = "specimenH", nullable = true, unique = false)
-    private String specimenH;
+    private String specimenNumbers;  // Changed to String
 
     @Column(name = "specimenMaxGrainSize", nullable = true, unique = false)
-    private String specimenMaxGrainSize;
+    private String specimenMaxGrainSize;  // Changed to String
 
     @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
     private String specimenMaxGrainFraction;
 
+    @Column(name = "schedulingNotes", nullable = true, unique = false)
+    private String schedulingNotes;
+
     @Column(name = "databaseBelongsTo", nullable = true, unique = false)
     private String databaseBelongsTo;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTest() { return test; }
-    public void setTest(String test) { this.test = test; }
-
+    // Getters and setters for all fields
+    public Long getId() {return id;}
     public String getGroup() { return group; }
     public void setGroup(String group) { this.group = group; }
 
+    public String getTest() { return test; }
+    public void setTest(String test) { this.test= test; }
+
     public String getClassification() { return classification; }
-    public void setClassification(String classification) { this.classification = classification; }
+    public void setClassification(String classification) { this.test= classification; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
@@ -95,15 +83,6 @@ public class GeotechnicalEntry {
 
     public String getTestMethod() { return testMethod; }
     public void setTestMethod(String testMethod) { this.testMethod = testMethod; }
-
-    public String getAlt1() { return alt1; }
-    public void setAlt1(String alt1) { this.alt1 = alt1; }
-
-    public String getAlt2() { return alt2; }
-    public void setAlt2(String alt2) { this.alt2 = alt2; }
-
-    public String getAlt3() { return alt3; }
-    public void setAlt3(String alt3) { this.alt3 = alt3; }
 
     public String getSampleType() { return sampleType; }
     public void setSampleType(String sampleType) { this.sampleType = sampleType; }
@@ -120,24 +99,18 @@ public class GeotechnicalEntry {
     public String getSpecimenNumbers() { return specimenNumbers; }
     public void setSpecimenNumbers(String specimenNumbers) { this.specimenNumbers = specimenNumbers; }
 
-    public String getSpecimenD() { return specimenD; }
-    public void setSpecimenD(String specimenD) { this.specimenD = specimenD; }
-
-    public String getSpecimenL() { return specimenL; }
-    public void setSpecimenL(String specimenL) { this.specimenL = specimenL; }
-
-    public String getSpecimenW() { return specimenW; }
-    public void setSpecimenW(String specimenW) { this.specimenW = specimenW; }
-
-    public String getSpecimenH() { return specimenH; }
-    public void setSpecimenH(String specimenH) { this.specimenH = specimenH; }
-
     public String getSpecimenMaxGrainSize() { return specimenMaxGrainSize; }
     public void setSpecimenMaxGrainSize(String specimenMaxGrainSize) { this.specimenMaxGrainSize = specimenMaxGrainSize; }
 
     public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
     public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
 
+    public String getSchedulingNotes() { return schedulingNotes; }
+    public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
+
+
     public String getDatabaseBelongsTo() { return databaseBelongsTo; }
-    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo;}
+    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
+
 }
+

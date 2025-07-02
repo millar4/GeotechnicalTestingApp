@@ -40,7 +40,9 @@ services:
       - ./parameters2.csv:/var/lib/mysql-files/parameters2.csv
       - ./aggregate.csv:/var/lib/mysql-files/aggregate.csv
       - ./rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
-      - ./rockParameters2.csv:/var/lib/mysql:/var/lib/mysql-files/concreteParameters
+      - ./concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
+      - ./inSituParameters.csv:/var/lib/mysql-files/inSituParameters.csv
+
     networks:
       - database_default
 

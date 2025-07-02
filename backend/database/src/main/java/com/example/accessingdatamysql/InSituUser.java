@@ -36,41 +36,14 @@ public class InSituUser {
     @Column(name = "alt3", nullable = true, unique = false)
     private String alt3;
 
-    @Column(name = "sampleType", nullable = true, unique = false)
-    private String sampleType;
+    @Column(name = "databaseBelongsTo", nullable =true, unique = false)
+    private String databaseBelongsTo;
 
-    @Column(name = "fieldSampleMass", nullable = true, unique = false)
-    private String fieldSampleMass;
+    @Column(name = "materials", nullable =true, unique = false)
+    private String materials;
 
-    @Column(name = "specimenType", nullable = true, unique = false)
-    private String specimenType;
-
-    @Column(name = "specimenMass", nullable = true, unique = false)
-    private String specimenMass;
-
-    @Column(name = "specimenNumbers", nullable = true, unique = false)
-    private String specimenNumbers;
-
-    @Column(name = "specimenD", nullable = true, unique = false)
-    private String specimenD;
-
-    @Column(name = "specimenL", nullable = true, unique = false)
-    private String specimenL;
-
-    @Column(name = "specimenW", nullable = true, unique = false)
-    private String specimenW;
-
-    @Column(name = "specimenH", nullable = true, unique = false)
-    private String specimenH;
-
-    @Column(name = "specimenMaxGrainSize", nullable = true, unique = false)
-    private String specimenMaxGrainSize;
-
-    @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
-    private String specimenMaxGrainFraction;
-
-    @Column(name = "schedulingNotes", nullable = true, unique = false)
-    private String schedulingNotes;
+    @Column(name = "applications", nullable =true, unique = false)
+    private String applications;
 
 
     public Long getId() { return id; }
@@ -100,39 +73,16 @@ public class InSituUser {
     public String getAlt3() { return alt3; }
     public void setAlt3(String alt3) { this.alt3 = alt3; }
 
-    public String getSampleType() { return sampleType; }
-    public void setSampleType(String sampleType) { this.sampleType = sampleType; }
+    public String getMaterials() { return materials; }
+    public void setMaterials(String materials) { this.materials = materials; }
 
-    public String getFieldSampleMass() { return fieldSampleMass; }
-    public void setFieldSampleMass(String fieldSampleMass) { this.fieldSampleMass = fieldSampleMass; }
+    public String getApplications() { return applications; }
+    public void setApplications(String applications) { this.applications = applications; }
 
-    public String getSpecimenType() { return specimenType; }
-    public void setSpecimenType(String specimenType) { this.specimenType = specimenType; }
-
-    public String getSpecimenMass() { return specimenMass; }
-    public void setSpecimenMass(String specimenMass) { this.specimenMass = specimenMass; }
-
-    public String getSpecimenNumbers() { return specimenNumbers; }
-    public void setSpecimenNumbers(String specimenNumbers) { this.specimenNumbers = specimenNumbers; }
-
-    public String getSpecimenD() { return specimenD; }
-    public void setSpecimenD(String specimenD) { this.specimenD = specimenD; }
-
-    public String getSpecimenL() { return specimenL; }
-    public void setSpecimenL(String specimenL) { this.specimenL = specimenL; }
-
-    public String getSpecimenW() { return specimenW; }
-    public void setSpecimenW(String specimenW) { this.specimenW = specimenW; }
-
-    public String getSpecimenH() { return specimenH; }
-    public void setSpecimenH(String specimenH) { this.specimenH = specimenH; }
-
-    public String getSpecimenMaxGrainSize() { return specimenMaxGrainSize; }
-    public void setSpecimenMaxGrainSize(String specimenMaxGrainSize) { this.specimenMaxGrainSize = specimenMaxGrainSize; }
-
-    public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
-    public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
-
-    public String getSchedulingNotes() { return schedulingNotes; }
-    public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
+    public String getDatabaseBelongsTo() {
+        return databaseBelongsTo;
+    }
+    public void setDatabaseBelongsTo(String databaseBelongsTo) {
+        this.databaseBelongsTo = databaseBelongsTo;
+    }
 }
