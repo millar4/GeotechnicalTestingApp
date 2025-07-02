@@ -8,7 +8,7 @@ const About = () => {
             <div className="about-content-wrapper">
                 <h1 className="about-title">GeoTest Finder</h1>
                 <p className="about-description">
-                    GeoTest Finder is an application designed to streamline the search and management of geological test information. The main features include:
+                    GeoTest Finder is an application designed to streamline the search and management of geological test information developed by the Univeristy of Bristol and Structural Soils Ltd. The main features include:
                 </p>
                 <ul className="about-list">
                     <li><strong>Paginated Test List:</strong> A scrollable list of tests that can be sorted by ID, name, parameter, or method, helping users locate specific tests quickly.</li>

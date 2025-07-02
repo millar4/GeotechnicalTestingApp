@@ -38,4 +38,6 @@ public interface ConcreteUserRepository extends CrudRepository<ConcreteUser, Lon
     List<ConcreteUser> findAllByOrderByMyGroupAsc();
     List<ConcreteUser> findAllByOrderByTestMethodAsc();
     List<ConcreteUser> findAllByOrderByParametersAsc();
+
+    List<ConcreteUser> findByDatabaseBelongsToContainingIgnoreCase(String databaseBelongsTo);
 }
