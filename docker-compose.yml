@@ -19,6 +19,7 @@ services:
       - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
       - ./backend/database/concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
       - ./backend/database/inSituParameters.csv:/var/lib/mysql-files/inSituParameters.csv
+      - ./backend/database/earthworksParameters.csv:/var/lib/mysql-files/earthworksParameters.csv
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -44,6 +45,7 @@ services:
       - ./backend/database/rockParameters.csv:/app/rockParameters.csv
       - ./backend/database/concreteParameters.csv:/app/concreteParameters.csv
       - ./backend/database/inSituParameters.csv:/app/inSituParameters.csv
+      - ./backend/database/earthworksParameters.csv:/app/earthworksParameters.csv
     ports:
       - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"]

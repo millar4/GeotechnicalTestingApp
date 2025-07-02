@@ -10,6 +10,7 @@ COPY ./backend/database/aggregate.csv /aggregate.csv
 COPY ./backend/database/rockParameters.csv /rockParameters.csv
 COPY ./backend/database/concreteParameters.csv /concreteParameters.csv
 COPY ./backend/database/inSituParameters.csv /inSituParameters.csv
+COPY ./backend/database/earthworksParameters.csv /earthworksParameters.csv
 
 EXPOSE 8080
 
