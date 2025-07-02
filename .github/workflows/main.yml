@@ -46,8 +46,7 @@ jobs:
           context: .
           file: ./backend/database/Dockerfile
           push: true
-          tags: |
-            tags: ghcr.io/millar4/geotechnicaltestingapp:${{ github.sha }}
+          tags: ghcr.io/millar4/geotechnicaltestingapp:${{ github.sha }}
 
             
 
