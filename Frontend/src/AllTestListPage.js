@@ -6,6 +6,9 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import lockIcon from './Lock4.png';
+import PrintableData from './PrintableData';
+import { useSelectedTests, handleToggleTest } from './SelectedTestsContext'; // Import this at the top
+
 
 // Helper function to escape special characters in search term for regex
 const escapeRegExp = (string) => {
@@ -96,17 +99,19 @@ const Box = ({
 }) => {
     return (
         <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>
-            {formatData(test, searchcontent, pattern, "test") && (
-                <h3>Test: {formatData(test, searchcontent, pattern, "test")}</h3>
-            )}
+        {formatData(test, searchcontent, pattern, "test") && (
+            <h3>
+                {formatData(test, searchcontent, pattern, "test")}{" "}
+                {symbol && (
+                    <span>({formatData(symbol, searchcontent, pattern, "symbol")})</span>
+                )}
+            </h3>
+        )}
             {formatData(group, searchcontent, pattern, "group") && (
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
                 <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
-            )}
-            {formatData(symbol, searchcontent, pattern, "symbol") && (
-                <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
                 <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
@@ -130,13 +135,16 @@ const getAuthHeaders = () => {
 };
 
 // FloatingDetails component: displays detailed info in a draggable/resizable window.
-const FloatingDetails = ({ details, onClose, position, searchcontent, pattern }) => {
+const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, tests }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() =>
       JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
   
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
+    const { selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
+
+
 
     const navigate = useNavigate(); 
   
@@ -149,6 +157,84 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
     }, []);
   
     const formatData = (data) => data;
+
+    const printTests = (testArray, searchcontent, pattern) => {
+            const printWindow = window.open('', '', 'height=600,width=800');
+
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/index.css'; // Update path as needed
+            printWindow.document.head.appendChild(link);
+
+            printWindow.document.write('<html><head><title>Print Test Details</title></head><body>');
+
+            testArray.forEach((details, index) => {
+                printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
+
+                // Format each field based on the selected pattern
+                if (formatData(details.test, searchcontent, pattern, "test")) {
+                    printWindow.document.write(`<p><strong>Test:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
+                }
+                if (formatData(details.group, searchcontent, pattern, "group")) {
+                    printWindow.document.write(`<p><strong>Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
+                }
+                if (formatData(details.classification, searchcontent, pattern, "classification")) {
+                    printWindow.document.write(`<p><strong>AGS:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+                }
+                if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
+                    printWindow.document.write(`<p><strong>Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
+                }
+                if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
+                    printWindow.document.write(`<p><strong>Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
+                }
+
+                // Additional fields (e.g., alt1, alt2, etc.)
+                const fields = [
+                    "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
+                    "specimenMass", "specimenNumbers", "specimenD", "specimenL", "specimenW",
+                    "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction",
+                    "schedulingNotes", "materials", "applications"
+                ];
+
+                fields.forEach((key) => {
+                    if (formatData(details[key])) {
+                        printWindow.document.write(`<p><strong>${key.replace(/([A-Z])/g, ' $1')}:</strong> ${formatData(details[key])}</p>`);
+                    }
+                });
+
+                printWindow.document.write('<hr>');
+            });
+
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+    };
+
+        const handlePrintClick = () => {
+            const selectedDetails = [];
+
+            // Iterate over the selectedTests array
+            for (let i = 0; i < selectedTests.length; i++) {
+                const selectedTestId = selectedTests[i];
+
+                // Find the corresponding test from the 'tests' array
+                const selectedTest = tests.find(test => test.id === selectedTestId);
+
+                // If a match is found, add it to the selectedDetails array
+                if (selectedTest) {
+                    selectedDetails.push(selectedTest);
+                }
+            }
+
+            // Check if any tests were selected and found
+            if (selectedDetails.length > 0) {
+                console.log("Selected Test Details:", selectedDetails);
+                printTests(selectedDetails, searchcontent, pattern); // Print all selected tests
+            } else {
+                alert("No tests selected for printing."); // Show a message if no tests are selected
+            }
+        };
+                    
   
     const handleEditClick = () => {
         const role = localStorage.getItem('role');
@@ -176,23 +262,41 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
             >
                 <button className="close-button" onClick={() => onClose(details.id)}>×</button>
                 <div className="floating-content">
-                    <div className="floating-header">
-                        <h3>Detailed Information</h3>
-                        {isLoggedIn && (
-                            <button className="edit-button" onClick={handleEditClick}>Edit</button>
-                    )}
+                <div className="floating-header">
+                <h3>Detailed Information</h3>
+                {isLoggedIn && (
+                <div className="floating-header-buttons">
+                    {/* Select Checkbox */}
+                    <label className="select-label">
+                    <input
+                        type="checkbox"
+                        checked={selectedTests.includes(details.id)}
+                        onChange={() => handleToggleTest(details.id)} // Toggle test selection
+                    />
+                    Select
+                    </label>
+
+                    {/* Edit Button */}
+                    <button className="edit-button" onClick={handleEditClick}>Edit</button>
+
+                    {/* Print Button */}
+                    <button 
+                    className="print-button" 
+                    onClick={handlePrintClick}
+                    >
+                    Print
+                    </button>
+                </div>
+                )}
                     </div>
                     {formatData(details.test, searchcontent, pattern, "test") && (
-                        <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
+                        <p><strong></strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
                     )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
                         <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
                         <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
-                    )}
-                    {formatData(details.symbol, searchcontent, pattern, "symbol") && (
-                        <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
                         <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
@@ -274,6 +378,7 @@ const PaginatedBoxes = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [sortOrder, setSortOrder] = useState('default');
     const [selectedBoxes, setSelectedBoxes] = useState([]);
+    const [tests, setTests] = useState([]);
 
     // Group filter state
     const [groups, setGroups] = useState([]);
@@ -699,14 +804,19 @@ const PaginatedBoxes = () => {
             
                 if (sortOrder === 'classification') {
                     result = sortDataByClassification(result, 'ascending');
-                } else if (sortOrder === 'testMethod')
+                    setTests(result);
+                } else if (sortOrder === 'testMethod'){
                     result = sortDataByTestMethod(result, 'ascending');
-                  else if(sortOrder === 'parameters')
+                    setTests(result);
+                }
+                  else if(sortOrder === 'parameters'){
                     result = sortDataByParameter(result, 'ascending');
+                    setTests(result);
+                  }
                 else {
                     result = getSortedData(result, sortOrder);
+                    setTests(result);
                 }
-            
                 setData(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -1130,6 +1240,7 @@ const PaginatedBoxes = () => {
                         position={box.position}
                         searchcontent={viewMode ? lastSearchContent : ""}
                         pattern={viewMode ? lastPattern : ""}
+                        tests={tests}
                     />
                 ))}
             </div>

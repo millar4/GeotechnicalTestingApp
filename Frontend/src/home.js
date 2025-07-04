@@ -137,7 +137,6 @@ function Home() {
             <div className="selectorbox">
               <select className="selector" value={pattern} onChange={handlePatternChange}>
                 <option value="Quick Search">Quick Search</option>
-                <option value="Test name">Test name</option>
                 <option value="Classification">AGS Value</option>
                 <option value="Test group">Test group</option>
                 <option value="Test parameters">Test parameters</option>
