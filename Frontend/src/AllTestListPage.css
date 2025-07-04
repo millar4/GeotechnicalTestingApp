@@ -446,25 +446,45 @@ html, body, * {
   background-color: white;
   color: #1D1D1B;;
 }
+.floating-header-buttons {
+  display: flex;
+  align-items: center;  /* Ensures vertical alignment */
+  gap: 10px;  /* Space between the buttons */
+}
 
 .edit-button {
-  margin-left: 100px;
-  margin-right: 50px;      
-  padding: 4px 8px;            
-  font-size: 1rem;         
-  font-weight: bold;      
-  border: 2px solid white; 
-  border-radius: 8px;      
-  background-color: #8d1d1c; 
+  padding: 4px 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: #8d1d1c;
   color: white;
-  cursor: pointer; 
+  cursor: pointer;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .edit-button:hover {
-  background-color: white; 
-  margin-left: 100px;
-  margin-right: 50px;
-  color: #1D1D1B;; 
+  background-color: white;
+  color: #1D1D1B;
+}
+
+.print-button {
+  margin-left: -5px; /* Move print button slightly to the left */
+  padding: 4px 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: #8d1d1c;
+  color: white;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.print-button:hover {
+  background-color: white;
+  color: #1D1D1B;
 }
 
 .close-button {
@@ -477,8 +497,9 @@ html, body, * {
   border: none;
   color: #8d1d1c;
   background-color: white;
-  z-index: 1000; 
+  z-index: 1000;
 }
+
 
 @media (max-width: 768px) {
   .sidebar {
@@ -609,5 +630,6 @@ html, body, * {
   outline: 2px solid #3a8dff; /* Highlight the handle when focused */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Optional: Add a subtle shadow when focused */
 }
+
 
 

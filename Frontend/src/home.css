@@ -1,0 +1,13 @@
+.search-all-button {
+  padding: 8px 12px;
+  margin-left: 10px;
+  background-color: #d19692;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-all-button:hover {
+  background-color: #912e28;
+}
