@@ -119,6 +119,12 @@ const Box = ({
             {formatData(testMethod, searchcontent, pattern, "testMethod") && (
                 <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
             )}
+            {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
+                <p>Field Sample Mass: {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+            )}
+            {formatData(sampleType, searchcontent, pattern, "sampleType") && (
+                <p>Sample Type: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
+            )}
         </button>
     );
 };
@@ -260,7 +266,14 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                 className="floating-details"
                 style={{ position: 'fixed', top: position.y, left: position.x }}
             >
-                <button className="close-button" onClick={() => onClose(details.id)}>×</button>
+                <button className="close-button"
+                    onClick={() => {
+                     handleToggleTest(details.id); // Deselect the test
+                     onClose(details.id);          // Close the floating window
+                    }}
+                    >
+                        ×
+                </button>
                 <div className="floating-content">
                 <div className="floating-header">
                 <h3>Detailed Information</h3>

@@ -132,7 +132,8 @@ function Home() {
     <div>
       <header className="App-header">
         <div className="floating-island">
-          <p>GeoTest Finder</p>
+          <p>Geotechincal Test Finder</p>
+          <small>Use this search engine to look up parameters, test methods and AGS values</small>
           <div className="search-container">
             <div className="selectorbox">
               <select className="selector" value={pattern} onChange={handlePatternChange}>

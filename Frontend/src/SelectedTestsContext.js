@@ -9,6 +9,9 @@ export const SelectedTestsProvider = ({ children }) => {
 
     // Function to toggle test selection
     const handleToggleTest = (id) => {
+        if (id == null){
+            
+        }
         setSelectedTests((prev) => {
             const updatedSelection = prev.includes(id)
                 ? prev.filter((tid) => tid !== id)
