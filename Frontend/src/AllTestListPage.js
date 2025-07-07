@@ -98,7 +98,7 @@ const Box = ({
     pattern
 }) => {
     return (
-        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>
+        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>  
         {formatData(test, searchcontent, pattern, "test") && (
             <h3>
                 {formatData(test, searchcontent, pattern, "test")}{" "}
@@ -164,57 +164,115 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
   
     const formatData = (data) => data;
 
-    const printTests = (testArray, searchcontent, pattern) => {
-            const printWindow = window.open('', '', 'height=600,width=800');
+   const printTests = (testArray, searchcontent, pattern) => {
+    const printWindow = window.open('printWindow', '_blank', 'height=600,width=800');
 
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '/index.css'; // Update path as needed
-            printWindow.document.head.appendChild(link);
-
-            printWindow.document.write('<html><head><title>Print Test Details</title></head><body>');
-
-            testArray.forEach((details, index) => {
-                printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
-
-                // Format each field based on the selected pattern
-                if (formatData(details.test, searchcontent, pattern, "test")) {
-                    printWindow.document.write(`<p><strong>Test:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
-                }
-                if (formatData(details.group, searchcontent, pattern, "group")) {
-                    printWindow.document.write(`<p><strong>Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
-                }
-                if (formatData(details.classification, searchcontent, pattern, "classification")) {
-                    printWindow.document.write(`<p><strong>AGS:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
-                }
-                if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
-                    printWindow.document.write(`<p><strong>Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
-                }
-                if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
-                    printWindow.document.write(`<p><strong>Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
-                }
-
-                // Additional fields (e.g., alt1, alt2, etc.)
-                const fields = [
-                    "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
-                    "specimenMass", "specimenNumbers", "specimenD", "specimenL", "specimenW",
-                    "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction",
-                    "schedulingNotes", "materials", "applications"
-                ];
-
-                fields.forEach((key) => {
-                    if (formatData(details[key])) {
-                        printWindow.document.write(`<p><strong>${key.replace(/([A-Z])/g, ' $1')}:</strong> ${formatData(details[key])}</p>`);
+    const htmlHead = `
+        <html>
+            <head>
+                <title>Test Details - Print</title>
+                <link rel="stylesheet" href="/index.css" />
+                <style>
+                    body {
+                        font-family: 'AvenirLTStd-Medium', sans-serif;
+                        padding: 20px;
                     }
-                });
 
-                printWindow.document.write('<hr>');
-            });
+                    .header-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #000;
+                    }
 
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
+                    .header-left {
+                        font-size: 12px;
+                        color: #000;
+                    }
+
+                    .header-right img {
+                        max-width: 100px;
+                        height: auto;
+                    }
+
+                    h3 {
+                        margin-top: 30px;
+                    }
+
+                    @media print {
+                        .header-container {
+                            page-break-inside: avoid;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header-container">
+                    <div class="header-left">
+                        Structural Soils Ltd &copy; 2025
+                    </div>
+                    <div class="header-right">
+                        <img src="/Logo2.png" alt="Company Logo" />
+                    </div>
+                </div>
+    `;
+
+    const htmlFooter = `
+            </body>
+        </html>
+    `;
+
+    printWindow.document.write(htmlHead);
+
+    testArray.forEach((details, index) => {
+        printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
+
+        if (formatData(details.test, searchcontent, pattern, "test")) {
+            printWindow.document.write(`<p><strong>Test:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
+        }
+        if (formatData(details.group, searchcontent, pattern, "group")) {
+            printWindow.document.write(`<p><strong>Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
+        }
+        if (formatData(details.classification, searchcontent, pattern, "classification")) {
+            printWindow.document.write(`<p><strong>AGS:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+        }
+        if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
+            printWindow.document.write(`<p><strong>Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
+        }
+        if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
+            printWindow.document.write(`<p><strong>Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
+        }
+
+        const fields = [
+            "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
+            "specimenMass", "specimenNumbers", "specimenD", "specimenL", "specimenW",
+            "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction",
+            "schedulingNotes", "materials", "applications"
+        ];
+
+        fields.forEach((key) => {
+            if (formatData(details[key])) {
+                printWindow.document.write(`<p><strong>${key.replace(/([A-Z])/g, ' $1')}:</strong> ${formatData(details[key])}</p>`);
+            }
+        });
+
+        printWindow.document.write('<hr>');
+    });
+
+    printWindow.document.write(htmlFooter);
+    printWindow.document.close();
+
+    printWindow.focus(); // helps suppress about:blank
+    printWindow.onload = () => {
+        printWindow.print();
     };
+};
+
+
+
+
 
         const handlePrintClick = () => {
             const selectedDetails = [];
@@ -266,10 +324,12 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                 className="floating-details"
                 style={{ position: 'fixed', top: position.y, left: position.x }}
             >
-                <button className="close-button"
+                <button aria-label="Close Details" className="close-button"
                     onClick={() => {
-                     handleToggleTest(details.id); // Deselect the test
-                     onClose(details.id);          // Close the floating window
+                       if (selectedTests.includes(details.id)) {
+                        handleToggleTest(details.id); // Only deselect if still selected
+                    }
+                    onClose(details.id); // Close the floating window
                     }}
                     >
                         ×
@@ -282,23 +342,36 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     {/* Select Checkbox */}
                     <label className="select-label">
                     <input
-                        type="checkbox"
-                        checked={selectedTests.includes(details.id)}
-                        onChange={() => handleToggleTest(details.id)} // Toggle test selection
+                            type="checkbox"
+                            checked={selectedTests.includes(details.id)} // Check if test is selected
+                                   onChange={(e) => {
+                                e.stopPropagation(); // Prevent click from propagating to the parent
+                                handleToggleTest(details.id); // Toggle test selection
+                            }}
                     />
                     Select
                     </label>
 
                     {/* Edit Button */}
-                    <button className="edit-button" onClick={handleEditClick}>Edit</button>
-
-                    {/* Print Button */}
-                    <button 
-                    className="print-button" 
-                    onClick={handlePrintClick}
-                    >
-                    Print
+                    <button
+                        className="edit-button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick();
+                        }}
+                        >
+                        Edit
                     </button>
+                    {/* Print Button */}
+                    <button
+                        className="print-button"
+                        onClick={(e) => {
+                            e.stopPropagation();  // Prevents triggering parent click
+                            handlePrintClick();
+                        }}
+                        >
+                        Print
+                        </button>
                 </div>
                 )}
                     </div>
