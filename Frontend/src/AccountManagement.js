@@ -186,7 +186,7 @@ function AccountManagement() {
                 <div className="user-info">
                   <strong>{acc.username}</strong> <em>({acc.role})</em>
                 </div>
-                <div className="actions">
+                <div className="actions">]
                   <button onClick={() => handleDeleteAccount(acc.id)} className="btn small">Delete</button>
                   <button onClick={() => handleToggleRole(acc)} className="btn small">
                     {acc.role === 'ADMIN' ? 'Demote' : 'Promote'}
