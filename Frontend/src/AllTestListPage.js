@@ -306,13 +306,13 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
           alert('You need ADMIN privileges to edit this item.');
           return;
         }
-        const databaseType = localStorage.getItem('databaseType') || 'soil';
-        navigate('/edititem', {
-        state: {
-            details,
-            databaseType,
-        }
+        const targetDatabase = details.databaseBelongsTo;
+                navigate(`/edititem/${targetDatabase.trim()}`, {
+                state: {
+                    details,
+                },
         });
+
       };
     return (
         <Draggable handle=".floating-header">
@@ -633,7 +633,7 @@ const PaginatedBoxes = () => {
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
             case 'inSituTest': return '/inSituTest';
-            case 'earthworks': return 'earthworks';
+            case 'earthworks': return '/earthworks';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };

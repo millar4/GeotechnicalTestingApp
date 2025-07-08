@@ -128,10 +128,7 @@ html, body, * {
   .account-button {
     display: none;
   }
-  .stop-button {
-    display: none;
-  }
-
+  
   .search-bar-form {
     display: none !important;
   }
