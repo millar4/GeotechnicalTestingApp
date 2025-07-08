@@ -110,6 +110,9 @@ const Box = ({
             {formatData(group, searchcontent, pattern, "group") && (
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
+             {formatData(id, searchcontent, pattern, "id ") && (
+                <p>ID: {formatData(id, searchcontent, pattern, "id")}</p>
+            )}
              {formatData(classification, searchcontent, pattern, "classification") && (
                 <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
@@ -141,7 +144,7 @@ const getAuthHeaders = () => {
 };
 
 // FloatingDetails component: displays detailed info in a draggable/resizable window.
-const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, tests }) => {
+const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, tests, mergedData }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() =>
       JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
@@ -149,7 +152,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
     const { selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
-
+    const [mergedResults, setMergedResults] = useState([]);
 
 
     const navigate = useNavigate(); 
@@ -271,18 +274,19 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
 };
 
 
-
-
-
         const handlePrintClick = () => {
+
             const selectedDetails = [];
+
+            // Determine whether to use `mergedData` or `tests`
+            const sourceArray = searchcontent ? mergedData.flat() : tests;
 
             // Iterate over the selectedTests array
             for (let i = 0; i < selectedTests.length; i++) {
                 const selectedTestId = selectedTests[i];
 
-                // Find the corresponding test from the 'tests' array
-                const selectedTest = tests.find(test => test.id === selectedTestId);
+                // Find the corresponding test from the chosen array
+                const selectedTest = sourceArray.find(test => test.id === selectedTestId);
 
                 // If a match is found, add it to the selectedDetails array
                 if (selectedTest) {
@@ -297,7 +301,12 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
             } else {
                 alert("No tests selected for printing."); // Show a message if no tests are selected
             }
+            console.log("searchcontent:", searchcontent);
+            console.log("mergedData:", mergedData);
+            console.log("tests:", tests);
+            console.log("selectedTests:", selectedTests);
         };
+
                     
   
     const handleEditClick = () => {
@@ -485,6 +494,8 @@ const PaginatedBoxes = () => {
 
     // viewMode: true displays search results, false displays complete test list
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
+
+    const [mergedData, setMergedData] = useState([]);
 
     // Database type state
     const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
@@ -925,23 +936,28 @@ const PaginatedBoxes = () => {
                 const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
                 console.log("All parallel requests done:", responses);
                 
-                let mergedData = [];
-                const seenIds = new Set();
-                responses.forEach(result => {
-                    result.forEach(item => {
-                        if (!seenIds.has(item.id)) {
-                            seenIds.add(item.id);
-                            mergedData.push(item);
-                        }
-                    });
+            let mergedData = [];
+            const seenIds = new Set();
+            responses.forEach(result => {
+                result.forEach(item => {
+                    if (!seenIds.has(item.id)) {
+                        seenIds.add(item.id);
+                        mergedData.push(item);
+                    }
                 });
-                
-                mergedData = getSortedData(mergedData, sortOrder);
-    
-                if (selectedGroup) {
-                    mergedData = mergedData.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-                setData(mergedData);
+            });
+
+            mergedData = getSortedData(mergedData, sortOrder);
+
+            if (selectedGroup) {
+                mergedData = mergedData.filter(
+                    item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            setMergedData(mergedData); 
+            setData(mergedData);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -1327,6 +1343,7 @@ const PaginatedBoxes = () => {
                         searchcontent={viewMode ? lastSearchContent : ""}
                         pattern={viewMode ? lastPattern : ""}
                         tests={tests}
+                        mergedData={mergedData}
                     />
                 ))}
             </div>
