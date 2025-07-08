@@ -120,9 +120,10 @@ function App() {
           <Route path="/AllTestListPage" element={<PaginatedBoxes />} />
           <Route path="/result" element={<Result />} />
           <Route path="/additem" element={<AddItem />} />
-          <Route path="/edititem" element={<EditTest />} />
           <Route path="/accountmanagement" element={<AccountManagement />} />
-          
+          <Route path="/edititem/:targetDatabase" element={<EditTest />} />
+
+    
           {/* Render PrintableData on a new route */}
           <Route path="/printable" element={
             <PrintableData

@@ -207,47 +207,63 @@ function Theupperbar({
       </div>
 
       {/* Center navigation links */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start', 
-        width: '100%', 
-        paddingLeft: '30%', 
-      }}>
-        <Link
-          to="/"
-          style={{
-            ...(hovered === 'Home' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('Home')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Home
-        </Link>
-        <Link
-          to="/AllTestListPage"
-          style={{
-            ...(hovered === 'TestList' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('TestList')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Test List
-        </Link>
-        <Link
-          to="/about"
-          style={{
-            ...(hovered === 'About' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('About')}
-          onMouseLeave={() => setHovered('')}
-        >
-          About
-        </Link>
-      </div>
+    <div style={{
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'left',
+  gap: '30px',
+  padding: '40px 0',
+  backgroundColor: 'transparent',
+  position: 'relative',
+  width: '100%',
+  height: 'auto',
+  transform: 'translateX(-8%)' // Added padding-left to shift all the links to the left
+}}>
+  {['Home', 'Search', 'Test List', 'About'].map((label) => {
+    const routeMap = {
+      'Home': 'https://soils.co.uk/',
+      'Search': '/',
+      'Test List': '/AllTestListPage',
+      'About': '/about',
+    };
+
+    const isHovered = hovered === label;
+
+    return (
+      <Link
+        key={label}
+        to={routeMap[label]}
+        onMouseEnter={() => setHovered(label)}
+        onMouseLeave={() => setHovered('')}
+        style={{
+          position: 'relative',
+          textDecoration: 'none',
+          color: 'white',
+          fontSize: '20px',
+          fontFamily: 'inherit',
+          fontWeight: 500,
+          paddingBottom: '5px',
+          transition: 'color 0.3s ease',
+          display: 'inline-block',
+          margin: 0,
+        }}
+      >
+        {label}
+        <span style={{
+          content: '""',
+          position: 'absolute',
+          left: 0,
+          bottom: 0,
+          height: '2px',
+          width: isHovered ? '100%' : '0%',
+          backgroundColor: 'white',
+          transition: 'width 0.3s ease',
+        }} />
+      </Link>
+    );
+  })}
+</div>
+
 
       {/* Search form */}
       <form
