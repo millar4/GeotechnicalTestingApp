@@ -33,9 +33,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Expose the AuthenticationManager bean for use by the login interface.
-     */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -45,56 +42,53 @@ public class SecurityConfig {
                 .build();
     }
 
-    /**
-     * Configure Spring Security to use stateless JWT authentication and CORS
-     * support.
-     * Restrict database modification to ADMIN, allow database read for USER and
-     * ADMIN.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
-                .authorizeHttpRequests()
-                // Public access
-                .requestMatchers("/api/auth/login", "/api/version", "/api/stop", "/api/stop/status").permitAll()
+            .cors().and()
+            .csrf().disable()
+            .authorizeRequests()
 
-                // Admin routes
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+            // Public authentication-related endpoints
+            .requestMatchers("/api/auth/login", "/api/version", "/api/stop", "/api/stop/status").permitAll()
 
-                // User routes
-                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+            // Public endpoints for database and tests
+            .requestMatchers(HttpMethod.GET, "/database/all").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/database/search").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/database/test").permitAll() 
+            .requestMatchers(HttpMethod.GET, "/database/groups").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/rocks/all").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/aggregate/all").permitAll() 
+            .requestMatchers(HttpMethod.GET, "/inSituTest/all").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/concrete/all").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/earthworks/all").permitAll() 
+            .requestMatchers(HttpMethod.GET, "/database/groups").permitAll()  
+            .requestMatchers(HttpMethod.GET, "/database/id", "/database/group", "/database/classification", "/database/symbol", "/database/parameters").permitAll()
 
-                // Allow both USER and ADMIN to read from the database
-                .requestMatchers(HttpMethod.GET, "/database/**").hasAnyRole("USER", "ADMIN")
+            // Admin-only for write operations
+            .requestMatchers("/database/add", "/database/delete/**", "/database/update/**").hasRole("ADMIN")
+            .requestMatchers("/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**").hasRole("ADMIN")
+            .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
 
-                // Only ADMIN can perform write operations on the database
-                .requestMatchers("/database/add", "/database/delete/**", "/database/update/**").hasRole("ADMIN")
+            // User + Admin read access
+            .requestMatchers(HttpMethod.GET, "/database/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.GET, "/aggregate/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.GET, "/rocks/**").hasAnyRole("USER", "ADMIN")
 
-                // USER and ADMIN can read aggregate database
-                .requestMatchers(HttpMethod.GET, "/aggregate/**").hasAnyRole("USER", "ADMIN")
+            // Admin routes
+            .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // Only ADMIN can write to Aggregate database
-                .requestMatchers("/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**").hasRole("ADMIN")
+            // User routes
+            .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
 
-                // USER and ADMIN can read Rocks database
-                .requestMatchers(HttpMethod.GET, "/rocks**").hasAnyRole("USER", "ADMIN")
+            // Catch-all
+            .anyRequest().authenticated()
+            .and()
 
-                // Only ADMIN can write to Aggregate database
-                .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
-
-                // All other requests must be authenticated
-                .anyRequest().authenticated()
-                .and()
-
-                // Add JWT authentication filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // Use stateless session management
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            // Add JWT filter before UsernamePasswordAuthenticationFilter
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
     }
-
 }
