@@ -1,0 +1,15 @@
+.app-footer {
+  background-color: #8d1d1c !important;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: underline;
+}

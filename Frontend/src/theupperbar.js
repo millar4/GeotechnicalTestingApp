@@ -206,48 +206,32 @@ function Theupperbar({
         )}
       </div>
 
-      {/* Center navigation links */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start', 
-        width: '100%', 
-        paddingLeft: '30%', 
-      }}>
-        <Link
-          to="/"
-          style={{
-            ...(hovered === 'Home' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('Home')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Home
-        </Link>
-        <Link
-          to="/AllTestListPage"
-          style={{
-            ...(hovered === 'TestList' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('TestList')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Test List
-        </Link>
-        <Link
-          to="/about"
-          style={{
-            ...(hovered === 'About' ? { ...addline, ...buttonhover } : addline),
-            fontWeight: 'bold', 
-          }}
-          onMouseEnter={() => setHovered('About')}
-          onMouseLeave={() => setHovered('')}
-        >
-          About
-        </Link>
-      </div>
+      
+      <div className="centered-nav">
+      {['Home', 'Search', 'Test List', 'About'].map((label) => {
+        const routeMap = {
+          'Home': 'https://soils.co.uk/',
+          'Search': '/',
+          'Test List': '/AllTestListPage',
+          'About': '/about',
+        };
+
+        const isHovered = hovered === label;
+
+        return (
+          <Link
+            key={label}
+            to={routeMap[label]}
+            onMouseEnter={() => setHovered(label)}
+            onMouseLeave={() => setHovered('')}
+            className="nav-link"
+          >
+            {label}
+            <span className={`nav-underline ${isHovered ? 'active' : ''}`} />
+          </Link>
+        );
+      })}
+  </div>
 
       {/* Search form */}
       <form

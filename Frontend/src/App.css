@@ -128,9 +128,6 @@ html, body, * {
   .account-button {
     display: none;
   }
-  .stop-button {
-    display: none;
-  }
 
   .search-bar-form {
     display: none !important;
@@ -483,4 +480,45 @@ nav {
   justify-content: flex-start;  
   align-items: center;
   padding-left: -30px;  
+}
+
+.centered-nav {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 40px 0;
+  background-color: transparent;
+  position: relative;
+  width: 100%;
+  height: auto;
+  transform: translateX(-8%);
+}
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  color: white;
+  font-size: 20px;
+  font-family: inherit;
+  font-weight: 500;
+  padding-bottom: 5px;
+  transition: color 0.3s ease;
+  display: inline-block;
+  margin: 0;
+}
+
+.nav-underline {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0%;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.nav-underline.active {
+  width: 100%;
 }
