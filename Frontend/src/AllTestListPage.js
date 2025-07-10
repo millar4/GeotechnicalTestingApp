@@ -110,9 +110,6 @@ const Box = ({
             {formatData(group, searchcontent, pattern, "group") && (
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
-             {formatData(id, searchcontent, pattern, "id ") && (
-                <p>ID: {formatData(id, searchcontent, pattern, "id")}</p>
-            )}
              {formatData(classification, searchcontent, pattern, "classification") && (
                 <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
@@ -214,7 +211,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
             <body>
                 <div class="header-container">
                     <div class="header-left">
-                        Structural Soils Ltd &copy; 2025
+                        2025 &copy Structural Soils Limited.
                     </div>
                     <div class="header-right">
                         <img src="/Logo2.png" alt="Company Logo" />
@@ -249,10 +246,10 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
         }
 
         const fields = [
-            "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
-            "specimenMass", "specimenNumbers", "specimenD", "specimenL", "specimenW",
-            "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction",
-            "schedulingNotes", "materials", "applications"
+            "Alt 1", "Alt 2", "Alt 3", "Sample Type", "Field Sample Mass", "Specimen Type",
+            "Specimen Mass", "Specimen Numbers", "Specimen Diameter", "Specimen Length", "Specimen Width",
+            "Specimen Height", "Specimen Max Grain Size", "Specimen Max Grain Fraction",
+            "Scheduling Notes", "Materials", "Applications"
         ];
 
         fields.forEach((key) => {
@@ -272,7 +269,6 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
         printWindow.print();
     };
 };
-
 
         const handlePrintClick = () => {
 
@@ -307,8 +303,6 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
             console.log("selectedTests:", selectedTests);
         };
 
-                    
-  
     const handleEditClick = () => {
         const role = localStorage.getItem('role');
         if (role !== 'ADMIN') {
@@ -321,8 +315,8 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     details,
                 },
         });
-
       };
+      
     return (
         <Draggable handle=".floating-header">
             <ResizableBox
@@ -360,7 +354,6 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     />
                     Select
                     </label>
-
                     {/* Edit Button */}
                     <button
                         className="edit-button"
@@ -650,41 +643,50 @@ const PaginatedBoxes = () => {
     };
     let url = ""; 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!token) {
-                setData([]);
-                return;
-            }
-    
-            setData([]);
-            const headers = getAuthHeaders();
-            const effectiveSearchContent = viewMode ? lastSearchContent : "";
-            const encodedSearch = encodeURIComponent(effectiveSearchContent);
-            let url = `${baseUrl}/all`; // Default URL, might change based on search
-            
-            if (effectiveSearchContent) {
-                // You can modify the URL based on the `effectiveSearchContent` if you are performing a search
-                url = `${baseUrl}/search?query=${encodedSearch}`;
-            }
-    
-            try {
-                const response = await fetch(url, { testMethod: "GET", headers });
-                if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-                
-                let result = await response.json();
-                // Apply group filtering if needed
-                if (selectedGroup) {
-                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-                const sortedData = sortOrder(result, sortOrder);
-                setData(result); // Set the sorted data
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+    const fetchData = async () => {
+        setData([]); // Clear previous data
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         };
-    
-        fetchData();
-    }, [viewMode, lastSearchContent, sortOrder, selectedGroup, token]);
+
+        // Add token only if it exists
+
+        const effectiveSearchContent = viewMode ? lastSearchContent : "";
+        const encodedSearch = encodeURIComponent(effectiveSearchContent);
+        let url = `${baseUrl}/all`;
+
+        if (effectiveSearchContent) {
+            url = `${baseUrl}/search?query=${encodedSearch}`;
+        }
+
+        try {
+            const response = await fetch(url, { method: "GET", headers });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+            }
+
+            let result = await response.json();
+
+            if (selectedGroup) {
+                result = result.filter(item =>
+                    item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            const sortedData = sortOrder(result, sortOrder);
+            setData(sortedData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setData([]); // Optionally clear data or keep stale data
+        }
+    };
+
+    fetchData();
+}, [viewMode, lastSearchContent, sortOrder, selectedGroup, baseUrl]);
+
     
     
     useEffect(() => {
@@ -738,27 +740,33 @@ const PaginatedBoxes = () => {
 
     // Fetch group data
     const fetchGroups = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/groups`, { testMethod: "GET", headers: getAuthHeaders() });
-            const result = await response.json();
-            console.log("Fetched groups:", result);
-            
-            if (Array.isArray(result)) {
-                setGroups(result);
-            } else if (result.groups) {
-                setGroups(result.groups);
-            } else if (Array.isArray(result.data)) {
-                setGroups(result.data.map(g => g.group));
-            } else {
-                console.error("Unexpected response format:", result);
-                setGroups([]);
-            }
-        } catch (error) {
-            console.error("Error fetching groups:", error);
+    try {
+        const headers = {};
+
+        const response = await fetch(`${baseUrl}/groups`, {
+            method: "GET",
+            headers,
+        });
+
+        const result = await response.json();
+        console.log("Fetched groups:", result);
+
+        if (Array.isArray(result)) {
+            setGroups(result);
+        } else if (result.groups) {
+            setGroups(result.groups);
+        } else if (Array.isArray(result.data)) {
+            setGroups(result.data.map(g => g.group));
+        } else {
+            console.error("Unexpected response format:", result);
             setGroups([]);
         }
-    };
-    
+    } catch (error) {
+        console.error("Error fetching groups:", error);
+        setGroups([]);
+    }
+};
+
     useEffect(() => {
         fetchGroups();
     }, [baseUrl, token]);
@@ -851,13 +859,9 @@ const PaginatedBoxes = () => {
         return data.sort(sortFunction);
     };
     
-    const fetchData = async () => {
-        if (!token) {
-            setData([]);
-            return;
-        }
+    const fetchFullData = async () => {
     
-        console.log("fetchData() triggered");
+        console.log("fetchFullData() triggered");
         setData([]);
         const headers = getAuthHeaders();
         const effectiveSearchContent = viewMode ? lastSearchContent : "";
@@ -985,7 +989,7 @@ const PaginatedBoxes = () => {
     
         console.log(`Final fetch from: ${url}`);
         try {
-            const response = await fetch(url, { testMethod: "GET", headers });
+            const response = await fetch(url, { method: "GET", headers });
             if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
             let result = await response.json();
             result = getSortedData(result, sortOrder);
@@ -1000,9 +1004,9 @@ const PaginatedBoxes = () => {
     };
     
     useEffect(() => {
-        fetchData();
+        fetchFullData();
         // eslint-disable-next-line
-    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup, token]);
+    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup]);
     
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -1267,12 +1271,7 @@ const PaginatedBoxes = () => {
                         </div>
                     ) : (
 
-                        !isLoggedIn ? (
-                            <div className="fixed-placeholder" style={{ position: 'relative', textAlign: 'center' }}>
-                            <img src={lockIcon} alt="Locked" style={{ width: '120px', marginBottom: '20px' }} />
-                            <h2>You are currently logged out. Please log in again to view tests.</h2>
-                            </div>
-                        ) : (
+                         (
                         
                         <div className="fixed-placeholder" style={{ position: 'relative' }}>
                             <h2>Testlist</h2>
@@ -1301,6 +1300,8 @@ const PaginatedBoxes = () => {
                             isActive={selectedBoxes.some(selectedBox => selectedBox.id === item.id)}
                             searchcontent={viewMode ? lastSearchContent : ""}
                             pattern={viewMode ? lastPattern : ""}
+                            {...currentItems.length === 0 && <p>No results found.</p>}
+
                         />
                     ))}
                 </div>
@@ -1350,5 +1351,4 @@ const PaginatedBoxes = () => {
         </div>
     );
 };
-
 export default PaginatedBoxes;

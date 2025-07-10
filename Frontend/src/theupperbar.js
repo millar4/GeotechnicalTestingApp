@@ -206,64 +206,32 @@ function Theupperbar({
         )}
       </div>
 
-      {/* Center navigation links */}
-    <div style={{
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'left',
-  gap: '30px',
-  padding: '40px 0',
-  backgroundColor: 'transparent',
-  position: 'relative',
-  width: '100%',
-  height: 'auto',
-  transform: 'translateX(-8%)' // Added padding-left to shift all the links to the left
-}}>
-  {['Home', 'Search', 'Test List', 'About'].map((label) => {
-    const routeMap = {
-      'Home': 'https://soils.co.uk/',
-      'Search': '/',
-      'Test List': '/AllTestListPage',
-      'About': '/about',
-    };
+      
+      <div className="centered-nav">
+      {['Home', 'Search', 'Test List', 'About'].map((label) => {
+        const routeMap = {
+          'Home': 'https://soils.co.uk/',
+          'Search': '/',
+          'Test List': '/AllTestListPage',
+          'About': '/about',
+        };
 
-    const isHovered = hovered === label;
+        const isHovered = hovered === label;
 
-    return (
-      <Link
-        key={label}
-        to={routeMap[label]}
-        onMouseEnter={() => setHovered(label)}
-        onMouseLeave={() => setHovered('')}
-        style={{
-          position: 'relative',
-          textDecoration: 'none',
-          color: 'white',
-          fontSize: '20px',
-          fontFamily: 'inherit',
-          fontWeight: 500,
-          paddingBottom: '5px',
-          transition: 'color 0.3s ease',
-          display: 'inline-block',
-          margin: 0,
-        }}
-      >
-        {label}
-        <span style={{
-          content: '""',
-          position: 'absolute',
-          left: 0,
-          bottom: 0,
-          height: '2px',
-          width: isHovered ? '100%' : '0%',
-          backgroundColor: 'white',
-          transition: 'width 0.3s ease',
-        }} />
-      </Link>
-    );
-  })}
-</div>
-
+        return (
+          <Link
+            key={label}
+            to={routeMap[label]}
+            onMouseEnter={() => setHovered(label)}
+            onMouseLeave={() => setHovered('')}
+            className="nav-link"
+          >
+            {label}
+            <span className={`nav-underline ${isHovered ? 'active' : ''}`} />
+          </Link>
+        );
+      })}
+  </div>
 
       {/* Search form */}
       <form

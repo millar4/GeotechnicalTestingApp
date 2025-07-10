@@ -120,12 +120,12 @@ const EditTest = () => {
   };
 
   const dynamicFields = {
-    aggregate: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'],
-    rock: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'schedulingNotes'],
-    concrete: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'schedulingNotes'],
-    database: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'],
-    inSituTest: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType','materials', 'applications'],
-    earthworks: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3','sampleType','materials', 'applications']
+    aggregate: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction'],
+    rock: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Type', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction', 'Scheduling Notes'],
+    concrete: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction', 'Scheduling Notes'],
+    database: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction'],
+    inSituTest: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt1', 'Alt2', 'Alt3', 'SampleT ype','Materials', 'Applications'],
+    earthworks: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3','Sample Type','Materials', 'Applications']
   };
 
   const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;
