@@ -11,6 +11,7 @@ import AddItem from './additem';
 import EditTest from './EditTest';
 import AccountManagement from './AccountManagement';
 import PrintableData from './PrintableData';  // Import PrintableData
+import Footer from './footer'
 
 function App() {
   const [searchcontent, updatecontent] = useState('');
@@ -135,6 +136,7 @@ function App() {
           } />
         </Routes>
       </div>
+      <Footer />
     </div>
   );
 }
