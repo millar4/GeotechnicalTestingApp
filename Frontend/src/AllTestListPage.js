@@ -6,6 +6,9 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import lockIcon from './Lock4.png';
+import PrintableData from './PrintableData';
+import { useSelectedTests, handleToggleTest } from './SelectedTestsContext'; // Import this at the top
+
 
 // Helper function to escape special characters in search term for regex
 const escapeRegExp = (string) => {
@@ -95,24 +98,32 @@ const Box = ({
     pattern
 }) => {
     return (
-        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>
-            {formatData(test, searchcontent, pattern, "test") && (
-                <h3>Test: {formatData(test, searchcontent, pattern, "test")}</h3>
-            )}
+        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>  
+        {formatData(test, searchcontent, pattern, "test") && (
+            <h3>
+                {formatData(test, searchcontent, pattern, "test")}{" "}
+                {symbol && (
+                    <span>({formatData(symbol, searchcontent, pattern, "symbol")})</span>
+                )}
+            </h3>
+        )}
             {formatData(group, searchcontent, pattern, "group") && (
                 <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
                 <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
-            {formatData(symbol, searchcontent, pattern, "symbol") && (
-                <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol")}</p>
-            )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
                 <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
             )}
             {formatData(testMethod, searchcontent, pattern, "testMethod") && (
                 <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
+            )}
+            {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
+                <p>Field Sample Mass: {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+            )}
+            {formatData(sampleType, searchcontent, pattern, "sampleType") && (
+                <p>Sample Type: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
             )}
         </button>
     );
@@ -130,13 +141,16 @@ const getAuthHeaders = () => {
 };
 
 // FloatingDetails component: displays detailed info in a draggable/resizable window.
-const FloatingDetails = ({ details, onClose, position, searchcontent, pattern }) => {
+const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, tests, mergedData }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() =>
       JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
   
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
+    const { selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
+    const [mergedResults, setMergedResults] = useState([]);
+
 
     const navigate = useNavigate(); 
   
@@ -149,21 +163,160 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
     }, []);
   
     const formatData = (data) => data;
-  
+
+   const printTests = (testArray, searchcontent, pattern) => {
+    const printWindow = window.open('printWindow', '_blank', 'height=600,width=800');
+
+    const htmlHead = `
+        <html>
+            <head>
+                <title>Test Details - Print</title>
+                <link rel="stylesheet" href="/index.css" />
+                <style>
+                    body {
+                        font-family: 'AvenirLTStd-Medium', sans-serif;
+                        padding: 20px;
+                    }
+
+                    .header-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #000;
+                    }
+
+                    .header-left {
+                        font-size: 12px;
+                        color: #000;
+                    }
+
+                    .header-right img {
+                        max-width: 100px;
+                        height: auto;
+                    }
+
+                    h3 {
+                        margin-top: 30px;
+                    }
+
+                    @media print {
+                        .header-container {
+                            page-break-inside: avoid;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header-container">
+                    <div class="header-left">
+                        2025 &copy Structural Soils Limited.
+                    </div>
+                    <div class="header-right">
+                        <img src="/Logo2.png" alt="Company Logo" />
+                    </div>
+                </div>
+    `;
+
+    const htmlFooter = `
+            </body>
+        </html>
+    `;
+
+    printWindow.document.write(htmlHead);
+
+    testArray.forEach((details, index) => {
+        printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
+
+        if (formatData(details.test, searchcontent, pattern, "test")) {
+            printWindow.document.write(`<p><strong>Test:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
+        }
+        if (formatData(details.group, searchcontent, pattern, "group")) {
+            printWindow.document.write(`<p><strong>Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
+        }
+        if (formatData(details.classification, searchcontent, pattern, "classification")) {
+            printWindow.document.write(`<p><strong>AGS:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+        }
+        if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
+            printWindow.document.write(`<p><strong>Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
+        }
+        if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
+            printWindow.document.write(`<p><strong>Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
+        }
+
+        const fields = [
+            "Alt 1", "Alt 2", "Alt 3", "Sample Type", "Field Sample Mass", "Specimen Type",
+            "Specimen Mass", "Specimen Numbers", "Specimen Diameter", "Specimen Length", "Specimen Width",
+            "Specimen Height", "Specimen Max Grain Size", "Specimen Max Grain Fraction",
+            "Scheduling Notes", "Materials", "Applications"
+        ];
+
+        fields.forEach((key) => {
+            if (formatData(details[key])) {
+                printWindow.document.write(`<p><strong>${key.replace(/([A-Z])/g, ' $1')}:</strong> ${formatData(details[key])}</p>`);
+            }
+        });
+
+        printWindow.document.write('<hr>');
+    });
+
+    printWindow.document.write(htmlFooter);
+    printWindow.document.close();
+
+    printWindow.focus(); // helps suppress about:blank
+    printWindow.onload = () => {
+        printWindow.print();
+    };
+};
+
+        const handlePrintClick = () => {
+
+            const selectedDetails = [];
+
+            // Determine whether to use `mergedData` or `tests`
+            const sourceArray = searchcontent ? mergedData.flat() : tests;
+
+            // Iterate over the selectedTests array
+            for (let i = 0; i < selectedTests.length; i++) {
+                const selectedTestId = selectedTests[i];
+
+                // Find the corresponding test from the chosen array
+                const selectedTest = sourceArray.find(test => test.id === selectedTestId);
+
+                // If a match is found, add it to the selectedDetails array
+                if (selectedTest) {
+                    selectedDetails.push(selectedTest);
+                }
+            }
+
+            // Check if any tests were selected and found
+            if (selectedDetails.length > 0) {
+                console.log("Selected Test Details:", selectedDetails);
+                printTests(selectedDetails, searchcontent, pattern); // Print all selected tests
+            } else {
+                alert("No tests selected for printing."); // Show a message if no tests are selected
+            }
+            console.log("searchcontent:", searchcontent);
+            console.log("mergedData:", mergedData);
+            console.log("tests:", tests);
+            console.log("selectedTests:", selectedTests);
+        };
+
     const handleEditClick = () => {
         const role = localStorage.getItem('role');
         if (role !== 'ADMIN') {
           alert('You need ADMIN privileges to edit this item.');
           return;
         }
-        const databaseType = localStorage.getItem('databaseType') || 'soil';
-        navigate('/edititem', {
-        state: {
-            details,
-            databaseType,
-        }
+        const targetDatabase = details.databaseBelongsTo;
+                navigate(`/edititem/${targetDatabase.trim()}`, {
+                state: {
+                    details,
+                },
         });
       };
+      
     return (
         <Draggable handle=".floating-header">
             <ResizableBox
@@ -174,25 +327,64 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
                 className="floating-details"
                 style={{ position: 'fixed', top: position.y, left: position.x }}
             >
-                <button className="close-button" onClick={() => onClose(details.id)}>×</button>
+                <button aria-label="Close Details" className="close-button"
+                    onClick={() => {
+                       if (selectedTests.includes(details.id)) {
+                        handleToggleTest(details.id); // Only deselect if still selected
+                    }
+                    onClose(details.id); // Close the floating window
+                    }}
+                    >
+                        ×
+                </button>
                 <div className="floating-content">
-                    <div className="floating-header">
-                        <h3>Detailed Information</h3>
-                        {isLoggedIn && (
-                            <button className="edit-button" onClick={handleEditClick}>Edit</button>
-                    )}
+                <div className="floating-header">
+                <h3>Detailed Information</h3>
+                {isLoggedIn && (
+                <div className="floating-header-buttons">
+                    {/* Select Checkbox */}
+                    <label className="select-label">
+                    <input
+                            type="checkbox"
+                            checked={selectedTests.includes(details.id)} // Check if test is selected
+                                   onChange={(e) => {
+                                e.stopPropagation(); // Prevent click from propagating to the parent
+                                handleToggleTest(details.id); // Toggle test selection
+                            }}
+                    />
+                    Select
+                    </label>
+                    {/* Edit Button */}
+                    <button
+                        className="edit-button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick();
+                        }}
+                        >
+                        Edit
+                    </button>
+                    {/* Print Button */}
+                    <button
+                        className="print-button"
+                        onClick={(e) => {
+                            e.stopPropagation();  // Prevents triggering parent click
+                            handlePrintClick();
+                        }}
+                        >
+                        Print
+                        </button>
+                </div>
+                )}
                     </div>
                     {formatData(details.test, searchcontent, pattern, "test") && (
-                        <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
+                        <p><strong></strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
                     )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
                         <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
                         <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
-                    )}
-                    {formatData(details.symbol, searchcontent, pattern, "symbol") && (
-                        <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
                         <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
@@ -274,6 +466,7 @@ const PaginatedBoxes = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [sortOrder, setSortOrder] = useState('default');
     const [selectedBoxes, setSelectedBoxes] = useState([]);
+    const [tests, setTests] = useState([]);
 
     // Group filter state
     const [groups, setGroups] = useState([]);
@@ -294,6 +487,8 @@ const PaginatedBoxes = () => {
 
     // viewMode: true displays search results, false displays complete test list
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
+
+    const [mergedData, setMergedData] = useState([]);
 
     // Database type state
     const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
@@ -442,47 +637,56 @@ const PaginatedBoxes = () => {
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
             case 'inSituTest': return '/inSituTest';
-            case 'earthworks': return 'earthworks';
+            case 'earthworks': return '/earthworks';
             default: return '/soil'; // Fallback to prevent undefined
         }
     };
     let url = ""; 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!token) {
-                setData([]);
-                return;
-            }
-    
-            setData([]);
-            const headers = getAuthHeaders();
-            const effectiveSearchContent = viewMode ? lastSearchContent : "";
-            const encodedSearch = encodeURIComponent(effectiveSearchContent);
-            let url = `${baseUrl}/all`; // Default URL, might change based on search
-            
-            if (effectiveSearchContent) {
-                // You can modify the URL based on the `effectiveSearchContent` if you are performing a search
-                url = `${baseUrl}/search?query=${encodedSearch}`;
-            }
-    
-            try {
-                const response = await fetch(url, { testMethod: "GET", headers });
-                if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-                
-                let result = await response.json();
-                // Apply group filtering if needed
-                if (selectedGroup) {
-                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-                const sortedData = sortOrder(result, sortOrder);
-                setData(result); // Set the sorted data
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+    const fetchData = async () => {
+        setData([]); // Clear previous data
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         };
-    
-        fetchData();
-    }, [viewMode, lastSearchContent, sortOrder, selectedGroup, token]);
+
+        // Add token only if it exists
+
+        const effectiveSearchContent = viewMode ? lastSearchContent : "";
+        const encodedSearch = encodeURIComponent(effectiveSearchContent);
+        let url = `${baseUrl}/all`;
+
+        if (effectiveSearchContent) {
+            url = `${baseUrl}/search?query=${encodedSearch}`;
+        }
+
+        try {
+            const response = await fetch(url, { method: "GET", headers });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+            }
+
+            let result = await response.json();
+
+            if (selectedGroup) {
+                result = result.filter(item =>
+                    item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            const sortedData = sortOrder(result, sortOrder);
+            setData(sortedData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setData([]); // Optionally clear data or keep stale data
+        }
+    };
+
+    fetchData();
+}, [viewMode, lastSearchContent, sortOrder, selectedGroup, baseUrl]);
+
     
     
     useEffect(() => {
@@ -536,27 +740,33 @@ const PaginatedBoxes = () => {
 
     // Fetch group data
     const fetchGroups = async () => {
-        try {
-            const response = await fetch(`${baseUrl}/groups`, { testMethod: "GET", headers: getAuthHeaders() });
-            const result = await response.json();
-            console.log("Fetched groups:", result);
-            
-            if (Array.isArray(result)) {
-                setGroups(result);
-            } else if (result.groups) {
-                setGroups(result.groups);
-            } else if (Array.isArray(result.data)) {
-                setGroups(result.data.map(g => g.group));
-            } else {
-                console.error("Unexpected response format:", result);
-                setGroups([]);
-            }
-        } catch (error) {
-            console.error("Error fetching groups:", error);
+    try {
+        const headers = {};
+
+        const response = await fetch(`${baseUrl}/groups`, {
+            method: "GET",
+            headers,
+        });
+
+        const result = await response.json();
+        console.log("Fetched groups:", result);
+
+        if (Array.isArray(result)) {
+            setGroups(result);
+        } else if (result.groups) {
+            setGroups(result.groups);
+        } else if (Array.isArray(result.data)) {
+            setGroups(result.data.map(g => g.group));
+        } else {
+            console.error("Unexpected response format:", result);
             setGroups([]);
         }
-    };
-    
+    } catch (error) {
+        console.error("Error fetching groups:", error);
+        setGroups([]);
+    }
+};
+
     useEffect(() => {
         fetchGroups();
     }, [baseUrl, token]);
@@ -649,13 +859,9 @@ const PaginatedBoxes = () => {
         return data.sort(sortFunction);
     };
     
-    const fetchData = async () => {
-        if (!token) {
-            setData([]);
-            return;
-        }
+    const fetchFullData = async () => {
     
-        console.log("fetchData() triggered");
+        console.log("fetchFullData() triggered");
         setData([]);
         const headers = getAuthHeaders();
         const effectiveSearchContent = viewMode ? lastSearchContent : "";
@@ -699,14 +905,19 @@ const PaginatedBoxes = () => {
             
                 if (sortOrder === 'classification') {
                     result = sortDataByClassification(result, 'ascending');
-                } else if (sortOrder === 'testMethod')
+                    setTests(result);
+                } else if (sortOrder === 'testMethod'){
                     result = sortDataByTestMethod(result, 'ascending');
-                  else if(sortOrder === 'parameters')
+                    setTests(result);
+                }
+                  else if(sortOrder === 'parameters'){
                     result = sortDataByParameter(result, 'ascending');
+                    setTests(result);
+                  }
                 else {
                     result = getSortedData(result, sortOrder);
+                    setTests(result);
                 }
-            
                 setData(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -729,23 +940,28 @@ const PaginatedBoxes = () => {
                 const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
                 console.log("All parallel requests done:", responses);
                 
-                let mergedData = [];
-                const seenIds = new Set();
-                responses.forEach(result => {
-                    result.forEach(item => {
-                        if (!seenIds.has(item.id)) {
-                            seenIds.add(item.id);
-                            mergedData.push(item);
-                        }
-                    });
+            let mergedData = [];
+            const seenIds = new Set();
+            responses.forEach(result => {
+                result.forEach(item => {
+                    if (!seenIds.has(item.id)) {
+                        seenIds.add(item.id);
+                        mergedData.push(item);
+                    }
                 });
-                
-                mergedData = getSortedData(mergedData, sortOrder);
-    
-                if (selectedGroup) {
-                    mergedData = mergedData.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-                setData(mergedData);
+            });
+
+            mergedData = getSortedData(mergedData, sortOrder);
+
+            if (selectedGroup) {
+                mergedData = mergedData.filter(
+                    item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            setMergedData(mergedData); 
+            setData(mergedData);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -773,7 +989,7 @@ const PaginatedBoxes = () => {
     
         console.log(`Final fetch from: ${url}`);
         try {
-            const response = await fetch(url, { testMethod: "GET", headers });
+            const response = await fetch(url, { method: "GET", headers });
             if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
             let result = await response.json();
             result = getSortedData(result, sortOrder);
@@ -788,9 +1004,9 @@ const PaginatedBoxes = () => {
     };
     
     useEffect(() => {
-        fetchData();
+        fetchFullData();
         // eslint-disable-next-line
-    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup, token]);
+    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup]);
     
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -1055,12 +1271,7 @@ const PaginatedBoxes = () => {
                         </div>
                     ) : (
 
-                        !isLoggedIn ? (
-                            <div className="fixed-placeholder" style={{ position: 'relative', textAlign: 'center' }}>
-                            <img src={lockIcon} alt="Locked" style={{ width: '120px', marginBottom: '20px' }} />
-                            <h2>You are currently logged out. Please log in again to view tests.</h2>
-                            </div>
-                        ) : (
+                         (
                         
                         <div className="fixed-placeholder" style={{ position: 'relative' }}>
                             <h2>Testlist</h2>
@@ -1089,6 +1300,8 @@ const PaginatedBoxes = () => {
                             isActive={selectedBoxes.some(selectedBox => selectedBox.id === item.id)}
                             searchcontent={viewMode ? lastSearchContent : ""}
                             pattern={viewMode ? lastPattern : ""}
+                            {...currentItems.length === 0 && <p>No results found.</p>}
+
                         />
                     ))}
                 </div>
@@ -1130,11 +1343,12 @@ const PaginatedBoxes = () => {
                         position={box.position}
                         searchcontent={viewMode ? lastSearchContent : ""}
                         pattern={viewMode ? lastPattern : ""}
+                        tests={tests}
+                        mergedData={mergedData}
                     />
                 ))}
             </div>
         </div>
     );
 };
-
 export default PaginatedBoxes;

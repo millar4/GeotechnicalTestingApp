@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import './EditTest.css';
 
 const EditTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { targetDatabase } = useParams();  // Extract targetDatabase from URL
   const state = location.state;
+  
+  // Log for debugging
   console.log(location.state);
-  // Determine entityType from state or fallback to path
-  const getEntityType = () => {
-    const knownTypes = ['aggregate', 'rock', 'concrete', 'inSituTest','database','earthworks'];
-    const fromState = state?.type;
-    if (fromState) return fromState;
+  console.log('targetDatabase:', targetDatabase);
 
-    const path = location.pathname.toLowerCase();
-    const matchedType = knownTypes.find(type => path.includes(type));
-    return matchedType; 
-  };
-
-  const entityType = getEntityType();
   const initialData = state?.details || {};
 
   const [formData, setFormData] = useState({
@@ -41,11 +34,11 @@ const EditTest = () => {
     specimenH: initialData.specimenH || '',
     specimenMaxGrainSize: initialData.specimenMaxGrainSize || '',
     specimenMaxGrainFraction: initialData.specimenMaxGrainFraction || '',
+    schedulingNotes: initialData.schedulingNotes || '',
     databaseBelongsTo: initialData.databaseBelongsTo || ''
   });
 
   const testId = initialData.id;
-  const targetDatabase = formData.databaseBelongsTo;
 
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
@@ -72,7 +65,6 @@ const EditTest = () => {
     const currentUsername = localStorage.getItem('username');
 
     try {
-      // Authenticate user before proceeding
       const authResponse = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,7 +74,6 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
-        // Handle Update Request
         const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
           method: 'PUT',
           headers: {
@@ -98,12 +89,6 @@ const EditTest = () => {
 
         alert('Test updated successfully!');
       } else if (actionType === 'delete') {
-        // Handle Delete Request
-        if (initialData.username === currentUsername) {
-          const confirmed = window.confirm("You are about to delete your own account. You will be logged out. Continue?");
-          if (!confirmed) return;
-        }
-
         const deleteResponse = await fetch(`http://localhost:8080/${targetDatabase}/delete/${testId}`, {
           method: 'DELETE',
           headers: {
@@ -134,17 +119,16 @@ const EditTest = () => {
     }
   };
 
-  // Define dynamic form fields for each entity type
   const dynamicFields = {
-    aggregate: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers', 'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'],
-    rock: ['test', 'group', 'symbol', 'parameters', 'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass'],
-    concrete: ['test', 'group', 'symbol', 'parameters', 'specimenType', 'specimenMass', 'specimenNumbers'],
-    database: ['test', 'group', 'symbol', 'parameters', 'testMethod', 'specimenType', 'specimenMass', 'specimenD', 'specimenL', 'specimenW', 'specimenH'],
-    inSituTest: ['Group','Test','Abbreviation or symbol','Test', 'parameters',' Default test method' ,'Alternative 1','Alternative 2','Alternative 3','Materials','Applications','databaseBelongsTo'],
-    earthworks: ['Group','Test','Abbreviation or symbol','Test', 'parameters',' Default test method' ,'Alternative 1','Alternative 2','Alternative 3','Materials','Applications','databaseBelongsTo']
+    aggregate: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction'],
+    rock: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Type', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction', 'Scheduling Notes'],
+    concrete: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction', 'Scheduling Notes'],
+    database: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3', 'Sample Type', 'Field Sample Mass', 'Specimen Type', 'Specimen Mass', 'Specimen Numbers', 'Specimen Diameter', 'Specimen Length', 'Specimen Width', 'Specimen Height', 'Specimen Max Grain Size', 'Specimen Max Grain Fraction'],
+    inSituTest: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt1', 'Alt2', 'Alt3', 'SampleT ype','Materials', 'Applications'],
+    earthworks: ['Test', 'Group', 'Symbol', 'Parameters', 'Test Method', 'Alt 1', 'Alt 2', 'Alt 3','Sample Type','Materials', 'Applications']
   };
 
-  const selectedFields = dynamicFields[entityType] || dynamicFields.aggregate;
+  const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;
 
   return (
     <div className="edit-item-container">

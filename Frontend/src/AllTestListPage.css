@@ -446,39 +446,49 @@ html, body, * {
   background-color: white;
   color: #1D1D1B;;
 }
+.floating-header-buttons {
+  display: flex;
+  align-items: center;  /* Ensures vertical alignment */
+  gap: 10px;  /* Space between the buttons */
+}
 
-.edit-button {
-  margin-left: 100px;
-  margin-right: 50px;      
-  padding: 4px 8px;            
-  font-size: 1rem;         
-  font-weight: bold;      
-  border: 2px solid white; 
-  border-radius: 8px;      
-  background-color: #8d1d1c; 
+.edit-button,
+.print-button {
+  padding: 6px 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 8px;
+  background-color: #8d1d1c;
   color: white;
-  cursor: pointer; 
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-width: 80px; /* Optional: ensures consistent button width */
+  text-align: center;
 }
 
-.edit-button:hover {
-  background-color: white; 
-  margin-left: 100px;
-  margin-right: 50px;
-  color: #1D1D1B;; 
+/* Optional hover effect */
+.edit-button:hover,
+.print-button:hover {
+  background-color: white;
+  color: #1D1D1B;
 }
+
 
 .close-button {
-  margin-right: 20px;
   position: absolute;
-  top: 15px;
-  right: 15px;
+  bottom: 15px;   /* Was: top: 15px; */
+  left: 15px;     /* Was: right: 15px; */
   font-size: 30px;
   cursor: pointer;
   border: none;
   color: #8d1d1c;
   background-color: white;
-  z-index: 1000; 
+  z-index: 1000;
+  margin: 0;       /* Optional: remove margin-right */
 }
+
 
 @media (max-width: 768px) {
   .sidebar {
@@ -609,5 +619,6 @@ html, body, * {
   outline: 2px solid #3a8dff; /* Highlight the handle when focused */
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Optional: Add a subtle shadow when focused */
 }
+
 
 
