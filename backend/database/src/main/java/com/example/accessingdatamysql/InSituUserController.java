@@ -186,4 +186,9 @@ public class InSituUserController{
         return InSituUserRepository.findByDatabaseBelongsToContainingIgnoreCase(schedulingNotes);
     }
 
+    @GetMapping("/imagePath")
+    public List<InSituUser> getByImagePathBelongsTo(@RequestParam String imagePath) {
+        return InSituUserRepository.findByImagePathContaining(imagePath);
+    }
+
 }

@@ -276,4 +276,9 @@ public class RocksUserController {
         return RocksUserRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
     }
 
+    @GetMapping("/imagePath")
+    public List<RocksUser> getByImagePath(@RequestParam String imagePath) {
+        return RocksUserRepository.findByImagePathContaining(imagePath);
+    }
+
 }

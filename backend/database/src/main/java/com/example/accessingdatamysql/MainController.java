@@ -263,4 +263,10 @@ public class MainController {
     public List<GeotechnicalEntry> getUsersByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
         return userRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
     }
+
+    @GetMapping(path = "/imagePath")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByImagepath(@RequestParam String imagePath) {
+        return userRepository.findByImagePathContaining(imagePath);
+    }
 }

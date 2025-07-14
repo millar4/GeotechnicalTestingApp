@@ -64,6 +64,9 @@ public class EarthworksUser {
     @Column(name = "databaseBelongsTo", nullable = true, unique = false)
     private String databaseBelongsTo;
 
+    @Column(name = "imagePath", nullable = true, unique = false)
+    private String imagePath;
+
     // Getters and setters for all fields
     public Long getId() {return id;}
     public String getGroup() { return group; }
@@ -111,6 +114,9 @@ public class EarthworksUser {
 
     public String getDatabaseBelongsTo() { return databaseBelongsTo; }
     public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
 }
 

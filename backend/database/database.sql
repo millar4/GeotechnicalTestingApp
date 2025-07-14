@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     specimenH VARCHAR(100),
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
-    databaseBelongsTo VARCHAR(100)
+    databaseBelongsTo VARCHAR(100),
+    imagePath VARCHAR(100)
 );
 
 
@@ -45,7 +46,8 @@ CREATE TABLE IF NOT EXISTS InSituTable (
     alt3 VARCHAR(100),
     materials VARCHAR(1000),
     applications VARCHAR(1000),
-    databaseBelongsTo VARCHAR(1000)
+    databaseBelongsTo VARCHAR(1000),
+    imagepath VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS EarthworksTable (
@@ -71,7 +73,8 @@ CREATE TABLE IF NOT EXISTS EarthworksTable (
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
-    databaseBelongsTo VARCHAR(100)
+    databaseBelongsTo VARCHAR(100),
+    imagePath VARCHAR(100)
 );
 
 -- ============================================
@@ -100,7 +103,8 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
-    databaseBelongsTo VARCHAR(100)
+    databaseBelongsTo VARCHAR(100),
+    imagePath VARCHAR(100)
 );
 
 -- ============================================
@@ -151,7 +155,8 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
-    databaseBelongsTo VARCHAR(100)
+    databaseBelongsTo VARCHAR(100),
+    iamgePath VARCHAR (100)
 );
 
 -- ============================================
@@ -168,7 +173,7 @@ IGNORE 1 LINES
     sampleType, fieldSampleMass, specimenType,
     specimenMass, specimenNumbers,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo
+    schedulingNotes, databaseBelongsTo, imagePath
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -184,7 +189,9 @@ SET
     specimenNumbers = NULLIF(specimenNumbers, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
-    schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL');
+    schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL'),
+    imagePath = NULLIF(TRIM(imagePath), 'NULL');
+    
 
 -- ============================================
 -- 4 Load CSV data into RocksTable
@@ -201,7 +208,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo
+    schedulingNotes, databaseBelongsTo, imagePath
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -225,7 +232,9 @@ SET
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
-    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
+    imagePath = NULLIF(imagePath, 'NULL')
+
 
 -- ============================================
 -- 5 Load CSV data into GeotechnicalTable
@@ -241,7 +250,7 @@ IGNORE 1 LINES
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo
+    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -264,7 +273,8 @@ SET
     specimenH = NULLIF(specimenH, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
-    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
+    imagePath = NULLIF(imagePath, 'NULL');
 
 -- ============================================
 -- 5 Load CSV data into ConcreteTable
@@ -281,7 +291,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo
+    schedulingNotes, databaseBelongsTo, imagePath
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -304,7 +314,8 @@ SET
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
-    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+    databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
+    imagePath = NULLIF(imagePath, 'NULL')  
 
 -- ============================================
 -- 5 Load CSV data into InSituTable
@@ -317,7 +328,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
     myGroup, test, symbol, parameters, testMethod,
-    alt1, alt2, alt3, materials, applications, databaseBelongsTo
+    alt1, alt2, alt3, materials, applications, databaseBelongsTo, imagePath
 )
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -331,6 +342,7 @@ SET
     materials = NULLIF(materials, 'NULL'),
     applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');  
+    imagePath = NULLIF(imagePath,'NULL')
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -347,7 +359,7 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-    myGroup,Test,symbol,parameters,testMethod,alt1,alt2,alt3,sampleType,fieldSampleMass,specimenType,SpecimenMass,specimenNumbers,specimenD,specimenL,specimenW,specimenH,specimenMaxGrainSize ,specimenMaxGrainFraction,schedulingNotes,databaseBelongsTo
+    myGroup,Test,symbol,parameters,testMethod,alt1,alt2,alt3,sampleType,fieldSampleMass,specimenType,SpecimenMass,specimenNumbers,specimenD,specimenL,specimenW,specimenH,specimenMaxGrainSize ,specimenMaxGrainFraction,schedulingNotes,databaseBelongsTo,imagePath
 )
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -371,6 +383,7 @@ SET
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL');    
+    imagePath = NULLIF(imagePath, 'NULL')
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,

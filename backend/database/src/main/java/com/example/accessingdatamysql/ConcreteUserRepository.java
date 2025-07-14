@@ -40,4 +40,5 @@ public interface ConcreteUserRepository extends CrudRepository<ConcreteUser, Lon
     List<ConcreteUser> findAllByOrderByParametersAsc();
 
     List<ConcreteUser> findByDatabaseBelongsToContainingIgnoreCase(String databaseBelongsTo);
+    List<ConcreteUser> findByImagePathContainingIgnoreCase(String imagePath);
 }

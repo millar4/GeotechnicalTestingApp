@@ -75,6 +75,9 @@ public class ConcreteUser {
     @Column(name = "databaseBelongsTo", nullable = true, unique = false)
     private String databaseBelongsTo;
 
+    @Column(name = "imagePath", nullable = true, unique = false)
+    private String imagePath;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -140,4 +143,9 @@ public class ConcreteUser {
 
     public String getDatabaseBelongsTo() {return databaseBelongsTo;}
     public void setDatabaseBelongsTo(String databaseBelongsTo) {this.databaseBelongsTo = databaseBelongsTo;}
+
+    public String getImagePath() {return imagePath;}
+    public void setImagePath(String imagePath) {this.imagePath = imagePath;}
+
+
 }

@@ -92,6 +92,7 @@ const Box = ({
     specimenH,
     specimenMaxGrainSize,
     specimenMaxGrainFraction,
+    imagePath,
     isActive,
     onClick,
     searchcontent,
@@ -148,7 +149,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
   
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
-    const { selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
+    const {selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
     const [mergedResults, setMergedResults] = useState([]);
 
 
@@ -319,13 +320,20 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
       
     return (
         <Draggable handle=".floating-header">
-            <ResizableBox
-                width={400}
-                height={400}
-                minConstraints={[300, 300]}
-                maxConstraints={[800, 600]}
-                className="floating-details"
-                style={{ position: 'fixed', top: position.y, left: position.x }}
+            <div
+                style={{
+                position: 'fixed',
+                top: position.y,
+                left: position.x,
+                width: '500',
+                height: 'auto', // Let content dictate height
+                maxHeight: '80vh', // Prevent it from growing too large
+                overflowY: 'auto', // Allow scrolling if content exceeds max height
+                backgroundColor: '#fff',  // White background
+                border: '1px solid #ccc', // Optional border
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional shadow
+                zIndex: 1000, // Ensure it sits on top of other elements
+            }}
             >
                 <button aria-label="Close Details" className="close-button"
                     onClick={() => {
@@ -444,10 +452,21 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     {formatData(details.applications) && (
                         <p><strong>Applications:</strong> {formatData(details.applications)}</p>
                     )}
+                    {details.imagePath && (
+                    <div>
+                        <p><strong>Image:</strong></p>
+                        <p><strong>Resolved Path:</strong> /{details.imagePath.replace(/^public[\\/]+/, '')}</p>
+                        <img
+                        src={`/${details.imagePath.replace(/^public[\\/]+/, '')}`}
+                        alt="Uploaded"
+                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                        />
+                    </div>
+                    )}
+
                 </div>
-            </ResizableBox>
+            </div>
         </Draggable>
-    
     );
 };
 

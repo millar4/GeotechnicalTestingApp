@@ -185,4 +185,9 @@ public class EarthworksUserController {
     public List<EarthworksUser> getByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
         return EarthworksUserRepository.findByDatabaseBelongsToContainingIgnoreCase(databaseBelongsTo);
     }
+
+    @GetMapping("/imagePath")
+    public List<EarthworksUser> getByImagePath(@RequestParam String imagePath) {
+        return EarthworksUserRepository.findByDatabaseBelongsToContainingIgnoreCase(imagePath);
+    }
 }

@@ -41,5 +41,6 @@ public interface EarthworksUserRepository extends JpaRepository<EarthworksUser, 
     List<EarthworksUser> findByClassification(String classification);
 
     List<EarthworksUser> findByDatabaseBelongsToContainingIgnoreCase(String databaseBelongsTo);
+    List<EarthworksUser> findByImagePathContainingIgnoreCase(String imagePath);
 
 }

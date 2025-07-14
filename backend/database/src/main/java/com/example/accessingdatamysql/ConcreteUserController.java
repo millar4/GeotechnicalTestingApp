@@ -264,9 +264,9 @@ public class ConcreteUserController{
         return ConcreteUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
 
-    @GetMapping("/databaseBelongsTo")
-    public List<ConcreteUser> getByDatabaseBelongsTo(@RequestParam String schedulingNotes) {
-        return ConcreteUserRepository.findByDatabaseBelongsToContainingIgnoreCase(schedulingNotes);
+    @GetMapping("/imagePath")
+    public List<ConcreteUser> getBy(@RequestParam String imagePath) {
+        return ConcreteUserRepository.findByImagePathContainingIgnoreCase(imagePath);
     }
 
 }

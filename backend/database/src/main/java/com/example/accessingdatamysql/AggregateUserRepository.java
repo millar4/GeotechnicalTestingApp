@@ -42,4 +42,6 @@ public interface AggregateUserRepository extends JpaRepository<AggregateUser, Lo
 
     List<AggregateUser> findByDatabaseBelongsToContainingIgnoreCase(String databaseBelongsTo);
 
+    List<AggregateUser> findByImagePathContainingIgnoreCase(String imagePath);
+
 }

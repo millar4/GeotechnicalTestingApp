@@ -64,6 +64,9 @@ public class AggregateUser {
     @Column(name = "databaseBelongsTo", nullable = true, unique = false)
     private String databaseBelongsTo;
 
+    @Column(name = "imagePath", nullable = true, unique = false)
+    private String imagePath;
+
     // Getters and setters for all fields
     public Long getId() {return id;}
     public String getGroup() { return group; }
@@ -108,9 +111,11 @@ public class AggregateUser {
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
 
-
     public String getDatabaseBelongsTo() { return databaseBelongsTo; }
     public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePatho(String imagePath) { this.imagePath = imagePath; }
 
 }
 

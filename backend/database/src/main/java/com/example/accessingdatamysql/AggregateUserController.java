@@ -185,4 +185,9 @@ public class AggregateUserController {
     public List<AggregateUser> getByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
         return AggregateUserRepository.findByDatabaseBelongsToContainingIgnoreCase(databaseBelongsTo);
     }
+
+    @GetMapping("/imagePath")
+    public List<AggregateUser> getByImagePathBelongsTo(@RequestParam String imagePath) {
+        return AggregateUserRepository.findByImagePathContainingIgnoreCase(imagePath);
+    }
 }

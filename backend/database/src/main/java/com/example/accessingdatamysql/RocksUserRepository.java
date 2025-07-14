@@ -78,6 +78,9 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
     @Query("SELECT r FROM RocksUser r WHERE r.classification IS NOT NULL AND r.databaseBelongsTo <> 'NULL' AND LOWER(r.databaseBelongsTo) LIKE LOWER(CONCAT('%', ?1, '%'))")
     List<RocksUser> findByDatabaseBelongsToContaining(String databaseBelongsTo);
 
+    @Query("SELECT r FROM RocksUser r WHERE r.classification IS NOT NULL AND r.databaseBelongsTo <> 'NULL' AND LOWER(r.databaseBelongsTo) LIKE LOWER(CONCAT('%', ?1, '%'))")
+    List<RocksUser> findByImagePathContaining(String imagePath);
+
     List<RocksUser> findAllByOrderByIdAsc();
     List<RocksUser> findAllByOrderByMyGroupAsc();
     List<RocksUser> findAllByOrderByTestMethodAsc();

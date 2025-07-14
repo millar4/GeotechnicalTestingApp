@@ -429,28 +429,32 @@ html, body, * {
   display: flex;
   align-items: center;
   gap: 8px; 
+  z-index:1001;
 }
 
-.account-button,
-.stop-button {
-  padding: 8px 15px;         
-  font-size: 0.9rem;         
+/* Make account button always clickable and on top */
+.account-button {
+  padding: 8px 15px;
+  font-size: 0.9rem;
   font-weight: bold;
-  border: 2px solid white;  
+  border: 2px solid white;
   border-radius: 8px;
-  background-color: #8d1d1c;    
-  color: white;               
+  background-color: #8d1d1c;
+  color: white;
   cursor: pointer;
-  margin-left: 5px;          
+  margin-left: 5px;
   transition: background-color 0.3s, color 0.3s;
+  position: relative;
+  z-index: 999999 !important;         /* ensure it's on top of all layers */
+  pointer-events: auto !important;   /* ensure it can always be clicked */
 }
 
-.account-button:hover,
-.stop-button:hover {
-  background-color: white;    
-  color: black;               
-  border: 2px solid black;   
+.account-button:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
 }
+
 
 .logo-container {
   padding: 10px 20px; 
