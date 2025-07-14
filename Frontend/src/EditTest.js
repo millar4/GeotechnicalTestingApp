@@ -18,6 +18,7 @@ const EditTest = () => {
     test: initialData.test || '',
     group: initialData.group || '',
     symbol: initialData.symbol || '',
+    classification: initialData.classification || '',
     parameters: initialData.parameters || '',
     testMethod: initialData.testMethod || '',
     alt1: initialData.alt1 || '',
@@ -121,39 +122,59 @@ const EditTest = () => {
 
 const dynamicFields = {
   aggregate: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'
   ],
   rock: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group','classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
     'schedulingNotes'
   ],
   concrete: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
     'schedulingNotes'
   ],
   database: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'
   ],
   inSituTest: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group', 'classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'materials', 'applications'
   ],
   earthworks: [
-    'test', 'group', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'materials', 'applications'
   ]
 };
 
 
   const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;
+  const fieldLabels = {
+  test: 'Test Name',
+  group: 'Test Group',
+  classification: 'UKSGI (3rd ed.) BOQ No.',
+  testMethod: 'Primary Test Method',
+  alt1: 'Altenative Method 1',
+  alt2: 'Alternative Method 2',
+  alt3: 'Alternative Method 3',
+  sampleType: 'Sample Condition',
+  fieldSampleMass: 'Field Sample Mass required(kg)',
+  specimenType: 'Specimen Condition',
+  specimenMass: 'Specimen Mass required(kg)',
+  specimenNumbers: 'Number of Specimens required',
+  specimenD: 'Specimen Diameter (mm)',
+  specimenL: 'Specimen Length (mm)',
+  specimenW: 'Specimen Width (mm)',
+  specimenH: 'Specimen Height (mm)',
+  specimenMaxGrainSize: 'Maximum Particle Size',
+  specimenMaxGrainFraction: 'Particle size fractions used in test (mm)'
+};
 
   return (
     <div className="edit-item-container">
@@ -161,7 +182,7 @@ const dynamicFields = {
       <form onSubmit={handleSubmit}>
         {selectedFields.map(field => (
           <div className="form-row" key={field}>
-            <label htmlFor={field}>{field.replace(/([A-Z])/g, ' $1')}:</label>
+            <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
             <input
               id={field}
               name={field}

@@ -109,22 +109,22 @@ const Box = ({
             </h3>
         )}
             {formatData(group, searchcontent, pattern, "group") && (
-                <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
+                <p>Test Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
-                <p>AGS: {formatData(classification, searchcontent, pattern, "classification")}</p>
+                <p>UKSGI (3rd ed). BOQ. No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
-                <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
+                <p> Test Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
             )}
             {formatData(testMethod, searchcontent, pattern, "testMethod") && (
-                <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
+                <p>Primary Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
             )}
             {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
-                <p>Field Sample Mass: {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+                <p>Field Sample Mass required (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
             )}
             {formatData(sampleType, searchcontent, pattern, "sampleType") && (
-                <p>Sample Type: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
+                <p>Sample Condition: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
             )}
         </button>
     );
@@ -231,25 +231,25 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
         printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
 
         if (formatData(details.test, searchcontent, pattern, "test")) {
-            printWindow.document.write(`<p><strong>Test:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
+            printWindow.document.write(`<p><strong>Test Name:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
         }
         if (formatData(details.group, searchcontent, pattern, "group")) {
-            printWindow.document.write(`<p><strong>Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
+            printWindow.document.write(`<p><strong>Test Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
         }
         if (formatData(details.classification, searchcontent, pattern, "classification")) {
-            printWindow.document.write(`<p><strong>AGS:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) BOQ No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
         }
         if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
-            printWindow.document.write(`<p><strong>Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
+            printWindow.document.write(`<p><strong>Test Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
         }
         if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
-            printWindow.document.write(`<p><strong>Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
+            printWindow.document.write(`<p><strong>Primary Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
         }
 
         const fields = [
-            "Alt 1", "Alt 2", "Alt 3", "Sample Type", "Field Sample Mass", "Specimen Type",
-            "Specimen Mass", "Specimen Numbers", "Specimen Diameter", "Specimen Length", "Specimen Width",
-            "Specimen Height", "Specimen Max Grain Size", "Specimen Max Grain Fraction",
+            "Alternative 1", "Alternative 2", "Alternative 3", "Sample Condition", "Field Sample Mass required(kg)", "Specimen Condition",
+            "Specimen Mass required(kg)", "Number of specimens requried", "Specimen Diameter (mm)", "Specimen Length (mm)", "Specimen Width (mm)",
+            "Specimen Height (mm)", "Maxmium Particle Size (mm)", "Particle size fractions used in test (mm)",
             "Scheduling Notes", "Materials", "Applications"
         ];
 
@@ -389,59 +389,59 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong></strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
                     )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
-                        <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
+                        <p><strong>Test Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
-                        <p><strong>AGS:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
+                        <p><strong>UKSGI (3rd ed.). BOQ No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
-                        <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
+                        <p><strong> Test Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
                     )}
                     {formatData(details.testMethod, searchcontent, pattern, "testMethod") && (
-                        <p><strong>Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
+                        <p><strong>Primary Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
                     )}
                     <h4>Additional Fields</h4>
                     {formatData(details.alt1) && (
-                        <p><strong>Alt1:</strong> {formatData(details.alt1)}</p>
+                        <p><strong>Alternative Method 1:</strong> {formatData(details.alt1)}</p>
                     )}
                     {formatData(details.alt2) && (
-                        <p><strong>Alt2:</strong> {formatData(details.alt2)}</p>
+                        <p><strong>Alternative Method 2:</strong> {formatData(details.alt2)}</p>
                     )}
                     {formatData(details.alt3) && (
-                        <p><strong>Alt3:</strong> {formatData(details.alt3)}</p>
+                        <p><strong>Alternative Method 3:</strong> {formatData(details.alt3)}</p>
                     )}
                     {formatData(details.sampleType) && (
-                        <p><strong>Sample Type:</strong> {formatData(details.sampleType)}</p>
+                        <p><strong>Sample Condition:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass(kg):</strong> {formatData(details.fieldSampleMass)}</p>
+                        <p><strong>Field Sample Mass Required(kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
-                        <p><strong>Specimen Type:</strong> {formatData(details.specimenType)}</p>
+                        <p><strong>Specimen Condition:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass(kg):</strong> {formatData(details.specimenMass)}</p>
+                        <p><strong>Specimen Mass required(kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
-                        <p><strong>Specimen Numbers:</strong> {formatData(details.specimenNumbers)}</p>
+                        <p><strong>Number of specimens required:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen D(mm):</strong> {formatData(details.specimenD)}</p>
+                        <p><strong>Specimen Diameter(mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen L(mm):</strong> {formatData(details.specimenL)}</p>
+                        <p><strong>Specimen Length(mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen W(mm):</strong> {formatData(details.specimenW)}</p>
+                        <p><strong>Specimen Width(mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen H(mm):</strong> {formatData(details.specimenH)}</p>
+                        <p><strong>Specimen Height(mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Specimen Max Grain Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
+                        <p><strong>Maximum Particle Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
-                        <p><strong>Specimen Max Grain Fraction(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
+                        <p><strong>Particle Size Fractions used in test(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
                     )}
                     {formatData(details.schedulingNotes) && (
                         <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes)}</p>
