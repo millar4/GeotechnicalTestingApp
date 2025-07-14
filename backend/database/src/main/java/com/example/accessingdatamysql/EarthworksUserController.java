@@ -121,6 +121,11 @@ public class EarthworksUserController {
         return EarthworksUserRepository.findByTestContainingIgnoreCase(test);
     }
 
+    @GetMapping("/testAlsoKnownAs")
+    public List<EarthworksUser> getByTestAlsoKnownAs(@RequestParam String test) {
+        return EarthworksUserRepository.findByTestAlsoKnownAs(test);
+    }
+
     @GetMapping("/symbol")
     public List<EarthworksUser> getBySymbol(@RequestParam String symbol) {
         return EarthworksUserRepository.findBySymbolContainingIgnoreCase(symbol);

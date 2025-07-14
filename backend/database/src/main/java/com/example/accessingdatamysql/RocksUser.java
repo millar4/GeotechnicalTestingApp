@@ -15,6 +15,9 @@ public class RocksUser {
     @Column(name = "test", nullable = true, unique = false)
     private String test;
 
+    @Column(name = "testAlsoKnownAs", nullable = true, unique = false)
+    private String testAlsoKnownAs;
+
     @Column(name = "myGroup", nullable = true, unique = false)
     private String myGroup;
 
@@ -87,6 +90,9 @@ public class RocksUser {
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
+
+    public String getTestAlsoKnownAs() { return test; }
+    public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs = testAlsoKnownAs; }
 
     public String getClassification() { return classification; }
     public void setClassification(String classification) { this.classification = classification; }

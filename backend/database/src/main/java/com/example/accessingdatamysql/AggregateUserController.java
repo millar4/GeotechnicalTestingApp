@@ -58,6 +58,7 @@ public class AggregateUserController {
             existingUser.setSpecimenMaxGrainSize(updatedUser.getSpecimenMaxGrainSize());
             existingUser.setSpecimenMaxGrainFraction(updatedUser.getSpecimenMaxGrainFraction());
             existingUser.setSchedulingNotes(updatedUser.getSchedulingNotes());
+            existingUser.setDatabaseBelongsTo(updatedUser.getDatabaseBelongsTo());
 
             return AggregateUserRepository.save(existingUser);
         } else {
@@ -119,6 +120,10 @@ public class AggregateUserController {
     @GetMapping("/test")
     public List<AggregateUser> getByTest(@RequestParam String test) {
         return AggregateUserRepository.findByTestContainingIgnoreCase(test);
+    }
+    @GetMapping("/testAlsoKnownAs")
+    public List<AggregateUser> getByTestAlsoKnown(@RequestParam String testAlsoKnownAs) {
+        return AggregateUserRepository.findByTestAlsoKnownAs(testAlsoKnownAs);
     }
 
     @GetMapping("/symbol")

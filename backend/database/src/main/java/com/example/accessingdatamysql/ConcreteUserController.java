@@ -157,6 +157,12 @@ public class ConcreteUserController{
         return ConcreteUserRepository.findByTestContaining(test);
     }
 
+    @GetMapping(path = "/testAlsoKnownAs")
+    @ResponseBody
+    public List<ConcreteUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+        return ConcreteUserRepository.findByTestContaining(testAlsoKnownAs);
+    }
+
     @GetMapping(path = "/symbol")
     @ResponseBody
     public List<ConcreteUser> getUsersBySymbol(@RequestParam String symbol) {

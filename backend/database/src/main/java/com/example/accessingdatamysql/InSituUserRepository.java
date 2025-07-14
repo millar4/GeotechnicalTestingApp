@@ -14,6 +14,7 @@ public interface InSituUserRepository extends CrudRepository<InSituUser, Long> {
 
     List<InSituUser> findByMyGroupContaining(String myGroup);
     List<InSituUser> findByTestContaining(String test);
+    List<InSituUser> findByTestAlsoKnownAsContaining(String testAlsoKnownAs);
     List<InSituUser> findBySymbolContaining(String symbol);
     List<InSituUser> findByParametersContaining(String parameters);
     List<InSituUser> findByTestMethodContaining(String testMethod);

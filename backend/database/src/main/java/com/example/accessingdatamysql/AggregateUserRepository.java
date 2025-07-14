@@ -20,6 +20,8 @@ public interface AggregateUserRepository extends JpaRepository<AggregateUser, Lo
 
     List<AggregateUser> findByTestMethodContainingIgnoreCase(String testMethod);
 
+    List<AggregateUser> findByTestAlsoKnownAs(String testAlsoKnownAs);
+
     List<AggregateUser> findBySampleTypeContainingIgnoreCase(String sampleType);
 
     List<AggregateUser> findByFieldSampleMassContainingIgnoreCase(String fieldSampleMass);

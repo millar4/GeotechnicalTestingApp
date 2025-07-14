@@ -145,6 +145,12 @@ public class InSituUserController{
         return InSituUserRepository.findByTestContaining(test);
     }
 
+    @GetMapping(path = "/testAlsoKnownAs")
+    @ResponseBody
+    public List<InSituUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+        return InSituUserRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs);
+    }
+
     @GetMapping(path = "/symbol")
     @ResponseBody
     public List<InSituUser> getUsersBySymbol(@RequestParam String symbol) {

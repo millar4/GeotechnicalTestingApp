@@ -18,6 +18,9 @@ public class ConcreteUser {
     @Column(name = "test", nullable = true, unique = false)
     private String test;
 
+    @Column(name = "testAlsoKnownAs", nullable = true, unique = false)
+    private String testAlsoKnownAs;
+
     @Column(name = "symbol", nullable = true, unique = true)
     private String symbol;
 
@@ -83,6 +86,9 @@ public class ConcreteUser {
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
+
+    public String getTestAlsoKnownAs() { return test; }
+    public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs = testAlsoKnownAs; }
 
     public String getmyGroup() { return myGroup; }
     public void setmyGroup(String myGroup) { this.myGroup = myGroup; }

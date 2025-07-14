@@ -14,6 +14,7 @@ public interface GeotechnicalEntryRepository extends CrudRepository<Geotechnical
 
     List<GeotechnicalEntry> findByGroupContaining(String group);
     List<GeotechnicalEntry> findByTestContaining(String test);
+    List<GeotechnicalEntry> findByTestAlsoKnownAsContaining(String test);
     List<GeotechnicalEntry> findByClassificationContaining(String classification);
     List<GeotechnicalEntry> findBySymbolContaining(String symbol);
     List<GeotechnicalEntry> findByParametersContaining(String parameters);

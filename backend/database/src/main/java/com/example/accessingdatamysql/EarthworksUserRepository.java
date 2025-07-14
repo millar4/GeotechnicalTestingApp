@@ -19,6 +19,7 @@ public interface EarthworksUserRepository extends JpaRepository<EarthworksUser, 
     List<EarthworksUser> findByParametersContainingIgnoreCase(String parameters);
 
     List<EarthworksUser> findByTestMethodContainingIgnoreCase(String testMethod);
+    List<EarthworksUser> findByTestAlsoKnownAs(String testAlsoKnownAs);
 
     List<EarthworksUser> findBySampleTypeContainingIgnoreCase(String sampleType);
 

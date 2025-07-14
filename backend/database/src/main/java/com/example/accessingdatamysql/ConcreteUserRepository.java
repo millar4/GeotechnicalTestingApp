@@ -14,6 +14,7 @@ public interface ConcreteUserRepository extends CrudRepository<ConcreteUser, Lon
 
     List<ConcreteUser> findByMyGroupContaining(String myGroup);
     List<ConcreteUser> findByTestContaining(String test);
+    List<ConcreteUser> findByTestAlsoKnownAs(String testAlsoKnownAs);
     List<ConcreteUser> findBySymbolContaining(String symbol);
     List<ConcreteUser> findByParametersContaining(String parameters);
     List<ConcreteUser> findByTestMethodContaining(String testMethod);

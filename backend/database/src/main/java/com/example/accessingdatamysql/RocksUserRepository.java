@@ -18,6 +18,9 @@ public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
     @Query("SELECT r FROM RocksUser r WHERE r.test IS NOT NULL AND r.test <> 'NULL' AND r.test LIKE %?1%")
     List<RocksUser> findByTestContaining(String test);
 
+    @Query("SELECT r FROM RocksUser r WHERE r.test IS NOT NULL AND r.test <> 'NULL' AND r.test LIKE %?1%")
+    List<RocksUser> findByTestAlsoKnownAsContaining(String testAlsoKnownAs);
+
     @Query("SELECT r FROM RocksUser r WHERE r.symbol IS NOT NULL AND r.symbol <> 'NULL' AND r.symbol LIKE %?1%")
     List<RocksUser> findBySymbolContaining(String symbol);
 

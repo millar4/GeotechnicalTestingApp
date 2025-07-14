@@ -40,7 +40,6 @@ public class RocksUserController {
             return (List<RocksUser>) RocksUserRepository.findAll();
         }
 
-
         switch (sort) {
             case "default":
                 return RocksUserRepository.findAllByOrderByIdAsc();
@@ -156,6 +155,12 @@ public class RocksUserController {
     @ResponseBody
     public List<RocksUser> getUsersByTest(@RequestParam String test) {
         return RocksUserRepository.findByTestContaining(test);
+    }
+
+    @GetMapping(path = "/testAlsoKnownAs")
+    @ResponseBody
+    public List<RocksUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+        return RocksUserRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs);
     }
 
     @GetMapping(path = "/symbol")
