@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     myGroup VARCHAR(100),
     classification VARCHAR(100),
     test VARCHAR(1000),
-    testAlsoKnownAs (1000),
+    testAlsoKnownAs VARCHAR(1000),
     symbol VARCHAR(10),
     parameters VARCHAR(1000),
     testMethod VARCHAR(100),
@@ -108,7 +108,8 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
-    imagePath VARCHAR(100)
+    imagePath VARCHAR(100),
+    testDescription VARCHAR(100)
 );
 
 -- ============================================
@@ -139,7 +140,8 @@ CREATE TABLE IF NOT EXISTS ConcreteTable(
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
-    imagePath VARCHAR(100)
+    imagePath VARCHAR(100),
+    testDescription VARCHAR(100)
 );
 
 -- ============================================
@@ -163,7 +165,8 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
-    imagePath VARCHAR (100)
+    imagePath VARCHAR (100),
+    testDescription VARCHAR(100)
 );
 
 -- ============================================
@@ -198,7 +201,8 @@ SET
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL'),
-    imagePath = NULLIF(imagePath, 'NULL');
+    imagePath = NULLIF(imagePath, 'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
     
 
 -- ============================================
@@ -222,7 +226,7 @@ SET
     myGroup = NULLIF(myGroup, 'NULL'),
     classification = NULLIF(classification, 'NULL'),
     test = NULLIF(test, 'NULL'),
-    testAlsoKnownAs = NULLIF(test, 'NULL'),
+    testAlsoKnownAs = NULLIF(testAlsoKnownAs, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
     testMethod = NULLIF(testMethod, 'NULL'),
@@ -242,7 +246,8 @@ SET
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
-    imagePath = NULLIF(imagePath, 'NULL');
+    imagePath = NULLIF(imagePath, 'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
 
 
 -- ============================================
@@ -265,7 +270,7 @@ SET
     myGroup = NULLIF(myGroup, 'NULL'),
     classification = NULLIF(classification, 'NULL'),
     test = NULLIF(test, 'NULL'),
-    testAlsoKnownAs = NULLIF(test, 'NULL'),
+    testAlsoKnownAs = NULLIF(testAlsoKnownAs, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
     testMethod = NULLIF(testMethod, 'NULL'),
@@ -284,7 +289,8 @@ SET
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
-    imagePath = NULLIF(imagePath, 'NULL');
+    imagePath = NULLIF(imagePath, 'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
 
 -- ============================================
 -- 5 Load CSV data into ConcreteTable
@@ -306,7 +312,7 @@ IGNORE 1 LINES
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
     test = NULLIF(test, 'NULL'),
-    testAlsoKnownAs = NULLIF(test, 'NULL'),
+    testAlsoKnownAs = NULLIF(testAlsoKnownAs, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
     testMethod = NULLIF(testMethod, 'NULL'),
@@ -326,7 +332,8 @@ SET
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
-    imagePath = NULLIF(imagePath, 'NULL');  
+    imagePath = NULLIF(imagePath, 'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
 
 -- ============================================
 -- 5 Load CSV data into InSituTable
@@ -344,7 +351,7 @@ IGNORE 1 LINES
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
     test = NULLIF(test, 'NULL'),
-    testAlsoKnownAs = NULLIF(test, 'NULL'),
+    testAlsoKnownAs = NULLIF(testAlsoKnownAs, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
     testMethod = NULLIF(testMethod, 'NULL'),
@@ -354,7 +361,8 @@ SET
     materials = NULLIF(materials, 'NULL'),
     applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
-    imagePath = NULLIF(imagePath,'NULL');
+    imagePath = NULLIF(imagePath,'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -376,7 +384,7 @@ IGNORE 1 LINES
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
     test = NULLIF(test, 'NULL'),
-    testAlsoKnownAs = NULLIF(test, 'NULL'),
+    testAlsoKnownAs = NULLIF(testAlsoKnownAs, 'NULL'),
     symbol = NULLIF(symbol, 'NULL'),
     parameters = NULLIF(parameters, 'NULL'),
     testMethod = NULLIF(testMethod, 'NULL'),

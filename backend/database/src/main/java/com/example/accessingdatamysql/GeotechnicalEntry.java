@@ -87,7 +87,7 @@ public class GeotechnicalEntry {
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
 
-    public String getTestAlsoKnownAs() { return test; }
+    public String getTestAlsoKnownAs() { return testAlsoKnownAs; }
     public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs = testAlsoKnownAs; }
 
     public String getGroup() { return group; }

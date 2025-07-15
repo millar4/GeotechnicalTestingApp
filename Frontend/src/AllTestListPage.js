@@ -73,6 +73,7 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
 const Box = ({
     id,
     test,
+    testAlsoKnownAs,
     group,
     classification,
     symbol,
@@ -401,6 +402,9 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong>Primary Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
                     )}
                     <h4>Additional Fields</h4>
+                    {formatData(details.testAlsoKnownAs, searchcontent, pattern, "testAlsoKnownAs") && (
+                        <p><strong>Test Also Known As: </strong> {formatData(details.testAlsoKnownAs)}</p>
+                    )} 
                     {formatData(details.alt1) && (
                         <p><strong>Alternative Method 1:</strong> {formatData(details.alt1)}</p>
                     )}
