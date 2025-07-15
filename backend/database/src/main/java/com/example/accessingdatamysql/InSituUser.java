@@ -48,9 +48,11 @@ public class InSituUser {
     @Column(name = "applications", nullable =true, unique = false)
     private String applications;
 
-     @Column(name = "imagePath", nullable =true, unique = false)
+    @Column(name = "imagePath", nullable =true, unique = false)
     private String imagePath;
 
+    @Column(name = "testDescription", nullable =true, unique = false)
+    private String testDescription;
 
 
     public Long getId() { return id; }
@@ -96,8 +98,10 @@ public class InSituUser {
         this.databaseBelongsTo = databaseBelongsTo;
     }
 
-
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription = testDescription; }
 
 }

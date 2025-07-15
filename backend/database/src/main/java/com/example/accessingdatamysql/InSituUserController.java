@@ -197,4 +197,11 @@ public class InSituUserController{
         return InSituUserRepository.findByImagePathContaining(imagePath);
     }
 
+
+    @GetMapping("/testDescription")
+    public List<InSituUser> getByTestDescription(@RequestParam String imagePath) {
+        return InSituUserRepository.findByTestDescriptionContaining(imagePath);
+    }
+    
+
 }

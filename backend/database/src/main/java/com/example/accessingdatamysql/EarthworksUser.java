@@ -70,6 +70,9 @@ public class EarthworksUser {
     @Column(name = "imagePath", nullable = true, unique = false)
     private String imagePath;
 
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
+
     // Getters and setters for all fields
     public Long getId() {return id;}
     public String getGroup() { return group; }
@@ -123,6 +126,9 @@ public class EarthworksUser {
 
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public String getTestDescription() { return imagePath; }
+    public void setTestDescription(String imagePath) { this.imagePath = imagePath; }
 
 }
 

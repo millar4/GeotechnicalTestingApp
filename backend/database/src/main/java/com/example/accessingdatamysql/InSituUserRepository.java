@@ -30,5 +30,6 @@ public interface InSituUserRepository extends CrudRepository<InSituUser, Long> {
 
     List<InSituUser> findByDatabaseBelongsToContainingIgnoreCase(String schedulingNotes);
     List<InSituUser> findByImagePathContaining(String imagePath);
+    List<InSituUser> findByTestDescriptionContaining(String imagePath);
 }
 

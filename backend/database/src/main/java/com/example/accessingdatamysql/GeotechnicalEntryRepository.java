@@ -44,4 +44,5 @@ public interface GeotechnicalEntryRepository extends CrudRepository<Geotechnical
 
     List<GeotechnicalEntry> findByDatabaseBelongsToContaining(String databaseBelongsTo);
     List<GeotechnicalEntry> findByImagePathContaining(String imagePath);
+    List<GeotechnicalEntry> findByTestDescriptionContaining(String testDescription);
 }

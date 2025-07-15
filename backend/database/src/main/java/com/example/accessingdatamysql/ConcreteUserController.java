@@ -271,8 +271,13 @@ public class ConcreteUserController{
     }
 
     @GetMapping("/imagePath")
-    public List<ConcreteUser> getBy(@RequestParam String imagePath) {
+    public List<ConcreteUser> getByImagePath(@RequestParam String imagePath) {
         return ConcreteUserRepository.findByImagePathContainingIgnoreCase(imagePath);
+    }
+
+    @GetMapping("testDescription/")
+    public List<ConcreteUser> getByTestDescriptionContaining(@RequestParam String imagePath) {
+        return ConcreteUserRepository.findByTestDescriptionContainingIgnoreCase(imagePath);
     }
 
 }

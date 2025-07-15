@@ -81,6 +81,9 @@ public class GeotechnicalEntry {
     @Column(name = "imagePath", nullable = true, unique = false)
     private String imagePath;
 
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -152,4 +155,7 @@ public class GeotechnicalEntry {
 
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath= imagePath;}
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescritpion) { this.testDescription= testDescription;}
 }

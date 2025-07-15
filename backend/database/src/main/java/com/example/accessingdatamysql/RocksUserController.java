@@ -286,4 +286,10 @@ public class RocksUserController {
         return RocksUserRepository.findByImagePathContaining(imagePath);
     }
 
+    @GetMapping("/TestDescription")
+    public List<RocksUser> getByTestDescription(@RequestParam String testDescription) {
+        return RocksUserRepository.findByTestDescriptionContaining(testDescription);
+    }
+
+
 }

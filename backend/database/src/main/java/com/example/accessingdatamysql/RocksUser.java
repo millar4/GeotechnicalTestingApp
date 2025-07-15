@@ -84,6 +84,8 @@ public class RocksUser {
     @Column(name = "imagePath", nullable = true, unique = false)
     private String imagePath;
 
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -159,4 +161,8 @@ public class RocksUser {
 
     public String getImagePath() { return databaseBelongsTo; }
     public void setImagePath(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription= testDescription; }
 }
+

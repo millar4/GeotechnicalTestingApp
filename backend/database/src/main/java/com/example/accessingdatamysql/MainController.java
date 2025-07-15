@@ -274,4 +274,10 @@ public class MainController {
     public List<GeotechnicalEntry> getUsersByImagepath(@RequestParam String imagePath) {
         return userRepository.findByImagePathContaining(imagePath);
     }
+
+   @GetMapping(path = "/testDescription")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String imagePath) {
+        return userRepository.findByImagePathContaining(imagePath);
+    }
 }
