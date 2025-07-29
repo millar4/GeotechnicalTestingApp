@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS GeotechnicalTable (
     specimenMaxGrainSize VARCHAR(100),
     specimenMaxGrainFraction VARCHAR(100),
     databaseBelongsTo VARCHAR(100),
-    imagePath VARCHAR(100)
+    imagePath VARCHAR(100),
+    testDescription VARCHAR(5000)
 );
 
 
@@ -49,7 +50,8 @@ CREATE TABLE IF NOT EXISTS InSituTable (
     materials VARCHAR(1000),
     applications VARCHAR(1000),
     databaseBelongsTo VARCHAR(1000),
-    imagePath VARCHAR(100)
+    imagePath VARCHAR(100),
+    testDescription VARCHAR(5000)
 );
 
 CREATE TABLE IF NOT EXISTS EarthworksTable (
@@ -77,7 +79,8 @@ CREATE TABLE IF NOT EXISTS EarthworksTable (
     specimenMaxGrainFraction VARCHAR(100),
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
-    imagePath VARCHAR(100)
+    imagePath VARCHAR(100),
+    testDescription VARCHAR(5000)
 );
 
 -- ============================================
@@ -109,7 +112,7 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription VARCHAR(100)
+    testDescription TEXT
 );
 
 -- ============================================
@@ -141,7 +144,7 @@ CREATE TABLE IF NOT EXISTS ConcreteTable(
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription VARCHAR(100)
+    testDescription VARCHAR(5000)
 );
 
 -- ============================================
@@ -166,7 +169,7 @@ CREATE TABLE IF NOT EXISTS AggregateTable (
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR (100),
-    testDescription VARCHAR(100)
+    testDescription VARCHAR(5000)
 );
 
 -- ============================================
@@ -183,7 +186,7 @@ IGNORE 1 LINES
     sampleType, fieldSampleMass, specimenType,
     specimenMass, specimenNumbers,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo, imagePath
+    schedulingNotes, databaseBelongsTo, imagePath, testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -220,7 +223,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo, imagePath
+    schedulingNotes, databaseBelongsTo, imagePath, testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -264,7 +267,7 @@ IGNORE 1 LINES
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath
+    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath,testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -307,7 +310,7 @@ IGNORE 1 LINES
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
     specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo, imagePath
+    schedulingNotes, databaseBelongsTo, imagePath, testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -346,7 +349,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
     myGroup, test, testAlsoKnownAs, symbol, parameters, testMethod,
-    alt1, alt2, alt3, materials, applications, databaseBelongsTo, imagePath
+    alt1, alt2, alt3, materials, applications, databaseBelongsTo, imagePath, testDescription
 )
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -379,7 +382,7 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
 (
-    myGroup,Test,testAlsoKnownAs,symbol,parameters,testMethod,alt1,alt2,alt3,sampleType,fieldSampleMass,specimenType,SpecimenMass,specimenNumbers,specimenD,specimenL,specimenW,specimenH,specimenMaxGrainSize ,specimenMaxGrainFraction,schedulingNotes,databaseBelongsTo,imagePath
+    myGroup,Test,testAlsoKnownAs,symbol,parameters,testMethod,alt1,alt2,alt3,sampleType,fieldSampleMass,specimenType,SpecimenMass,specimenNumbers,specimenD,specimenL,specimenW,specimenH,specimenMaxGrainSize ,specimenMaxGrainFraction,schedulingNotes,databaseBelongsTo,imagePath,testDescription
 )
 SET  
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -399,12 +402,12 @@ SET
     specimenD = NULLIF(specimenD, 'NULL'),
     specimenL = NULLIF(specimenL, 'NULL'),
     specimenW = NULLIF(specimenW, 'NULL'),
-    specimenH = NULLIF(specimenH, 'NULL'),
     specimenMaxGrainSize = NULLIF(specimenMaxGrainSize, 'NULL'),
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
-    imagePath = NULLIF(imagePath, 'NULL');
+    imagePath = NULLIF(imagePath, 'NULL'),
+    testDescription = NULLIF(testDescription, 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,

@@ -14,12 +14,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
-      - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
-      - ./backend/database/aggregate.csv:/var/lib/mysql-files/aggregate.csv
-      - ./backend/database/rockParameters.csv:/var/lib/mysql-files/rockParameters.csv
-      - ./backend/database/concreteParameters.csv:/var/lib/mysql-files/concreteParameters.csv
-      - ./backend/database/inSituParameters.csv:/var/lib/mysql-files/inSituParameters.csv
-      - ./backend/database/earthworksParameters.csv:/var/lib/mysql-files/earthworksParameters.csv
+      - ./backend/database/src/csv:/var/lib/mysql-files  # Only bind-mount CSVs here
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -40,12 +35,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: secret
     volumes:
       - ./backend/database/target/database-0.0.1-snapshot.jar:/app/app.jar
-      - ./backend/database/parameters2.csv:/app/parameters2.csv
-      - ./backend/database/aggregate.csv:/app/aggregate.csv
-      - ./backend/database/rockParameters.csv:/app/rockParameters.csv
-      - ./backend/database/concreteParameters.csv:/app/concreteParameters.csv
-      - ./backend/database/inSituParameters.csv:/app/inSituParameters.csv
-      - ./backend/database/earthworksParameters.csv:/app/earthworksParameters.csv
     ports:
       - "8080:8080"
     command: ["java", "-jar", "/app/app.jar"]

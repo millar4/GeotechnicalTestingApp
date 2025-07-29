@@ -94,6 +94,7 @@ const Box = ({
     specimenMaxGrainSize,
     specimenMaxGrainFraction,
     imagePath,
+    testDescription,
     isActive,
     onClick,
     searchcontent,
@@ -248,10 +249,10 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
         }
 
         const fields = [
-            "Alternative 1", "Alternative 2", "Alternative 3", "Sample Condition", "Field Sample Mass required(kg)", "Specimen Condition",
-            "Specimen Mass required(kg)", "Number of specimens requried", "Specimen Diameter (mm)", "Specimen Length (mm)", "Specimen Width (mm)",
-            "Specimen Height (mm)", "Maxmium Particle Size (mm)", "Particle size fractions used in test (mm)",
-            "Scheduling Notes", "Materials", "Applications"
+                'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+                'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+                'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+                'schedulingNotes', 'testDescription', 'materials',' applications'
         ];
 
         fields.forEach((key) => {
@@ -456,6 +457,20 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     {formatData(details.applications) && (
                         <p><strong>Applications:</strong> {formatData(details.applications)}</p>
                     )}
+                    {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
+                    <div>
+                        <strong>Test Description:</strong>
+                        {formatData(details.testDescription)
+                            .split(/\r?\n+/) // split on line breaks
+                            .filter(para => para.trim() !== '') // skip empty lines
+                            .map((para, index) => (
+                                <span key={index} style={{ display: 'block', marginBottom: '1em' }}>
+                                    {para}
+                                </span>
+                            ))}
+                    </div>
+                )}
+
                     {details.imagePath && (
                     <div>
                         <p><strong>Image:</strong></p>

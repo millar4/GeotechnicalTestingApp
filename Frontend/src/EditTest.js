@@ -36,7 +36,8 @@ const EditTest = () => {
     specimenMaxGrainSize: initialData.specimenMaxGrainSize || '',
     specimenMaxGrainFraction: initialData.specimenMaxGrainFraction || '',
     schedulingNotes: initialData.schedulingNotes || '',
-    databaseBelongsTo: initialData.databaseBelongsTo || ''
+    databaseBelongsTo: initialData.databaseBelongsTo || '',
+    testDescription: initialData.testDescription || ''
   });
 
   const testId = initialData.id;
@@ -75,6 +76,8 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
+        console.log('Submitting update with:', formData);
+
         const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
           method: 'PUT',
           headers: {
@@ -124,32 +127,32 @@ const dynamicFields = {
   aggregate: [
     'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
   ],
   rock: [
     'test', 'group','classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-    'schedulingNotes'
+    'schedulingNotes', 'testDescription'
   ],
   concrete: [
     'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-    'schedulingNotes'
+    'schedulingNotes', 'testDescription'
   ],
   database: [
     'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
     'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction'
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
   ],
   inSituTest: [
     'test', 'group', 'classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'materials', 'applications'
+    'sampleType', 'materials', 'applications', 'testDescription'
   ],
   earthworks: [
     'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'materials', 'applications'
+    'sampleType', 'materials', 'applications', 'testDescription'
   ]
 };
 
@@ -173,7 +176,8 @@ const dynamicFields = {
   specimenW: 'Specimen Width (mm)',
   specimenH: 'Specimen Height (mm)',
   specimenMaxGrainSize: 'Maximum Particle Size',
-  specimenMaxGrainFraction: 'Particle size fractions used in test (mm)'
+  specimenMaxGrainFraction: 'Particle size fractions used in test (mm)',
+  testDescription: 'Test Description: '
 };
 
   return (
@@ -181,17 +185,31 @@ const dynamicFields = {
       <h2>Edit Test</h2>
       <form onSubmit={handleSubmit}>
         {selectedFields.map(field => (
-          <div className="form-row" key={field}>
-            <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
-            <input
-              id={field}
-              name={field}
-              value={formData[field] || ''}
-              onChange={handleChange}
-              placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
-            />
-          </div>
-        ))}
+            <div className="form-row" key={field}>
+              <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
+              
+              {field === 'testDescription' ? (
+                <textarea
+                  id={field}
+                  name={field}
+                  value={formData[field] || ''}
+                  onChange={handleChange}
+                  placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
+                  rows={6}
+                  style={{ resize: 'vertical' }}
+                />
+              ) : (
+                <input
+                  id={field}
+                  name={field}
+                  value={formData[field] || ''}
+                  onChange={handleChange}
+                  placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
+                />
+              )}
+            </div>
+))}
+
 
         <div className="button-group">
           <button type="submit">Update</button>
