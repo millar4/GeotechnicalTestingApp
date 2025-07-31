@@ -5,10 +5,13 @@ WORKDIR /app
 # Update package list and upgrade if necessary
 RUN apt-get update && apt-get upgrade -y
 
+# Install mariadb-client (for mysql command) and curl
+RUN apt-get update && apt-get install -y mariadb-client curl
+
 # Copy the Spring Boot application JAR
 COPY ./backend/database/target/database-0.0.1-*.jar /app/app.jar
 
-# Copy the CSV files from the correct directory
+# Copy CSV parameter files
 COPY ./backend/database/src/csv/parameters2.csv /parameters2.csv
 COPY ./backend/database/src/csv/aggregate.csv /aggregate.csv
 COPY ./backend/database/src/csv/rockParameters.csv /rockParameters.csv

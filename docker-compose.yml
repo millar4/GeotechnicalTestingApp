@@ -1,9 +1,20 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
-    container_name: GeoTechnicalDatabase
+  restore:
     image: mysql:8
+    container_name: RestoreBackup
+    volumes:
+      - mysql_data:/var/lib/mysql       # Target volume
+      - ./local_backups:/backup         # Where backups live on host
+      - ./backend/database/src/backups/restore_backup.sh:/restore.sh:ro
+    entrypoint: [ "sh", "-c", "sleep 3 && sh /restore.sh" ]
+    restart: "no"
+
+
+  mysql:
+    image: mysql:8
+    container_name: GeoTechnicalDatabase
     environment:
       MYSQL_DATABASE: GeotechnicalTests
       MYSQL_USER: myuser
@@ -13,8 +24,11 @@ services:
       - "4000:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
-      - ./backend/database/src/csv:/var/lib/mysql-files  # Only bind-mount CSVs here
+      - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+      - ./backend/database/src/csv:/var/lib/mysql-files
+    depends_on:
+      restore:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -33,11 +47,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://GeoTechnicalDatabase:3306/GeotechnicalTests
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: secret
-    volumes:
-      - ./backend/database/target/database-0.0.1-snapshot.jar:/app/app.jar
     ports:
       - "8080:8080"
-    command: ["java", "-jar", "/app/app.jar"]
 
   frontend:
     container_name: GeoTechnicalFrontend

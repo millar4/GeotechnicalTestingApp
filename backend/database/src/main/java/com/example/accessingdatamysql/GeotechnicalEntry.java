@@ -157,5 +157,5 @@ public class GeotechnicalEntry {
     public void setImagePath(String imagePath) { this.imagePath= imagePath;}
 
     public String getTestDescription() { return testDescription; }
-    public void setTestDescription(String testDescritpion) { this.testDescription= testDescription;}
+    public void setTestDescription(String testDescription) { this.testDescription= testDescription;}
 }

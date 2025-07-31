@@ -464,7 +464,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                             .split(/\r?\n+/) // split on line breaks
                             .filter(para => para.trim() !== '') // skip empty lines
                             .map((para, index) => (
-                                <span key={index} style={{ display: 'block', marginBottom: '1em' }}>
+                                <span key={index} style={{ display: 'block', marginBottom: '1em', textAlign: 'left' }}>
                                     {para}
                                 </span>
                             ))}
@@ -478,7 +478,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <img
                         src={`/${details.imagePath.replace(/^public[\\/]+/, '')}`}
                         alt="Uploaded"
-                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                        style={{ width: '150px', height: '150px', objectFit: 'cover'}}
                         />
                     </div>
                     )}

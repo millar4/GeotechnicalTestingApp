@@ -128,6 +128,7 @@ public class MainController {
         existing.setSpecimenH(updatedEntry.getSpecimenH());
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setTestDescription(updatedEntry.getTestDescription());
         // ... More fields can be assigned here as well.
 
         // 3. Preservation of updated entities
@@ -277,7 +278,7 @@ public class MainController {
 
    @GetMapping(path = "/testDescription")
     @ResponseBody
-    public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String imagePath) {
-        return userRepository.findByImagePathContaining(imagePath);
+    public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String testDescription) {
+        return userRepository.findByTestDescriptionContaining(testDescription);
     }
 }
