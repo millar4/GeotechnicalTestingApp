@@ -69,11 +69,15 @@ public class SecurityConfig {
             .requestMatchers("/database/add", "/database/delete/**", "/database/update/**").hasRole("ADMIN")
             .requestMatchers("/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**").hasRole("ADMIN")
             .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
+            // Add this under the admin-only section
+            .requestMatchers("/edititem/**").hasRole("ADMIN")
+
 
             // User + Admin read access
             .requestMatchers(HttpMethod.GET, "/database/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/aggregate/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/rocks/**").hasAnyRole("USER", "ADMIN")
+
 
             // Admin routes
             .requestMatchers("/admin/**").hasRole("ADMIN")

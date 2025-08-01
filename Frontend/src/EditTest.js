@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import './EditTest.css';
 
@@ -7,7 +7,7 @@ const EditTest = () => {
   const location = useLocation();
   const { targetDatabase } = useParams();  // Extract targetDatabase from URL
   const state = location.state;
-  
+
   // Log for debugging
   console.log(location.state);
   console.log('targetDatabase:', targetDatabase);
@@ -45,6 +45,7 @@ const EditTest = () => {
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
+  const [isAuthorized, setIsAuthorized] = useState(false); // Authorization check state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,94 +124,129 @@ const EditTest = () => {
     }
   };
 
-const dynamicFields = {
-  aggregate: [
-    'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
-  ],
-  rock: [
-    'test', 'group','classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-    'schedulingNotes', 'testDescription'
-  ],
-  concrete: [
-    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-    'schedulingNotes', 'testDescription'
-  ],
-  database: [
-    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
-  ],
-  inSituTest: [
-    'test', 'group', 'classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'materials', 'applications', 'testDescription'
-  ],
-  earthworks: [
-    'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'materials', 'applications', 'testDescription'
-  ]
-};
+  // Handle the token validation
+  useEffect(() => {
+    const token = localStorage.getItem('token');
 
+    if (!token) {
+      setIsAuthorized(false);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])); // Decode token
+      console.log('Token Payload:', payload); // Debug: log the token payload
+
+      const roles = payload?.roles || payload?.authorities || [];
+      const sub = payload?.sub; // Extract 'sub' (username)
+
+      console.log('Roles:', roles); // Debug: log the roles
+
+      const isAdmin = Array.isArray(roles)
+        ? roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')
+        : typeof roles === 'string'
+        ? roles.includes('ADMIN')
+        : false;
+
+      // If there are no roles, fallback to the 'sub' value being 'admin'
+      const isAdminUser = isAdmin || sub === 'admin';
+
+      setIsAuthorized(isAdminUser); // Set authorization based on role or 'sub' value
+    } catch (err) {
+      console.error('Token decoding error:', err);
+      setIsAuthorized(false);
+    }
+  }, []);
+
+  const dynamicFields = {
+    aggregate: [
+      'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
+    ],
+    rock: [
+      'test', 'group','classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+      'schedulingNotes', 'testDescription'
+    ],
+    concrete: [
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+      'schedulingNotes', 'testDescription'
+    ],
+    database: [
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
+    ],
+    inSituTest: [
+      'test', 'group', 'classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'materials', 'applications', 'testDescription'
+    ],
+    earthworks: [
+      'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'sampleType', 'materials', 'applications', 'testDescription'
+    ]
+  };
 
   const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;
   const fieldLabels = {
-  test: 'Test Name',
-  group: 'Test Group',
-  classification: 'UKSGI (3rd ed.) BOQ No.',
-  testMethod: 'Primary Test Method',
-  alt1: 'Altenative Method 1',
-  alt2: 'Alternative Method 2',
-  alt3: 'Alternative Method 3',
-  sampleType: 'Sample Condition',
-  fieldSampleMass: 'Field Sample Mass required(kg)',
-  specimenType: 'Specimen Condition',
-  specimenMass: 'Specimen Mass required(kg)',
-  specimenNumbers: 'Number of Specimens required',
-  specimenD: 'Specimen Diameter (mm)',
-  specimenL: 'Specimen Length (mm)',
-  specimenW: 'Specimen Width (mm)',
-  specimenH: 'Specimen Height (mm)',
-  specimenMaxGrainSize: 'Maximum Particle Size',
-  specimenMaxGrainFraction: 'Particle size fractions used in test (mm)',
-  testDescription: 'Test Description: '
-};
+    test: 'Test Name',
+    group: 'Test Group',
+    classification: 'UKSGI (3rd ed.) BOQ No.',
+    testMethod: 'Primary Test Method',
+    alt1: 'Altenative Method 1',
+    alt2: 'Alternative Method 2',
+    alt3: 'Alternative Method 3',
+    sampleType: 'Sample Condition',
+    fieldSampleMass: 'Field Sample Mass required(kg)',
+    specimenType: 'Specimen Condition',
+    specimenMass: 'Specimen Mass required(kg)',
+    specimenNumbers: 'Number of Specimens required',
+    specimenD: 'Specimen Diameter (mm)',
+    specimenL: 'Specimen Length (mm)',
+    specimenW: 'Specimen Width (mm)',
+    specimenH: 'Specimen Height (mm)',
+    specimenMaxGrainSize: 'Maximum Particle Size',
+    specimenMaxGrainFraction: 'Particle size fractions used in test (mm)',
+    testDescription: 'Test Description: '
+  };
+
+  if (!isAuthorized) {
+    navigate('/404'); // Redirect to 404 page if unauthorized
+    return null; // Prevent rendering the rest of the component
+  }
 
   return (
     <div className="edit-item-container">
       <h2>Edit Test</h2>
       <form onSubmit={handleSubmit}>
         {selectedFields.map(field => (
-            <div className="form-row" key={field}>
-              <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
-              
-              {field === 'testDescription' ? (
-                <textarea
-                  id={field}
-                  name={field}
-                  value={formData[field] || ''}
-                  onChange={handleChange}
-                  placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
-                  rows={6}
-                  style={{ resize: 'vertical' }}
-                />
-              ) : (
-                <input
-                  id={field}
-                  name={field}
-                  value={formData[field] || ''}
-                  onChange={handleChange}
-                  placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
-                />
-              )}
-            </div>
-))}
-
-
+          <div className="form-row" key={field}>
+            <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
+            {field === 'testDescription' ? (
+              <textarea
+                id={field}
+                name={field}
+                value={formData[field] || ''}
+                onChange={handleChange}
+                placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
+                rows={6}
+                style={{ resize: 'vertical' }}
+              />
+            ) : (
+              <input
+                id={field}
+                name={field}
+                value={formData[field] || ''}
+                onChange={handleChange}
+                placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
+              />
+            )}
+          </div>
+        ))}
         <div className="button-group">
           <button type="submit">Update</button>
           <button type="button" onClick={handleDelete}>Delete</button>

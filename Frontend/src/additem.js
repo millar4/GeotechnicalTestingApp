@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './additem.css';
 
@@ -17,6 +17,41 @@ const AddItem = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setIsAuthorized(false);
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      const roles = payload?.roles || payload?.authorities || [];
+      const sub = payload?.sub;
+
+      const isAdmin = Array.isArray(roles)
+        ? roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')
+        : typeof roles === 'string'
+        ? roles.includes('ADMIN')
+        : false;
+
+      const isAdminUser = isAdmin || sub === 'admin';
+      setIsAuthorized(isAdminUser);
+    } catch (err) {
+      console.error('Token decoding error:', err);
+      setIsAuthorized(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      navigate('/404');
+    }
+  }, [isAuthorized, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,7 +70,6 @@ const AddItem = () => {
 
   const handleFinalSubmit = async () => {
     try {
-      // Authenticate the user
       const authResponse = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,9 +86,8 @@ const AddItem = () => {
       }
 
       const token = authData.token;
-      localStorage.setItem('token', token); // Store token for reuse
+      localStorage.setItem('token', token);
 
-      // POST the form data
       const url = `http://localhost:8080/${databaseTarget}/add`;
 
       const addResponse = await fetch(url, {
@@ -67,6 +100,7 @@ const AddItem = () => {
       });
 
       if (!addResponse.ok) {
+        if (addResponse.status === 403) throw new Error('403 Forbidden: Unauthorized access');
         throw new Error(`Failed to add item: ${addResponse.status}`);
       }
 
@@ -89,6 +123,8 @@ const AddItem = () => {
   const formatLabel = (label) =>
     label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
+  if (!isAuthorized) return null; // Prevent rendering before authorization
+
   return (
     <div className="add-item-container">
       <h2>Add New Item</h2>
@@ -104,8 +140,8 @@ const AddItem = () => {
             <option value="aggregate">Aggregate</option>
             <option value="rocks">Rock</option>
             <option value="concrete">Concrete</option>
-            <option value="inSituTest">Concrete</option>
-            <option value="earthworks">Concrete</option>
+            <option value="inSituTest">In Situ</option>
+            <option value="earthworks">Earthworks</option>
           </select>
         </div>
 
