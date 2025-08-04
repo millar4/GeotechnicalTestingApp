@@ -12,6 +12,7 @@ import EditTest from './EditTest';
 import AccountManagement from './AccountManagement';
 import PrintableData from './PrintableData';  // Import PrintableData
 import Footer from './footer'
+import NotFound from './NotFound'; 
 
 function App() {
   const [searchcontent, updatecontent] = useState('');
@@ -123,6 +124,7 @@ function App() {
           <Route path="/additem" element={<AddItem />} />
           <Route path="/accountmanagement" element={<AccountManagement />} />
           <Route path="/edititem/:targetDatabase" element={<EditTest />} />
+          <Route path="*" element={<NotFound />} />
 
     
           {/* Render PrintableData on a new route */}

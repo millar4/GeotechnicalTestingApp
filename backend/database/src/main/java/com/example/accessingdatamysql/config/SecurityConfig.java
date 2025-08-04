@@ -71,6 +71,7 @@ public class SecurityConfig {
             .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
             // Add this under the admin-only section
             .requestMatchers("/edititem/**").hasRole("ADMIN")
+            .requestMatchers("/additem", "/additem/**").hasRole("ADMIN")
 
 
             // User + Admin read access

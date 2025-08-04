@@ -5,13 +5,8 @@ import './EditTest.css';
 const EditTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { targetDatabase } = useParams();  // Extract targetDatabase from URL
+  const { targetDatabase } = useParams();
   const state = location.state;
-
-  // Log for debugging
-  console.log(location.state);
-  console.log('targetDatabase:', targetDatabase);
-
   const initialData = state?.details || {};
 
   const [formData, setFormData] = useState({
@@ -41,11 +36,10 @@ const EditTest = () => {
   });
 
   const testId = initialData.id;
-
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
-  const [isAuthorized, setIsAuthorized] = useState(false); // Authorization check state
+  const [isAuthorized, setIsAuthorized] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,8 +71,6 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
-        console.log('Submitting update with:', formData);
-
         const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
           method: 'PUT',
           headers: {
@@ -89,6 +81,7 @@ const EditTest = () => {
         });
 
         if (!updateResponse.ok) {
+          if (updateResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to update this resource.');
           throw new Error(`Failed to update item: ${updateResponse.status}`);
         }
 
@@ -102,6 +95,7 @@ const EditTest = () => {
         });
 
         if (!deleteResponse.ok) {
+          if (deleteResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to delete this resource.');
           throw new Error(`Failed to delete item: ${deleteResponse.status}`);
         }
 
@@ -124,34 +118,23 @@ const EditTest = () => {
     }
   };
 
-  // Handle the token validation
   useEffect(() => {
     const token = localStorage.getItem('token');
-
-    if (!token) {
-      setIsAuthorized(false);
-      return;
-    }
+    if (!token) return setIsAuthorized(false);
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decode token
-      console.log('Token Payload:', payload); // Debug: log the token payload
-
+      const payload = JSON.parse(atob(token.split('.')[1]));
       const roles = payload?.roles || payload?.authorities || [];
-      const sub = payload?.sub; // Extract 'sub' (username)
-
-      console.log('Roles:', roles); // Debug: log the roles
+      const sub = payload?.sub;
 
       const isAdmin = Array.isArray(roles)
         ? roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')
         : typeof roles === 'string'
-        ? roles.includes('ADMIN')
-        : false;
+          ? roles.includes('ADMIN')
+          : false;
 
-      // If there are no roles, fallback to the 'sub' value being 'admin'
       const isAdminUser = isAdmin || sub === 'admin';
-
-      setIsAuthorized(isAdminUser); // Set authorization based on role or 'sub' value
+      setIsAuthorized(isAdminUser);
     } catch (err) {
       console.error('Token decoding error:', err);
       setIsAuthorized(false);
@@ -160,64 +143,79 @@ const EditTest = () => {
 
   const dynamicFields = {
     aggregate: [
-      'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+      'specimenMaxGrainFraction', 'testDescription'
     ],
     rock: [
-      'test', 'group','classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-      'schedulingNotes', 'testDescription'
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+      'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
     ],
     concrete: [
       'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-      'schedulingNotes', 'testDescription'
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+      'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
     ],
     database: [
       'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction', 'testDescription'
+      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+      'specimenMaxGrainFraction', 'testDescription'
     ],
     inSituTest: [
-      'test', 'group', 'classification','symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'materials', 'applications', 'testDescription'
     ],
     earthworks: [
-      'test', 'group','classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
       'sampleType', 'materials', 'applications', 'testDescription'
     ]
   };
 
   const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;
+
   const fieldLabels = {
     test: 'Test Name',
     group: 'Test Group',
     classification: 'UKSGI (3rd ed.) BOQ No.',
+    symbol: 'Symbol',
+    parameters: 'Parameters',
     testMethod: 'Primary Test Method',
-    alt1: 'Altenative Method 1',
+    alt1: 'Alternative Method 1',
     alt2: 'Alternative Method 2',
     alt3: 'Alternative Method 3',
     sampleType: 'Sample Condition',
-    fieldSampleMass: 'Field Sample Mass required(kg)',
+    fieldSampleMass: 'Field Sample Mass (kg)',
     specimenType: 'Specimen Condition',
-    specimenMass: 'Specimen Mass required(kg)',
-    specimenNumbers: 'Number of Specimens required',
+    specimenMass: 'Specimen Mass (kg)',
+    specimenNumbers: 'Number of Specimens',
     specimenD: 'Specimen Diameter (mm)',
     specimenL: 'Specimen Length (mm)',
     specimenW: 'Specimen Width (mm)',
     specimenH: 'Specimen Height (mm)',
-    specimenMaxGrainSize: 'Maximum Particle Size',
-    specimenMaxGrainFraction: 'Particle size fractions used in test (mm)',
-    testDescription: 'Test Description: '
+    specimenMaxGrainSize: 'Max Particle Size',
+    specimenMaxGrainFraction: 'Grain Fraction Used (mm)',
+    schedulingNotes: 'Scheduling Notes',
+    materials: 'Materials',
+    applications: 'Applications',
+    testDescription: 'Test Description'
   };
 
-  if (!isAuthorized) {
-    navigate('/404'); // Redirect to 404 page if unauthorized
-    return null; // Prevent rendering the rest of the component
+  if (isAuthorized === false) {
+    return (
+      <div className="edit-item-container">
+        <h2>403 - Forbidden</h2>
+        <p>Resource not found or you do not have permission to access this test.</p>
+        <button onClick={() => navigate('/')}>Go to Home</button>
+      </div>
+    );
   }
+
+  if (isAuthorized === null) return null;
 
   return (
     <div className="edit-item-container">
@@ -225,16 +223,14 @@ const EditTest = () => {
       <form onSubmit={handleSubmit}>
         {selectedFields.map(field => (
           <div className="form-row" key={field}>
-            <label htmlFor={field}>{fieldLabels[field] || field.replace(/([A-Z])/g, ' $1')}:</label>
-            {field === 'testDescription' ? (
+            <label htmlFor={field}>{fieldLabels[field] || field}:</label>
+            {field === 'testDescription' || field === 'schedulingNotes' ? (
               <textarea
                 id={field}
                 name={field}
                 value={formData[field] || ''}
                 onChange={handleChange}
-                placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
-                rows={6}
-                style={{ resize: 'vertical' }}
+                rows={4}
               />
             ) : (
               <input
@@ -242,7 +238,6 @@ const EditTest = () => {
                 name={field}
                 value={formData[field] || ''}
                 onChange={handleChange}
-                placeholder={`Enter ${field.replace(/([A-Z])/g, ' $1')}`}
               />
             )}
           </div>
@@ -258,11 +253,11 @@ const EditTest = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>
-              Please enter your password to {actionType === 'update' ? 'confirm update' : 'confirm deletion'}
+              Enter password to confirm {actionType === 'update' ? 'update' : 'deletion'}
             </h3>
             <input
               type="password"
-              placeholder="Enter password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

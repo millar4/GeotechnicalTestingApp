@@ -74,7 +74,7 @@ function Theupperbar({
           window.location.reload();
         });
     }, 5000);
-  
+
     return () => clearInterval(interval);
   }, []);
 
@@ -206,32 +206,31 @@ function Theupperbar({
         )}
       </div>
 
-      
       <div className="centered-nav">
-      {['Home', 'Search', 'Test List', 'About'].map((label) => {
-        const routeMap = {
-          'Home': 'https://soils.co.uk/',
-          'Search': '/',
-          'Test List': '/AllTestListPage',
-          'About': '/about',
-        };
+        {['Home', 'Search', 'Test List', 'About'].map((label) => {
+          const routeMap = {
+            'Home': 'https://soils.co.uk/',
+            'Search': '/',
+            'Test List': '/AllTestListPage',
+            'About': '/about',
+          };
 
-        const isHovered = hovered === label;
+          const isHovered = hovered === label;
 
-        return (
-          <Link
-            key={label}
-            to={routeMap[label]}
-            onMouseEnter={() => setHovered(label)}
-            onMouseLeave={() => setHovered('')}
-            className="nav-link"
-          >
-            {label}
-            <span className={`nav-underline ${isHovered ? 'active' : ''}`} />
-          </Link>
-        );
-      })}
-  </div>
+          return (
+            <Link
+              key={label}
+              to={routeMap[label]}
+              onMouseEnter={() => setHovered(label)}
+              onMouseLeave={() => setHovered('')}
+              className="nav-link"
+            >
+              {label}
+              <span className={`nav-underline ${isHovered ? 'active' : ''}`} />
+            </Link>
+          );
+        })}
+      </div>
 
       {/* Search form */}
       <form
@@ -260,10 +259,10 @@ function Theupperbar({
             className="history-dropdown"
             onMouseDown={(e) => e.preventDefault()}
           >
-            {[...searchhistory]
+            {[...new Set(searchhistory.map(item => item.content))] // Remove duplicates by content
               .sort((a, b) => {
-                const startsWithA = a.content.startsWith(searchcontent);
-                const startsWithB = b.content.startsWith(searchcontent);
+                const startsWithA = a.startsWith(searchcontent);
+                const startsWithB = b.startsWith(searchcontent);
                 if (startsWithA && !startsWithB) return -1;
                 if (!startsWithA && startsWithB) return 1;
                 return 0;
@@ -274,8 +273,8 @@ function Theupperbar({
                   className="history-item"
                   onClick={() => handleClickHistory(item)}
                 >
-                  {item.content}{' '}
-                  <span className="history-mode">({item.mode})</span>
+                  {item}{' '}
+                  <span className="history-mode">({searchhistory.find(i => i.content === item)?.mode})</span>
                   <span
                     className="delete-icon"
                     onClick={(e) => {
@@ -318,4 +317,3 @@ function Theupperbar({
 }
 
 export default Theupperbar;
-

@@ -17,45 +17,41 @@ const AddItem = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(null);
 
+  // Authorization check
   useEffect(() => {
     const token = localStorage.getItem('token');
-
-    if (!token) {
-      setIsAuthorized(false);
-      return;
-    }
-
+    if (!token) return setIsAuthorized(false);
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-
       const roles = payload?.roles || payload?.authorities || [];
       const sub = payload?.sub;
-
-      const isAdmin = Array.isArray(roles)
-        ? roles.includes('ROLE_ADMIN') || roles.includes('ADMIN')
-        : typeof roles === 'string'
-        ? roles.includes('ADMIN')
-        : false;
-
-      const isAdminUser = isAdmin || sub === 'admin';
-      setIsAuthorized(isAdminUser);
+      const isAdmin =
+        (Array.isArray(roles) && (roles.includes('ROLE_ADMIN') || roles.includes('ADMIN'))) ||
+        (typeof roles === 'string' && roles.includes('ADMIN')) ||
+        sub === 'admin';
+      setIsAuthorized(isAdmin);
     } catch (err) {
-      console.error('Token decoding error:', err);
+      console.error('Token parsing error:', err);
       setIsAuthorized(false);
     }
   }, []);
 
-  useEffect(() => {
-    if (!isAuthorized) {
-      navigate('/404');
-    }
-  }, [isAuthorized, navigate]);
+  // If not authorized, show 403 message
+  if (isAuthorized === false) {
+    return (
+      <div className="edit-item-container">
+        <h2>403 Forbidden</h2>
+        <p>You do not have permission to add an item to this database.</p>
+        <p>If you believe this is an error, please contact an administrator.</p>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -78,9 +74,7 @@ const AddItem = () => {
           password
         })
       });
-
       const authData = await authResponse.json();
-
       if (!authResponse.ok || !authData.token) {
         throw new Error('Authentication failed: incorrect password or missing token');
       }
@@ -89,7 +83,6 @@ const AddItem = () => {
       localStorage.setItem('token', token);
 
       const url = `http://localhost:8080/${databaseTarget}/add`;
-
       const addResponse = await fetch(url, {
         method: 'POST',
         headers: {
@@ -100,11 +93,14 @@ const AddItem = () => {
       });
 
       if (!addResponse.ok) {
-        if (addResponse.status === 403) throw new Error('403 Forbidden: Unauthorized access');
+        if (addResponse.status === 403) {
+          alert('403 Forbidden: You are not authorized to add this resource.');
+          return;
+        }
         throw new Error(`Failed to add item: ${addResponse.status}`);
       }
 
-      alert('Item successfully added!');
+      alert('Item added successfully!');
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -123,7 +119,7 @@ const AddItem = () => {
   const formatLabel = (label) =>
     label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
-  if (!isAuthorized) return null; // Prevent rendering before authorization
+  if (isAuthorized === null) return null;
 
   return (
     <div className="add-item-container">
@@ -155,13 +151,6 @@ const AddItem = () => {
               placeholder="None"
               onChange={handleChange}
               autoFocus={idx === 0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  const nextInput = document.querySelector(`#${fields[idx + 1]}`);
-                  if (nextInput) nextInput.focus();
-                }
-              }}
             />
           </div>
         ))}
@@ -175,13 +164,13 @@ const AddItem = () => {
       {showConfirm && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>Are you sure to add a new item?</h3>
+            <h3>Confirm adding new item?</h3>
             <table>
               <tbody>
-                {fields.map(field => (
-                  <tr key={field}>
-                    <td><strong>{formatLabel(field)}:</strong></td>
-                    <td>{formData[field]}</td>
+                {fields.map(f => (
+                  <tr key={f}>
+                    <td><strong>{formatLabel(f)}:</strong></td>
+                    <td>{formData[f]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -200,7 +189,7 @@ const AddItem = () => {
             <h3>Please enter your password to confirm</h3>
             <input
               type="password"
-              placeholder="Enter password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
