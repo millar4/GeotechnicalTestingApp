@@ -9,6 +9,7 @@ import lockIcon from './Lock4.png';
 import PrintableData from './PrintableData';
 import { useSelectedTests, handleToggleTest } from './SelectedTestsContext'; // Import this at the top
 
+
 // Helper function to escape special characters in search term for regex
 const escapeRegExp = (string) => {
     return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&');
@@ -473,6 +474,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     {details.imagePath && (
                     <div>
                         <p><strong>Image:</strong></p>
+                        <p><strong>Resolved Path:</strong> /{details.imagePath.replace(/^public[\\/]+/, '')}</p>
                         <img
                         src={`/${details.imagePath.replace(/^public[\\/]+/, '')}`}
                         alt="Uploaded"

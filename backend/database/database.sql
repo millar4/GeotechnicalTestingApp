@@ -260,8 +260,8 @@ LOAD DATA INFILE '/var/lib/mysql-files/parameters2.csv'
 INTO TABLE GeotechnicalTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
+LINES TERMINATED BY '\r\n'
+IGNORE 1 ROWS
 (
     myGroup, classification, test, testAlsoKnownAs, symbol, parameters, testMethod,
     alt1, alt2, alt3, sampleType, fieldSampleMass,
