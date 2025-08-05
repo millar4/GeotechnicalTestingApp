@@ -471,7 +471,7 @@ html, body, * {
 
 
 .close-button {
-  position: absolute;
+  position: dyn;
   bottom: 15px;   /* Was: top: 15px; */
   left: 15px;     /* Was: right: 15px; */
   font-size: 30px;
