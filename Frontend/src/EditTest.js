@@ -37,6 +37,7 @@ const EditTest = () => {
 
   const testId = initialData.id;
   const [imageFile, setImageFile] = useState(null);
+  const [imageURL, setImageURL] = useState(initialData.imageURL || '');  // This will hold the image URL for the existing image
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
@@ -48,7 +49,9 @@ const EditTest = () => {
   };
 
   const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setImageFile(file);
+    setImageURL(URL.createObjectURL(file)); // This will set the preview image
   };
 
   const handleSubmit = (e) => {
@@ -269,6 +272,13 @@ const EditTest = () => {
         ))}
 
         {/* ✅ Image Upload Field */}
+        {imageURL && (
+          <div className="form-row">
+            <label>Current Image:</label>
+            <img src={imageURL} alt="Current" style={{ width: '200px', height: 'auto' }} />
+          </div>
+        )}
+        
         <div className="form-row">
           <label htmlFor="image">Upload Image (optional):</label>
           <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
