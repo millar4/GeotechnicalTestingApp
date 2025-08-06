@@ -1,23 +1,20 @@
 package com.example.accessingdatamysql;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "http://localhost:3100")
 @Controller
@@ -26,6 +23,8 @@ public class MainController {
 
     @Autowired
     private GeotechnicalEntryRepository userRepository;
+
+    private final String uploadDir = "uploads/";
 
     @GetMapping(path = "/all/table")
     public String getAllUsersByTable(Model model) {
@@ -65,13 +64,9 @@ public class MainController {
         }
 
         Optional<GeotechnicalEntry> userOpt = userRepository.findById(longId);
-        if (userOpt.isPresent()) {
-            return Collections.singletonList(userOpt.get());
-        } else {
-            return Collections.emptyList();
-        }
+        return userOpt.map(Collections::singletonList).orElse(Collections.emptyList());
     }
-        
+
     @GetMapping("/classification")
     @ResponseBody
     public List<GeotechnicalEntry> getUserByClassification(@RequestParam String classification) {
@@ -80,7 +75,7 @@ public class MainController {
 
     @PostMapping("/add")
     @ResponseBody
-    public GeotechnicalEntry addGeotechnicalEntry (@RequestBody GeotechnicalEntry GeotechnicalEntry) {
+    public GeotechnicalEntry addGeotechnicalEntry(@RequestBody GeotechnicalEntry GeotechnicalEntry) {
         return userRepository.save(GeotechnicalEntry);
     }
 
@@ -96,19 +91,66 @@ public class MainController {
         }
     }
 
+    /**
+     * ✅ Update entry via JSON (no image)
+     */
     @PutMapping("/update/{id}")
     @ResponseBody
     public ResponseEntity<GeotechnicalEntry> updateGeotechnicalEntry(
             @PathVariable Long id,
             @RequestBody GeotechnicalEntry updatedEntry) {
-        // 1. Find an existing record in the database based on the primary key id.
+
         Optional<GeotechnicalEntry> existingOpt = userRepository.findById(id);
         if (existingOpt.isEmpty()) {
-           // Returns 404 if the corresponding record is not found.
             return ResponseEntity.notFound().build();
         }
-        // 2. Synchronize the updated fields passed by the front-end into the database.
+
         GeotechnicalEntry existing = existingOpt.get();
+        updateFields(existing, updatedEntry);
+
+        GeotechnicalEntry saved = userRepository.save(existing);
+        return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * ✅ Update entry with image (multipart form)
+     */
+    @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<GeotechnicalEntry> updateGeotechnicalEntryWithImage(
+            @PathVariable Long id,
+            @RequestPart("data") GeotechnicalEntry updatedEntry,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        Optional<GeotechnicalEntry> existingOpt = userRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        GeotechnicalEntry existing = existingOpt.get();
+        updateFields(existing, updatedEntry);
+
+        if (image != null && !image.isEmpty()) {
+            try {
+                Files.createDirectories(Paths.get(uploadDir));
+                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                Files.copy(image.getInputStream(), filePath);
+
+                existing.setImagePath(filePath.toString());
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body(null);
+            }
+        }
+
+        GeotechnicalEntry saved = userRepository.save(existing);
+        return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * ✅ Helper method for updating fields
+     */
+    private void updateFields(GeotechnicalEntry existing, GeotechnicalEntry updatedEntry) {
         existing.setTest(updatedEntry.getTest());
         existing.setGroup(updatedEntry.getGroup());
         existing.setSymbol(updatedEntry.getSymbol());
@@ -129,15 +171,9 @@ public class MainController {
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
         existing.setTestDescription(updatedEntry.getTestDescription());
-        // ... More fields can be assigned here as well.
-
-        // 3. Preservation of updated entities
-        GeotechnicalEntry saved = userRepository.save(existing);
-
-    // 4. Return the updated entity to the front end
-        return ResponseEntity.ok(saved);
     }
 
+    // ✅ Other existing GET endpoints (unchanged)...
     @GetMapping(path = "/group")
     @ResponseBody
     public List<GeotechnicalEntry> getUsersByGroup(@RequestParam String group) {
@@ -276,7 +312,7 @@ public class MainController {
         return userRepository.findByImagePathContaining(imagePath);
     }
 
-   @GetMapping(path = "/testDescription")
+    @GetMapping(path = "/testDescription")
     @ResponseBody
     public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String testDescription) {
         return userRepository.findByTestDescriptionContaining(testDescription);

@@ -36,6 +36,7 @@ const EditTest = () => {
   });
 
   const testId = initialData.id;
+  const [imageFile, setImageFile] = useState(null);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
@@ -44,6 +45,10 @@ const EditTest = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleSubmit = (e) => {
@@ -71,14 +76,34 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
-        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(formData)
-        });
+        let updateResponse;
+
+        if (imageFile) {
+          // ✅ Use FormData if image is included
+          const formDataToSend = new FormData();
+          for (const key in formData) {
+            formDataToSend.append(key, formData[key]);
+          }
+          formDataToSend.append('image', imageFile);
+
+          updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}` // Do NOT set Content-Type with FormData
+            },
+            body: formDataToSend
+          });
+        } else {
+          // ✅ Send JSON if no image is attached
+          updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+          });
+        }
 
         if (!updateResponse.ok) {
           if (updateResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to update this resource.');
@@ -242,6 +267,13 @@ const EditTest = () => {
             )}
           </div>
         ))}
+
+        {/* ✅ Image Upload Field */}
+        <div className="form-row">
+          <label htmlFor="image">Upload Image (optional):</label>
+          <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
+        </div>
+
         <div className="button-group">
           <button type="submit">Update</button>
           <button type="button" onClick={handleDelete}>Delete</button>

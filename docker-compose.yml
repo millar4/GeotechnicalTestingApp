@@ -10,6 +10,7 @@ services:
       MYSQL_USER: myuser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: rootpassword
+      command: --innodb-force-recovery=6
     ports:
       - "4000:3306"
     volumes:
