@@ -1,8 +1,23 @@
 package com.example.accessingdatamysql;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +32,46 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin(origins = "http://localhost:3100")
 @Controller
 @RequestMapping(path = "/rocks")
+
 public class RocksUserController {
+
+    private void updateFields(RocksUser existing, RocksUser updatedEntry) {
+    existing.setTest(updatedEntry.getTest());
+    existing.setmyGroup(updatedEntry.getmyGroup());
+    existing.setSymbol(updatedEntry.getSymbol());
+    existing.setParameters(updatedEntry.getParameters());
+    existing.setTestMethod(updatedEntry.getTestMethod());
+    existing.setAlt1(updatedEntry.getAlt1());
+    existing.setAlt2(updatedEntry.getAlt2());
+    existing.setAlt3(updatedEntry.getAlt3());
+    existing.setSampleType(updatedEntry.getSampleType());
+    existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
+    existing.setSpecimenType(updatedEntry.getSpecimenType());
+    existing.setSpecimenMass(updatedEntry.getSpecimenMass());
+    existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
+    existing.setSpecimenD(updatedEntry.getSpecimenD());
+    existing.setSpecimenL(updatedEntry.getSpecimenL());
+    existing.setSpecimenW(updatedEntry.getSpecimenW());
+    existing.setSpecimenH(updatedEntry.getSpecimenH());
+    existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
+    existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+    existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+    existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
+    existing.setTestDescription(updatedEntry.getTestDescription());
+}
+
+
+    private final String uploadDir = "testImages/";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private RocksUserRepository RocksUserRepository;
@@ -95,6 +144,63 @@ public class RocksUserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<RocksUser> updateRocksUserWithImage(
+        @PathVariable Long id,
+        @RequestPart("data") String updatedEntryJson,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
+
+    Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            RocksUser updatedEntry = objectMapper.readValue(updatedEntryJson, RocksUser.class);
+            RocksUser existing = existingOpt.get();
+
+            // Reuse field update logic
+            updateFields(existing, updatedEntry);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path newImagePath = Paths.get(uploadDir, fileName);
+
+                // Delete old image if it exists
+                String oldImagePath = existing.getImagePath();
+                if (oldImagePath != null && !oldImagePath.isEmpty()) {
+                    try {
+                        Path oldPath = Paths.get(uploadDir, Paths.get(oldImagePath).getFileName().toString()).normalize();
+                        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
+
+                        if (!oldPath.toAbsolutePath().startsWith(basePath)) {
+                            System.err.println("[WARN] Attempted to delete outside upload dir: " + oldPath);
+                        } else if (Files.exists(oldPath)) {
+                            Files.delete(oldPath);
+                        }
+                    } catch (IOException ex) {
+                        System.err.println("[WARN] Failed to delete old image: " + ex.getMessage());
+                    }
+                }
+
+                // Save new image
+                Files.copy(image.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
+                existing.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+            }
+
+            RocksUser saved = RocksUserRepository.save(existing);
+            return ResponseEntity.ok(saved);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 
     @PutMapping("/update/{id}")
     @ResponseBody

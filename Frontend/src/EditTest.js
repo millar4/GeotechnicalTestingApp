@@ -37,7 +37,9 @@ const EditTest = () => {
 
   const testId = initialData.id;
   const [imageFile, setImageFile] = useState(null);
-  const [imageURL, setImageURL] = useState(initialData.imageURL || '');  // This will hold the image URL for the existing image
+  const [imageURL, setImageURL] = useState(
+    initialData.imagePath ? `http://localhost:8080/${initialData.imagePath}` : ''
+  );
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
@@ -51,7 +53,7 @@ const EditTest = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
-    setImageURL(URL.createObjectURL(file)); // This will set the preview image
+    setImageURL(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e) => {
@@ -79,34 +81,17 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
-        let updateResponse;
+        const formDataToSend = new FormData();
+        formDataToSend.append('data', JSON.stringify(formData));
+        if (imageFile) formDataToSend.append('image', imageFile);
 
-        if (imageFile) {
-          // ✅ Use FormData if image is included
-          const formDataToSend = new FormData();
-          for (const key in formData) {
-            formDataToSend.append(key, formData[key]);
-          }
-          formDataToSend.append('image', imageFile);
-
-          updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
-            method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}` // Do NOT set Content-Type with FormData
-            },
-            body: formDataToSend
-          });
-        } else {
-          // ✅ Send JSON if no image is attached
-          updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(formData)
-          });
-        }
+        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update-with-image/${testId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formDataToSend
+        });
 
         if (!updateResponse.ok) {
           if (updateResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to update this resource.');
@@ -271,14 +256,13 @@ const EditTest = () => {
           </div>
         ))}
 
-        {/* ✅ Image Upload Field */}
         {imageURL && (
           <div className="form-row">
             <label>Current Image:</label>
             <img src={imageURL} alt="Current" style={{ width: '200px', height: 'auto' }} />
           </div>
         )}
-        
+
         <div className="form-row">
           <label htmlFor="image">Upload Image (optional):</label>
           <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
