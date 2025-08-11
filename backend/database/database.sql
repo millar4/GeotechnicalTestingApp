@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription LONGTEXT
+    testDescription VARCHAR(5000)
 );
 
 -- ============================================
@@ -244,7 +244,8 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(NULLIF(TRIM(testDescription), ''), 'NULL');
+
 
 
 -- ============================================
