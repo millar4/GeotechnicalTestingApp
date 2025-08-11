@@ -1,6 +1,7 @@
 package com.example.accessingdatamysql;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
@@ -8,73 +9,52 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
+import io.jsonwebtoken.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin(origins = "http://localhost:3100")
 @Controller
 @RequestMapping(path = "/rocks")
-
 public class RocksUserController {
 
-    private void updateFields(RocksUser existing, RocksUser updatedEntry) {
-    existing.setTest(updatedEntry.getTest());
-    existing.setmyGroup(updatedEntry.getmyGroup());
-    existing.setSymbol(updatedEntry.getSymbol());
-    existing.setParameters(updatedEntry.getParameters());
-    existing.setTestMethod(updatedEntry.getTestMethod());
-    existing.setAlt1(updatedEntry.getAlt1());
-    existing.setAlt2(updatedEntry.getAlt2());
-    existing.setAlt3(updatedEntry.getAlt3());
-    existing.setSampleType(updatedEntry.getSampleType());
-    existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
-    existing.setSpecimenType(updatedEntry.getSpecimenType());
-    existing.setSpecimenMass(updatedEntry.getSpecimenMass());
-    existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
-    existing.setSpecimenD(updatedEntry.getSpecimenD());
-    existing.setSpecimenL(updatedEntry.getSpecimenL());
-    existing.setSpecimenW(updatedEntry.getSpecimenW());
-    existing.setSpecimenH(updatedEntry.getSpecimenH());
-    existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
-    existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
-    existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
-    existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
-    existing.setTestDescription(updatedEntry.getTestDescription());
-}
-
-
-    private final String uploadDir = "testImages/";
+    private final String uploadDir = "public/testImages/";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private RocksUserRepository RocksUserRepository;
+
+    private void updateFields(RocksUser existing, RocksUser updatedEntry) {
+        existing.setTest(updatedEntry.getTest());
+        existing.setmyGroup(updatedEntry.getmyGroup());
+        existing.setSymbol(updatedEntry.getSymbol());
+        existing.setParameters(updatedEntry.getParameters());
+        existing.setTestMethod(updatedEntry.getTestMethod());
+        existing.setAlt1(updatedEntry.getAlt1());
+        existing.setAlt2(updatedEntry.getAlt2());
+        existing.setAlt3(updatedEntry.getAlt3());
+        existing.setSampleType(updatedEntry.getSampleType());
+        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
+        existing.setSpecimenType(updatedEntry.getSpecimenType());
+        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
+        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
+        existing.setSpecimenD(updatedEntry.getSpecimenD());
+        existing.setSpecimenL(updatedEntry.getSpecimenL());
+        existing.setSpecimenW(updatedEntry.getSpecimenW());
+        existing.setSpecimenH(updatedEntry.getSpecimenH());
+        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
+        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
+        existing.setTestDescription(updatedEntry.getTestDescription());
+    }
 
     @GetMapping(path = "/all/table")
     public String getAllUsersByTable(Model model) {
@@ -106,17 +86,12 @@ public class RocksUserController {
     @GetMapping("/id")
     @ResponseBody
     public List<RocksUser> getUserById(@RequestParam String id) {
-        Long longId;
         try {
-            longId = Long.valueOf(id);
+            Long longId = Long.valueOf(id);
+            return RocksUserRepository.findById(longId)
+                    .map(Collections::singletonList)
+                    .orElse(Collections.emptyList());
         } catch (NumberFormatException e) {
-            return Collections.emptyList();
-        }
-
-        Optional<RocksUser> userOpt = RocksUserRepository.findById(longId);
-        if (userOpt.isPresent()) {
-            return Collections.singletonList(userOpt.get());
-        } else {
             return Collections.emptyList();
         }
     }
@@ -128,11 +103,11 @@ public class RocksUserController {
             RocksUser savedEntry = RocksUserRepository.save(newEntry);
             return ResponseEntity.ok(savedEntry);
         } catch (Exception e) {
-            e.printStackTrace();  // Log the error for more visibility
+            e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
     }
-    
+
     @DeleteMapping(path = "/delete/{id}")
     @ResponseBody
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
@@ -148,11 +123,11 @@ public class RocksUserController {
     @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ResponseEntity<RocksUser> updateRocksUserWithImage(
-        @PathVariable Long id,
-        @RequestPart("data") String updatedEntryJson,
-        @RequestPart(value = "image", required = false) MultipartFile image) {
+            @PathVariable Long id,
+            @RequestPart("data") String updatedEntryJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
 
-    Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
+        Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
         if (existingOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -160,36 +135,27 @@ public class RocksUserController {
         try {
             RocksUser updatedEntry = objectMapper.readValue(updatedEntryJson, RocksUser.class);
             RocksUser existing = existingOpt.get();
-
-            // Reuse field update logic
             updateFields(existing, updatedEntry);
 
             if (image != null && !image.isEmpty()) {
                 Files.createDirectories(Paths.get(uploadDir));
-
                 String fileName = image.getOriginalFilename();
                 Path newImagePath = Paths.get(uploadDir, fileName);
 
-                // Delete old image if it exists
                 String oldImagePath = existing.getImagePath();
                 if (oldImagePath != null && !oldImagePath.isEmpty()) {
                     try {
-                        Path oldPath = Paths.get(uploadDir, Paths.get(oldImagePath).getFileName().toString()).normalize();
-                        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
-
-                        if (!oldPath.toAbsolutePath().startsWith(basePath)) {
-                            System.err.println("[WARN] Attempted to delete outside upload dir: " + oldPath);
-                        } else if (Files.exists(oldPath)) {
+                        Path oldPath = Paths.get(oldImagePath).normalize();
+                        if (Files.exists(oldPath)) {
                             Files.delete(oldPath);
                         }
                     } catch (IOException ex) {
-                        System.err.println("[WARN] Failed to delete old image: " + ex.getMessage());
+                        System.err.println("Failed to delete old image: " + ex.getMessage());
                     }
                 }
 
-                // Save new image
                 Files.copy(image.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
-                existing.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                existing.setImagePath(newImagePath.toString());
             }
 
             RocksUser saved = RocksUserRepository.save(existing);
@@ -201,201 +167,122 @@ public class RocksUserController {
         }
     }
 
-
     @PutMapping("/update/{id}")
     @ResponseBody
-    public ResponseEntity<RocksUser> updateRocksUser(
-            @PathVariable Long id,
-            @RequestBody RocksUser updatedEntry) {
-        // 1. Find an existing record in the databaseBelongsTo based on the primary key id.
+    public ResponseEntity<RocksUser> updateRocksUser(@PathVariable Long id, @RequestBody RocksUser updatedEntry) {
         Optional<RocksUser> existingOpt = RocksUserRepository.findById(id);
         if (existingOpt.isEmpty()) {
-           // Returns 404 if the corresponding record is not found.
             return ResponseEntity.notFound().build();
         }
-        // 2. Synchronize the updated fields passed by the front-end into the databaseBelongsTo.
+
         RocksUser existing = existingOpt.get();
-        existing.setTest(updatedEntry.getTest());
-        existing.setmyGroup(updatedEntry.getmyGroup());
-        existing.setSymbol(updatedEntry.getSymbol());
-        existing.setParameters(updatedEntry.getParameters());
-        existing.setTestMethod(updatedEntry.getTestMethod());
-        existing.setAlt1(updatedEntry.getAlt1());
-        existing.setAlt2(updatedEntry.getAlt2());
-        existing.setAlt3(updatedEntry.getAlt3());
-        existing.setSampleType(updatedEntry.getSampleType());
-        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
-        existing.setSpecimenType(updatedEntry.getSpecimenType());
-        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
-        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
-        existing.setSpecimenD(updatedEntry.getSpecimenD());
-        existing.setSpecimenL(updatedEntry.getSpecimenL());
-        existing.setSpecimenW(updatedEntry.getSpecimenW());
-        existing.setSpecimenH(updatedEntry.getSpecimenH());
-        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
-        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
-        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
-        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
-        // ... More fields can be assigned here as well.
-
-        // 3. Preservation of updated entities
+        updateFields(existing, updatedEntry);
         RocksUser saved = RocksUserRepository.save(existing);
-
-    // 4. Return the updated entity to the front end
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping(path = "/group")
-    @ResponseBody
-    public List<RocksUser> getUsersByGroup(@RequestParam String group) {
+    // Various search filters
+    @GetMapping(path = "/group") public List<RocksUser> getUsersByGroup(@RequestParam String group) {
         return RocksUserRepository.findByMyGroupContaining(group);
     }
 
-    @GetMapping(path = "/groups")
-    @ResponseBody
-    public List<String> getAllGroups() {
+    @GetMapping(path = "/groups") public List<String> getAllGroups() {
         return RocksUserRepository.findAllGroups();
     }
 
-    @GetMapping(path = "/test")
-    @ResponseBody
-    public List<RocksUser> getUsersByTest(@RequestParam String test) {
+    @GetMapping(path = "/test") public List<RocksUser> getUsersByTest(@RequestParam String test) {
         return RocksUserRepository.findByTestContaining(test);
     }
 
-    @GetMapping(path = "/testAlsoKnownAs")
-    @ResponseBody
-    public List<RocksUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+    @GetMapping(path = "/testAlsoKnownAs") public List<RocksUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
         return RocksUserRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs);
     }
 
-    @GetMapping(path = "/symbol")
-    @ResponseBody
-    public List<RocksUser> getUsersBySymbol(@RequestParam String symbol) {
+    @GetMapping(path = "/symbol") public List<RocksUser> getUsersBySymbol(@RequestParam String symbol) {
         return RocksUserRepository.findBySymbolContaining(symbol);
     }
 
-    @GetMapping(path = "/classification")
-    @ResponseBody
-    public List<RocksUser> getUsersByClassification(@RequestParam String classification) {
+    @GetMapping(path = "/classification") public List<RocksUser> getUsersByClassification(@RequestParam String classification) {
         return RocksUserRepository.findByClassificationContaining(classification);
     }
 
-    @GetMapping(path = "/parameters")
-    @ResponseBody
-    public List<RocksUser> getUsersByParameters(@RequestParam String parameters) {
+    @GetMapping(path = "/parameters") public List<RocksUser> getUsersByParameters(@RequestParam String parameters) {
         return RocksUserRepository.findByParametersContaining(parameters);
     }
 
-    @GetMapping(path = "/testMethod")
-    @ResponseBody
-    public List<RocksUser> getRocksUsersByTestMethod(@RequestParam String testMethod) {
+    @GetMapping(path = "/testMethod") public List<RocksUser> getRocksUsersByTestMethod(@RequestParam String testMethod) {
         return RocksUserRepository.findByTestMethodContaining(testMethod);
     }
 
-    @GetMapping(path = "/alt1")
-    @ResponseBody
-    public List<RocksUser> getUsersByAlt1(@RequestParam String alt1) {
+    @GetMapping(path = "/alt1") public List<RocksUser> getUsersByAlt1(@RequestParam String alt1) {
         return RocksUserRepository.findByAlt1Containing(alt1);
     }
 
-    @GetMapping(path = "/alt2")
-    @ResponseBody
-    public List<RocksUser> getUsersByAlt2(@RequestParam String alt2) {
+    @GetMapping(path = "/alt2") public List<RocksUser> getUsersByAlt2(@RequestParam String alt2) {
         return RocksUserRepository.findByAlt2Containing(alt2);
     }
 
-    @GetMapping(path = "/alt3")
-    @ResponseBody
-    public List<RocksUser> getUsersByAlt3(@RequestParam String alt3) {
+    @GetMapping(path = "/alt3") public List<RocksUser> getUsersByAlt3(@RequestParam String alt3) {
         return RocksUserRepository.findByAlt3Containing(alt3);
     }
 
-    @GetMapping(path = "/sampleType")
-    @ResponseBody
-    public List<RocksUser> getUsersBySampleType(@RequestParam String sampleType) {
+    @GetMapping(path = "/sampleType") public List<RocksUser> getUsersBySampleType(@RequestParam String sampleType) {
         return RocksUserRepository.findBySampleTypeContaining(sampleType);
     }
 
-    @GetMapping(path = "/fieldSampleMassGreaterThan")
-    @ResponseBody
-    public List<RocksUser> getUsersByFieldSampleMass(@RequestParam String mass) {
+    @GetMapping(path = "/fieldSampleMassGreaterThan") public List<RocksUser> getUsersByFieldSampleMass(@RequestParam String mass) {
         return RocksUserRepository.findByFieldSampleMassContaining(mass);
     }
 
-    @GetMapping(path = "/specimenType")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenType(@RequestParam String specimenType) {
+    @GetMapping(path = "/specimenType") public List<RocksUser> getUsersBySpecimenType(@RequestParam String specimenType) {
         return RocksUserRepository.findBySpecimenTypeContaining(specimenType);
     }
 
-    @GetMapping(path = "/specimenMassGreaterThan")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenMass(@RequestParam String mass) {
+    @GetMapping(path = "/specimenMassGreaterThan") public List<RocksUser> getUsersBySpecimenMass(@RequestParam String mass) {
         return RocksUserRepository.findBySpecimenMassContaining(mass);
     }
 
-    @GetMapping(path = "/specimenNumbers")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
+    @GetMapping(path = "/specimenNumbers") public List<RocksUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
         return RocksUserRepository.findBySpecimenNumbersContaining(numbers);
     }
 
-    @GetMapping(path = "/specimenD")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenD(@RequestParam String diameter) {
+    @GetMapping(path = "/specimenD") public List<RocksUser> getUsersBySpecimenD(@RequestParam String diameter) {
         return RocksUserRepository.findBySpecimenDContaining(diameter);
     }
 
-    @GetMapping(path = "/specimenL")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenL(@RequestParam String length) {
+    @GetMapping(path = "/specimenL") public List<RocksUser> getUsersBySpecimenL(@RequestParam String length) {
         return RocksUserRepository.findBySpecimenLContaining(length);
     }
 
-    @GetMapping(path = "/specimenW")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenW(@RequestParam String width) {
+    @GetMapping(path = "/specimenW") public List<RocksUser> getUsersBySpecimenW(@RequestParam String width) {
         return RocksUserRepository.findBySpecimenWContaining(width);
     }
 
-    @GetMapping(path = "/specimenH")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenH(@RequestParam String height) {
+    @GetMapping(path = "/specimenH") public List<RocksUser> getUsersBySpecimenH(@RequestParam String height) {
         return RocksUserRepository.findBySpecimenHContaining(height);
     }
 
-    @GetMapping(path = "/specimenMaxGrainSize")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
+    @GetMapping(path = "/specimenMaxGrainSize") public List<RocksUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
         return RocksUserRepository.findBySpecimenMaxGrainSizeContaining(grainSize);
     }
 
-    @GetMapping(path = "/specimenMaxGrainFraction")
-    @ResponseBody
-    public List<RocksUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
+    @GetMapping(path = "/specimenMaxGrainFraction") public List<RocksUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
         return RocksUserRepository.findBySpecimenMaxGrainFractionContaining(fraction);
     }
 
-    @GetMapping("/schedulingNotes")
-    public List<RocksUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
+    @GetMapping("/schedulingNotes") public List<RocksUser> getBySchedulingNotes(@RequestParam String schedulingNotes) {
         return RocksUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
 
-    @GetMapping("/databaseBelongsTo")
-    public List<RocksUser> getBydatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
+    @GetMapping("/databaseBelongsTo") public List<RocksUser> getBydatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
         return RocksUserRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
     }
 
-    @GetMapping("/imagePath")
-    public List<RocksUser> getByImagePath(@RequestParam String imagePath) {
+    @GetMapping("/imagePath") public List<RocksUser> getByImagePath(@RequestParam String imagePath) {
         return RocksUserRepository.findByImagePathContaining(imagePath);
     }
 
-    @GetMapping("/TestDescription")
-    public List<RocksUser> getByTestDescription(@RequestParam String testDescription) {
+    @GetMapping("/TestDescription") public List<RocksUser> getByTestDescription(@RequestParam String testDescription) {
         return RocksUserRepository.findByTestDescriptionContaining(testDescription);
     }
-
-
 }
