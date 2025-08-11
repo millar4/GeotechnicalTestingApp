@@ -74,11 +74,36 @@ public class MainController {
         return userRepository.findByClassificationContaining(classification);
     }
 
-    @PostMapping("/add")
+   @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public GeotechnicalEntry addGeotechnicalEntry(@RequestBody GeotechnicalEntry GeotechnicalEntry) {
-        return userRepository.save(GeotechnicalEntry);
+    public ResponseEntity<GeotechnicalEntry> addGeotechnicalEntryWithImage(
+        @RequestPart("data") String geotechnicalEntryJson,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        try {
+            GeotechnicalEntry entry = objectMapper.readValue(geotechnicalEntryJson, GeotechnicalEntry.class);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir, fileName);
+                Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                entry.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                imagePath.toFile().setReadable(true, false);
+                imagePath.toFile().setWritable(true, false);
+            }
+
+            GeotechnicalEntry savedEntry = userRepository.save(entry);
+            return ResponseEntity.ok(savedEntry);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
+
 
     @DeleteMapping(path = "/delete/{id}")
     @ResponseBody

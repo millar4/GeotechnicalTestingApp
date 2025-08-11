@@ -244,7 +244,9 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(NULLIF(TRIM(testDescription), ''), 'NULL');
+    testDescription = NULLIF(testDescription, '');
+    
+
 
 
 

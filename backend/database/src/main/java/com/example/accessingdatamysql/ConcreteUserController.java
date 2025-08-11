@@ -1,10 +1,16 @@
 package com.example.accessingdatamysql;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +23,41 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @CrossOrigin(origins = "http://localhost:3100")
 @Controller
 @RequestMapping(path = "/concrete")
 public class ConcreteUserController{
+
+    private void updateFields(ConcreteUser existing, ConcreteUser updatedEntry) {
+        existing.setTest(updatedEntry.getTest());
+        existing.setmyGroup(updatedEntry.getmyGroup());
+        existing.setSymbol(updatedEntry.getSymbol());
+        existing.setParameters(updatedEntry.getParameters());
+        existing.setTestMethod(updatedEntry.getTestMethod());
+        existing.setAlt1(updatedEntry.getAlt1());
+        existing.setAlt2(updatedEntry.getAlt2());
+        existing.setAlt3(updatedEntry.getAlt3());
+        existing.setSampleType(updatedEntry.getSampleType());
+        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
+        existing.setSpecimenType(updatedEntry.getSpecimenType());
+        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
+        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
+        existing.setSpecimenD(updatedEntry.getSpecimenD());
+        existing.setSpecimenL(updatedEntry.getSpecimenL());
+        existing.setSpecimenW(updatedEntry.getSpecimenW());
+        existing.setSpecimenH(updatedEntry.getSpecimenH());
+        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
+        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+    }
+
+    private final String uploadDir = "testImages/";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private ConcreteUserRepository ConcreteUserRepository;
@@ -73,14 +108,95 @@ public class ConcreteUserController{
         }
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<ConcreteUser> addUser(@RequestBody ConcreteUser newEntry) {
+    public ResponseEntity<ConcreteUser> addConcreteUserWithImage(
+        @RequestPart("data") String aggregateEntryJson,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
+
         try {
-            ConcreteUser savedEntry = ConcreteUserRepository.save(newEntry);
+            ConcreteUser entry = objectMapper.readValue(aggregateEntryJson, ConcreteUser.class);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir, fileName);
+                Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                entry.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                imagePath.toFile().setReadable(true, false);
+                imagePath.toFile().setWritable(true, false);
+            }
+
+            ConcreteUser savedEntry = ConcreteUserRepository.save(entry);
             return ResponseEntity.ok(savedEntry);
+
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<ConcreteUser> updateConcreteUserWithImage(
+            @PathVariable Long id,
+            @RequestPart("data") String updatedEntryJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        System.out.println("=== [DEBUG] Received update-with-image request for ID: " + id + " ===");
+
+        Optional<ConcreteUser> existingOpt = ConcreteUserRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            ConcreteUser updatedEntry = objectMapper.readValue(updatedEntryJson, ConcreteUser.class);
+            ConcreteUser existing = existingOpt.get();
+            updateFields(existing, updatedEntry);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path newImagePath = Paths.get(uploadDir, fileName);
+
+                // Delete old image if it exists
+                String oldImagePath = existing.getImagePath();
+                if (oldImagePath != null && !oldImagePath.isEmpty()) {
+                    try {
+                        Path oldPath = Paths.get(uploadDir, Paths.get(oldImagePath).getFileName().toString()).normalize();
+                        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
+
+                        if (!oldPath.toAbsolutePath().startsWith(basePath)) {
+                            System.err.println("[WARN] Attempted to delete image outside of upload directory: " + oldPath);
+                        } else if (Files.exists(oldPath)) {
+                            Files.delete(oldPath);
+                            System.out.println("[DEBUG] Deleted old image: " + oldPath);
+                        }
+                    } catch (IOException ex) {
+                        System.err.println("[WARN] Failed to delete old image: " + ex.getMessage());
+                    }
+                }
+
+
+                // Save new image
+                Files.copy(image.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
+                existing.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                newImagePath.toFile().setReadable(true, false);
+                newImagePath.toFile().setWritable(true, false);
+                System.out.println("[DEBUG] Saved new image: " + newImagePath);
+            }
+
+            ConcreteUser saved =ConcreteUserRepository.save(existing);
+            return ResponseEntity.ok(saved);
+
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to update entry with image: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
 
