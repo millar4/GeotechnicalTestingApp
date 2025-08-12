@@ -1,12 +1,5 @@
 package com.example.accessingdatamysql;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Optional;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,19 +9,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,71 +25,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @CrossOrigin(origins = "http://localhost:3100")
-@RequestMapping("/aggregate")
-public class AggregateUserController {
+@Controller
+@RequestMapping(path = "/aggregate")
+public class AggregateUserController{
 
     private void updateFields(AggregateUser existing, AggregateUser updatedEntry) {
-    if (updatedEntry.getTest() != null && !updatedEntry.getTest().isEmpty()) {
         existing.setTest(updatedEntry.getTest());
-    }
-    if (updatedEntry.getTestAlsoKnownAs() != null && !updatedEntry.getTestAlsoKnownAs().isEmpty()) {
-        existing.setTestAlsoKnownAs(updatedEntry.getTestAlsoKnownAs());
-    }
-    if (updatedEntry.getGroup() != null && !updatedEntry.getGroup().isEmpty()) {
-        existing.setGroup(updatedEntry.getGroup());
-    }
-    if (updatedEntry.getClassification() != null && !updatedEntry.getClassification().isEmpty()) {
-        existing.setClassification(updatedEntry.getClassification());
-    }
-    if (updatedEntry.getSymbol() != null && !updatedEntry.getSymbol().isEmpty()) {
         existing.setSymbol(updatedEntry.getSymbol());
-    }
-    if (updatedEntry.getParameters() != null && !updatedEntry.getParameters().isEmpty()) {
         existing.setParameters(updatedEntry.getParameters());
-    }
-    if (updatedEntry.getTestMethod() != null && !updatedEntry.getTestMethod().isEmpty()) {
         existing.setTestMethod(updatedEntry.getTestMethod());
-    }
-    if (updatedEntry.getSampleType() != null && !updatedEntry.getSampleType().isEmpty()) {
         existing.setSampleType(updatedEntry.getSampleType());
-    }
-    if (updatedEntry.getFieldSampleMass() != null && !updatedEntry.getFieldSampleMass().isEmpty()) {
         existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
-    }
-    if (updatedEntry.getSpecimenType() != null && !updatedEntry.getSpecimenType().isEmpty()) {
         existing.setSpecimenType(updatedEntry.getSpecimenType());
-    }
-    if (updatedEntry.getSpecimenMass() != null && !updatedEntry.getSpecimenMass().isEmpty()) {
         existing.setSpecimenMass(updatedEntry.getSpecimenMass());
-    }
-    if (updatedEntry.getSpecimenNumbers() != null && !updatedEntry.getSpecimenNumbers().isEmpty()) {
         existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
-    }
-    if (updatedEntry.getSpecimenMaxGrainSize() != null && !updatedEntry.getSpecimenMaxGrainSize().isEmpty()) {
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
-    }
-    if (updatedEntry.getSpecimenMaxGrainFraction() != null && !updatedEntry.getSpecimenMaxGrainFraction().isEmpty()) {
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
     }
-    if (updatedEntry.getDatabaseBelongsTo() != null && !updatedEntry.getDatabaseBelongsTo().isEmpty()) {
-        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
-    }
-    
-    if (updatedEntry.getSchedulingNotes() != null && !updatedEntry.getSchedulingNotes().isEmpty()) {
-        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
-    }
-    if (updatedEntry.getImagePath() != null && !updatedEntry.getImagePath().isEmpty()) {
-        existing.setImagePath(updatedEntry.getImagePath());
-    }
-}
-
-
-
 
     private final String uploadDir = "testImages/";
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -112,10 +54,55 @@ public class AggregateUserController {
     @Autowired
     private AggregateUserRepository AggregateUserRepository;
 
-    // Add new record
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @GetMapping(path = "/all/table")
+    public String getAllUsersByTable(Model model) {
+        Iterable<AggregateUser> users = AggregateUserRepository.findAll();
+        model.addAttribute("users", users);
+        return "users";
+    }
+
+    @GetMapping(path = "/all")
+    public @ResponseBody List<AggregateUser> getAllUsers(@RequestParam(required = false) String sort) {
+        if (sort == null || sort.isEmpty()) {
+            return (List<AggregateUser>) AggregateUserRepository.findAll();
+        }
+
+
+        switch (sort) {
+            case "default":
+                return AggregateUserRepository.findAllByOrderByIdAsc();
+            case "name":
+                return AggregateUserRepository.findAllByOrderByGroupAsc();
+            case "method":
+                return AggregateUserRepository.findAllByOrderByTestMethodAsc();
+            case "parameter":
+                return AggregateUserRepository.findAllByOrderByParametersAsc();
+            default:
+                return (List<AggregateUser>) AggregateUserRepository.findAll();
+        }
+    }
+
+    @GetMapping("/id")
     @ResponseBody
-    public ResponseEntity<AggregateUser> addAggregateUserWithImage(
+    public List<AggregateUser> getUserById(@RequestParam String id) {
+        Long longId;
+        try {
+            longId = Long.valueOf(id);
+        } catch (NumberFormatException e) {
+            return Collections.emptyList();
+        }
+
+        Optional<AggregateUser> userOpt = AggregateUserRepository.findById(longId);
+        if (userOpt.isPresent()) {
+            return Collections.singletonList(userOpt.get());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+  @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<AggregateUser> addGeotechnicalEntryWithImage(
         @RequestPart("data") String aggregateEntryJson,
         @RequestPart(value = "image", required = false) MultipartFile image) {
 
@@ -205,44 +192,8 @@ public class AggregateUserController {
         }
     }
 
-    @GetMapping(path = "/groups")
-    @ResponseBody
-    public List<String> getAllGroups() {
-        return AggregateUserRepository.findAllGroups();
-    }
-
-
-
-    // Update existing record
-    @PutMapping("/update/{id}")
-    public AggregateUser updateAggregateUser(@PathVariable Long id, @RequestBody AggregateUser updatedUser) {
-        Optional<AggregateUser> optionalUser = AggregateUserRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            AggregateUser existingUser = optionalUser.get();
-            existingUser.setTest(updatedUser.getTest());
-            existingUser.setGroup(updatedUser.getGroup());
-            existingUser.setClassification(updatedUser.getClassification());
-            existingUser.setSymbol(updatedUser.getSymbol());
-            existingUser.setParameters(updatedUser.getParameters());
-            existingUser.setTestMethod(updatedUser.getTestMethod());
-            existingUser.setSampleType(updatedUser.getSampleType());
-            existingUser.setFieldSampleMass(updatedUser.getFieldSampleMass());
-            existingUser.setSpecimenType(updatedUser.getSpecimenType());
-            existingUser.setSpecimenMass(updatedUser.getSpecimenMass());
-            existingUser.setSpecimenNumbers(updatedUser.getSpecimenNumbers());
-            existingUser.setSpecimenMaxGrainSize(updatedUser.getSpecimenMaxGrainSize());
-            existingUser.setSpecimenMaxGrainFraction(updatedUser.getSpecimenMaxGrainFraction());
-            existingUser.setSchedulingNotes(updatedUser.getSchedulingNotes());
-            existingUser.setDatabaseBelongsTo(updatedUser.getDatabaseBelongsTo());
-
-            return AggregateUserRepository.save(existingUser);
-        } else {
-            throw new RuntimeException("AggregateUser not found with id " + id);
-        }
-    }
-
-    // Delete by ID
     @DeleteMapping(path = "/delete/{id}")
+    @ResponseBody
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         Optional<AggregateUser> entryOpt = AggregateUserRepository.findById(id);
         if (entryOpt.isPresent()) {
@@ -252,108 +203,126 @@ public class AggregateUserController {
             return ResponseEntity.notFound().build();
         }
     }
-    
 
-    // Get all records, optional sort
-    @GetMapping("/all")
-    public List<AggregateUser> getAllAggregateUsers(@RequestParam(required = false) String sort) {
-        if (sort == null || sort.isEmpty()) {
-            return AggregateUserRepository.findAll();
+    @PutMapping("/update/{id}")
+    @ResponseBody
+    public ResponseEntity<AggregateUser> updateAggregateUser(
+            @PathVariable Long id,
+            @RequestBody AggregateUser updatedEntry) {
+        // 1. Find an existing record in the database based on the primary key id.
+        Optional<AggregateUser> existingOpt = AggregateUserRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+           // Returns 404 if the corresponding record is not found.
+            return ResponseEntity.notFound().build();
         }
-        switch (sort) {
-            case "default":
-                return AggregateUserRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
-            case "name":
-                return AggregateUserRepository.findAll(Sort.by(Sort.Direction.ASC, "group"));
-            case "method":
-                return AggregateUserRepository.findAll(Sort.by(Sort.Direction.ASC, "testMethod"));
-            case "parameter":
-                return AggregateUserRepository.findAll(Sort.by(Sort.Direction.ASC, "parameters"));
-            default:
-                return AggregateUserRepository.findAll();
-        }
+        // 2. Synchronize the updated fields passed by the front-end into the database.
+        AggregateUser existing = existingOpt.get();
+        existing.setTest(updatedEntry.getTest());
+        existing.setSymbol(updatedEntry.getSymbol());
+        existing.setParameters(updatedEntry.getParameters());
+        existing.setTestMethod(updatedEntry.getTestMethod());
+
+        existing.setSampleType(updatedEntry.getSampleType());
+        existing.setFieldSampleMass(updatedEntry.getFieldSampleMass());
+        existing.setSpecimenType(updatedEntry.getSpecimenType());
+        existing.setSpecimenMass(updatedEntry.getSpecimenMass());
+        existing.setSpecimenNumbers(updatedEntry.getSpecimenNumbers());
+        existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
+        existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setSchedulingNotes(updatedEntry.getSchedulingNotes());
+        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
+        // ... More fields can be assigned here as well.
+
+        // 3. Preservation of updated entities
+        AggregateUser saved = AggregateUserRepository.save(existing);
+
+    // 4. Return the updated entity to the front end
+        return ResponseEntity.ok(saved);
     }
 
-    // Precise search by ID
-    @GetMapping("/id")
-    public List<AggregateUser> getById(@RequestParam String id) {
-        try {
-            Long longId = Long.parseLong(id);
-            Optional<AggregateUser> opt = AggregateUserRepository.findById(longId);
-            return opt.map(List::of).orElse(List.of());
-        } catch (NumberFormatException e) {
-            return List.of();
-        }
-    }
-
-    // Fuzzy search endpoints
-    @GetMapping("/group")
-    public List<AggregateUser> getByGroup(@RequestParam String group) {
+    @GetMapping(path = "/group")
+    @ResponseBody
+    public List<AggregateUser> getUsersByGroup(@RequestParam String group) {
         return AggregateUserRepository.findByGroupContainingIgnoreCase(group);
     }
 
-    @GetMapping("/test")
-    public List<AggregateUser> getByTest(@RequestParam String test) {
-        return AggregateUserRepository.findByTestContainingIgnoreCase(test);
-    }
-    @GetMapping("/testAlsoKnownAs")
-    public List<AggregateUser> getByTestAlsoKnown(@RequestParam String testAlsoKnownAs) {
-        return AggregateUserRepository.findByTestAlsoKnownAs(testAlsoKnownAs);
+    @GetMapping(path = "/groups")
+    @ResponseBody
+    public List<String> getAllGroups() {
+        return AggregateUserRepository.findAllGroups();
     }
 
-    @GetMapping("/symbol")
-    public List<AggregateUser> getBySymbol(@RequestParam String symbol) {
+    @GetMapping(path = "/test")
+    @ResponseBody
+    public List<AggregateUser> getUsersByTest(@RequestParam String test) {
+        return AggregateUserRepository.findByTestContainingIgnoreCase(test);
+    }
+
+    @GetMapping(path = "/testAlsoKnownAs")
+    @ResponseBody
+    public List<AggregateUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+        return AggregateUserRepository.findByTestContainingIgnoreCase(testAlsoKnownAs);
+    }
+
+    @GetMapping(path = "/symbol")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySymbol(@RequestParam String symbol) {
         return AggregateUserRepository.findBySymbolContainingIgnoreCase(symbol);
     }
 
-    @GetMapping("/parameters")
-    public List<AggregateUser> getByParameters(@RequestParam String parameters) {
+    @GetMapping(path = "/parameters")
+    @ResponseBody
+    public List<AggregateUser> getUsersByParameters(@RequestParam String parameters) {
         return AggregateUserRepository.findByParametersContainingIgnoreCase(parameters);
     }
 
-    @GetMapping("/testMethod")
-    public List<AggregateUser> getByTestMethod(@RequestParam String testMethod) {
+    @GetMapping(path = "/testMethod")
+    @ResponseBody
+    public List<AggregateUser> getAggregateUsersByTestMethod(@RequestParam String testMethod) {
         return AggregateUserRepository.findByTestMethodContainingIgnoreCase(testMethod);
     }
 
-    @GetMapping("/classification")
-    public List<AggregateUser> getByClassification(@RequestParam String classification) {
-        return AggregateUserRepository.findByClassification(classification);
-    }
-
-    @GetMapping("/sampleType")
-    public List<AggregateUser> getBySampleType(@RequestParam String sampleType) {
+    @GetMapping(path = "/sampleType")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySampleType(@RequestParam String sampleType) {
         return AggregateUserRepository.findBySampleTypeContainingIgnoreCase(sampleType);
     }
 
-    @GetMapping("/fieldSampleMass")
-    public List<AggregateUser> getByFieldSampleMass(@RequestParam String fieldSampleMass) {
-        return AggregateUserRepository.findByFieldSampleMassContainingIgnoreCase(fieldSampleMass);
+    @GetMapping(path = "/fieldSampleMassGreaterThan")
+    @ResponseBody
+    public List<AggregateUser> getUsersByFieldSampleMass(@RequestParam String mass) {
+        return AggregateUserRepository.findByFieldSampleMassContainingIgnoreCase(mass);
     }
 
-    @GetMapping("/specimenType")
-    public List<AggregateUser> getBySpecimenType(@RequestParam String specimenType) {
+    @GetMapping(path = "/specimenType")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySpecimenType(@RequestParam String specimenType) {
         return AggregateUserRepository.findBySpecimenTypeContainingIgnoreCase(specimenType);
     }
 
-    @GetMapping("/specimenMass")
-    public List<AggregateUser> getBySpecimenMass(@RequestParam String specimenMass) {
-        return AggregateUserRepository.findBySpecimenMassContainingIgnoreCase(specimenMass);
+    @GetMapping(path = "/specimenMassGreaterThan")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySpecimenMass(@RequestParam String mass) {
+        return AggregateUserRepository.findBySpecimenMassContainingIgnoreCase(mass);
     }
 
-    @GetMapping("/specimenNumbers")
-    public List<AggregateUser> getBySpecimenNumbers(@RequestParam String specimenNumbers) {
-        return AggregateUserRepository.findBySpecimenNumbersContainingIgnoreCase(specimenNumbers);
+    @GetMapping(path = "/specimenNumbers")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySpecimenNumbers(@RequestParam String numbers) {
+        return AggregateUserRepository.findBySpecimenNumbersContainingIgnoreCase(numbers);
     }
 
-    @GetMapping("/specimenMaxGrainSize")
-    public List<AggregateUser> getBySpecimenMaxGrainSize(@RequestParam String specimenMaxGrainSize) {
-        return AggregateUserRepository.findBySpecimenMaxGrainSizeContainingIgnoreCase(specimenMaxGrainSize);
+
+    @GetMapping(path = "/specimenMaxGrainSize")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySpecimenMaxGrainSize(@RequestParam String grainSize) {
+        return AggregateUserRepository.findBySpecimenMaxGrainSizeContainingIgnoreCase(grainSize);
     }
 
-    @GetMapping("/specimenMaxGrainFraction")
-    public List<AggregateUser> getBySpecimenMaxGrainFraction(@RequestParam String specimenMaxGrainFraction) {
-        return AggregateUserRepository.findBySpecimenMaxGrainFractionContainingIgnoreCase(specimenMaxGrainFraction);
+    @GetMapping(path = "/specimenMaxGrainFraction")
+    @ResponseBody
+    public List<AggregateUser> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
+        return AggregateUserRepository.findBySpecimenMaxGrainFractionContainingIgnoreCase(fraction);
     }
 
     @GetMapping("/schedulingNotes")
@@ -361,13 +330,14 @@ public class AggregateUserController {
         return AggregateUserRepository.findBySchedulingNotesContainingIgnoreCase(schedulingNotes);
     }
 
-    @GetMapping("/databaseBelongsTo")
-    public List<AggregateUser> getByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
-        return AggregateUserRepository.findByDatabaseBelongsToContainingIgnoreCase(databaseBelongsTo);
-    }
-
     @GetMapping("/imagePath")
-    public List<AggregateUser> getByImagePathBelongsTo(@RequestParam String imagePath) {
+    public List<AggregateUser> getByImagePath(@RequestParam String imagePath) {
         return AggregateUserRepository.findByImagePathContainingIgnoreCase(imagePath);
     }
+
+    @GetMapping("testDescription/")
+    public List<AggregateUser> getByTestDescriptionContaining(@RequestParam String imagePath) {
+        return AggregateUserRepository.findByTestDescriptionContainingIgnoreCase(imagePath);
+    }
+
 }

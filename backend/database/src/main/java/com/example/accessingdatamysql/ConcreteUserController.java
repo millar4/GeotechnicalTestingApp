@@ -108,9 +108,9 @@ public class ConcreteUserController{
         }
     }
 
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<ConcreteUser> addConcreteUserWithImage(
+    public ResponseEntity<ConcreteUser> addGeotechnicalEntryWithImage(
         @RequestPart("data") String aggregateEntryJson,
         @RequestPart(value = "image", required = false) MultipartFile image) {
 
@@ -190,7 +190,7 @@ public class ConcreteUserController{
                 System.out.println("[DEBUG] Saved new image: " + newImagePath);
             }
 
-            ConcreteUser saved =ConcreteUserRepository.save(existing);
+            ConcreteUser saved = ConcreteUserRepository.save(existing);
             return ResponseEntity.ok(saved);
 
         } catch (Exception e) {

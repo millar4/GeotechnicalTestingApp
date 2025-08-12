@@ -72,6 +72,9 @@ public class AggregateUser {
     @Column(name = "imagePath", nullable = true, unique = false)
     private String imagePath;
 
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
+
     // Getters and setters for all fields
     public Long getId() {return id;}
     public String getGroup() { return group; }
@@ -124,6 +127,9 @@ public class AggregateUser {
 
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription = testDescription; }
 
 }
 
