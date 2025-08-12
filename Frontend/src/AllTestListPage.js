@@ -1,18 +1,27 @@
 import './AllTestListPage.css';
+import './index.css';
 import React, { useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import lockIcon from './Lock4.png';
+import PrintableData from './PrintableData';
+import { useSelectedTests, handleToggleTest } from './SelectedTestsContext'; // Import this at the top
 
-// Utility function: format data and add search highlight.
+
+// Helper function to escape special characters in search term for regex
+const escapeRegExp = (string) => {
+    return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&');
+};
+
+// Function to format and highlight the search content
 const formatData = (data, searchcontent, pattern, fieldName) => {
-    if (!data) return null;
-
     if (typeof data === 'string' && searchcontent) {
+        // If pattern is "Quick Search", highlight the search term in the string
         if (pattern === "Quick Search") {
-            const regex = new RegExp(`(${searchcontent})`, 'gi');
+            // Escape the search content to make it regex-safe
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -21,13 +30,12 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
                 />
             );
         }
+
+        // Determine the field based on the selected pattern
         let targetField = "";
         switch (pattern) {
             case "Test name":
                 targetField = "test";
-                break;
-            case "Test ID":
-                targetField = "id";
                 break;
             case "Test group":
                 targetField = "group";
@@ -38,11 +46,16 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
             case "Test parameters":
                 targetField = "parameters";
                 break;
+            case "Classification":
+                targetField = "classification";
+                break;
             default:
                 break;
         }
+
+        // If the target field matches the current fieldName, highlight the search term
         if (fieldName === targetField) {
-            const regex = new RegExp(`(${searchcontent})`, 'gi');
+            const regex = new RegExp(`(${escapeRegExp(searchcontent)})`, 'gi');
             return (
                 <span
                     dangerouslySetInnerHTML={{
@@ -52,14 +65,17 @@ const formatData = (data, searchcontent, pattern, fieldName) => {
             );
         }
     }
-    return data;
+    return data; // Return data without any changes if no matches
 };
+
 
 // Box component: displays a brief summary of a test item.
 const Box = ({
     id,
     test,
+    testAlsoKnownAs,
     group,
+    classification,
     symbol,
     parameters,
     testMethod,
@@ -77,30 +93,40 @@ const Box = ({
     specimenH,
     specimenMaxGrainSize,
     specimenMaxGrainFraction,
+    imagePath,
+    testDescription,
     isActive,
     onClick,
     searchcontent,
     pattern
 }) => {
     return (
-        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>
-            {formatData(test, searchcontent, pattern, "test") && (
-                <h3>Test: {formatData(test, searchcontent, pattern, "test")}</h3>
-            )}
+        <button className={`box ${isActive ? 'active' : ''}`} onClick={onClick}>  
+        {formatData(test, searchcontent, pattern, "test") && (
+            <h3>
+                {formatData(test, searchcontent, pattern, "test")}{" "}
+                {symbol && (
+                    <span>({formatData(symbol, searchcontent, pattern, "symbol")})</span>
+                )}
+            </h3>
+        )}
             {formatData(group, searchcontent, pattern, "group") && (
-                <p>Group: {formatData(group, searchcontent, pattern, "group")}</p>
+                <p>Test Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
-            {formatData(String(id), searchcontent, pattern, "id") && (
-                <p>Test ID: {formatData(String(id), searchcontent, pattern, "id")}</p>
-            )}
-            {formatData(symbol, searchcontent, pattern, "symbol") && (
-                <p>Symbol: {formatData(symbol, searchcontent, pattern, "symbol")}</p>
+             {formatData(classification, searchcontent, pattern, "classification") && (
+                <p>UKSGI (3rd ed). BOQ. No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
-                <p>Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
+                <p> Test Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
             )}
             {formatData(testMethod, searchcontent, pattern, "testMethod") && (
-                <p>Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
+                <p>Primary Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
+            )}
+            {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
+                <p>Field Sample Mass required (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+            )}
+            {formatData(sampleType, searchcontent, pattern, "sampleType") && (
+                <p>Sample Condition: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
             )}
         </button>
     );
@@ -118,13 +144,16 @@ const getAuthHeaders = () => {
 };
 
 // FloatingDetails component: displays detailed info in a draggable/resizable window.
-const FloatingDetails = ({ details, onClose, position, searchcontent, pattern }) => {
+const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, tests, mergedData }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(() =>
       JSON.parse(localStorage.getItem('isLoggedIn')) || false
     );
   
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [password, setPassword] = useState('');
+    const {selectedTests, handleToggleTest } = useSelectedTests(); // Access global state
+    const [mergedResults, setMergedResults] = useState([]);
+
 
     const navigate = useNavigate(); 
   
@@ -136,100 +165,327 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern })
       return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
   
-    const formatData = (data) => data || 'N/A';
-  
+    const formatData = (data) => data;
+
+   const printTests = (testArray, searchcontent, pattern) => {
+    const printWindow = window.open('printWindow', '_blank', 'height=600,width=800');
+
+    const htmlHead = `
+        <html>
+            <head>
+                <title>Test Details - Print</title>
+                <link rel="stylesheet" href="/index.css" />
+                <style>
+                    body {
+                        font-family: 'AvenirLTStd-Medium', sans-serif;
+                        padding: 20px;
+                    }
+
+                    .header-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 10px;
+                        padding-bottom: 10px;
+                        border-bottom: 1px solid #000;
+                    }
+
+                    .header-left {
+                        font-size: 12px;
+                        color: #000;
+                    }
+
+                    .header-right img {
+                        max-width: 100px;
+                        height: auto;
+                    }
+
+                    h3 {
+                        margin-top: 30px;
+                    }
+
+                    @media print {
+                        .header-container {
+                            page-break-inside: avoid;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="header-container">
+                    <div class="header-left">
+                        2025 &copy Structural Soils Limited.
+                    </div>
+                    <div class="header-right">
+                        <img src="/Logo2.png" alt="Company Logo" />
+                    </div>
+                </div>
+    `;
+
+    const htmlFooter = `
+            </body>
+        </html>
+    `;
+
+    printWindow.document.write(htmlHead);
+
+    testArray.forEach((details, index) => {
+        printWindow.document.write(`<h3>Test ${index + 1} Details</h3>`);
+
+        if (formatData(details.test, searchcontent, pattern, "test")) {
+            printWindow.document.write(`<p><strong>Test Name:</strong> ${formatData(details.test, searchcontent, pattern, "test")}</p>`);
+        }
+        if (formatData(details.group, searchcontent, pattern, "group")) {
+            printWindow.document.write(`<p><strong>Test Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
+        }
+        if (formatData(details.classification, searchcontent, pattern, "classification")) {
+            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) BOQ No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+        }
+        if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
+            printWindow.document.write(`<p><strong>Test Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
+        }
+        if (formatData(details.testMethod, searchcontent, pattern, "testMethod")) {
+            printWindow.document.write(`<p><strong>Primary Test Method:</strong> ${formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>`);
+        }
+
+        const fields = [
+                'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+                'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+                'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+                'schedulingNotes', 'testDescription', 'materials',' applications'
+        ];
+
+        fields.forEach((key) => {
+            if (formatData(details[key])) {
+                printWindow.document.write(`<p><strong>${key.replace(/([A-Z])/g, ' $1')}:</strong> ${formatData(details[key])}</p>`);
+            }
+        });
+
+        printWindow.document.write('<hr>');
+    });
+
+    printWindow.document.write(htmlFooter);
+    printWindow.document.close();
+
+    printWindow.focus(); // helps suppress about:blank
+    printWindow.onload = () => {
+        printWindow.print();
+    };
+};
+
+        const handlePrintClick = () => {
+
+            const selectedDetails = [];
+
+            // Determine whether to use `mergedData` or `tests`
+            const sourceArray = searchcontent ? mergedData.flat() : tests;
+
+            // Iterate over the selectedTests array
+            for (let i = 0; i < selectedTests.length; i++) {
+                const selectedTestId = selectedTests[i];
+
+                // Find the corresponding test from the chosen array
+                const selectedTest = sourceArray.find(test => test.id === selectedTestId);
+
+                // If a match is found, add it to the selectedDetails array
+                if (selectedTest) {
+                    selectedDetails.push(selectedTest);
+                }
+            }
+
+            // Check if any tests were selected and found
+            if (selectedDetails.length > 0) {
+                console.log("Selected Test Details:", selectedDetails);
+                printTests(selectedDetails, searchcontent, pattern); // Print all selected tests
+            } else {
+                alert("No tests selected for printing."); // Show a message if no tests are selected
+            }
+            console.log("searchcontent:", searchcontent);
+            console.log("mergedData:", mergedData);
+            console.log("tests:", tests);
+            console.log("selectedTests:", selectedTests);
+        };
+
     const handleEditClick = () => {
         const role = localStorage.getItem('role');
         if (role !== 'ADMIN') {
           alert('You need ADMIN privileges to edit this item.');
           return;
         }
-        navigate('/edititem', { state: { details } });
+        const targetDatabase = details.databaseBelongsTo;
+                navigate(`/edititem/${targetDatabase.trim()}`, {
+                state: {
+                    details,
+                },
+        });
       };
+      
     return (
         <Draggable handle=".floating-header">
-            <ResizableBox
-                width={400}
-                height={400}
-                minConstraints={[300, 300]}
-                maxConstraints={[800, 600]}
-                className="floating-details"
-                style={{ position: 'fixed', top: position.y, left: position.x }}
+            <div
+                style={{
+                position: 'fixed',
+                top: position.y,
+                left: position.x,
+                width: '500',
+                height: 'auto', // Let content dictate height
+                maxHeight: '80vh', // Prevent it from growing too large
+                overflowY: 'auto', // Allow scrolling if content exceeds max height
+                backgroundColor: '#fff',  // White background
+                border: '1px solid #ccc', // Optional border
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional shadow
+                zIndex: 1000, // Ensure it sits on top of other elements
+            }}
             >
-                <button className="close-button" onClick={() => onClose(details.id)}>×</button>
+                <button aria-label="Close Details" className="close-button"
+                    onClick={() => {
+                       if (selectedTests.includes(details.id)) {
+                        handleToggleTest(details.id); // Only deselect if still selected
+                    }
+                    onClose(details.id); // Close the floating window
+                    }}
+                    >
+                        ×
+                </button>
                 <div className="floating-content">
-                    <div className="floating-header">
-                        <h3>Detailed Information</h3>
-                        {isLoggedIn && (
-                            <button className="edit-button" onClick={handleEditClick}>Edit</button>
-                    )}
+                <div className="floating-header">
+                <h3>Detailed Information</h3>
+                {isLoggedIn && (
+                <div className="floating-header-buttons">
+                    {/* Select Checkbox */}
+                    <label className="select-label">
+                    <input
+                            type="checkbox"
+                            checked={selectedTests.includes(details.id)} // Check if test is selected
+                                   onChange={(e) => {
+                                e.stopPropagation(); // Prevent click from propagating to the parent
+                                handleToggleTest(details.id); // Toggle test selection
+                            }}
+                    />
+                    Select
+                    </label>
+                    {/* Edit Button */}
+                    <button
+                        className="edit-button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick();
+                        }}
+                        >
+                        Edit
+                    </button>
+                    {/* Print Button */}
+                    <button
+                        className="print-button"
+                        onClick={(e) => {
+                            e.stopPropagation();  // Prevents triggering parent click
+                            handlePrintClick();
+                        }}
+                        >
+                        Print
+                        </button>
+                </div>
+                )}
                     </div>
                     {formatData(details.test, searchcontent, pattern, "test") && (
-                        <p><strong>Test:</strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
-                    )}
+                        <p><strong></strong> {formatData(details.test, searchcontent, pattern, "test")}</p>
+                    )} 
                     {formatData(details.group, searchcontent, pattern, "group") && (
-                        <p><strong>Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
+                        <p><strong>Test Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
-                    {formatData(details.id, searchcontent, pattern, "id") && (
-                        <p><strong>ID:</strong> {formatData(details.id, searchcontent, pattern, "id")}</p>
-                    )}
-                    {formatData(details.symbol, searchcontent, pattern, "symbol") && (
-                        <p><strong>Symbol:</strong> {formatData(details.symbol, searchcontent, pattern, "symbol")}</p>
+                    {formatData(details.classification, searchcontent, pattern, "classification") && (
+                        <p><strong>UKSGI (3rd ed.). BOQ No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
-                        <p><strong>Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
+                        <p><strong> Test Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
                     )}
                     {formatData(details.testMethod, searchcontent, pattern, "testMethod") && (
-                        <p><strong>Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
+                        <p><strong>Primary Test Method:</strong> {formatData(details.testMethod, searchcontent, pattern, "testMethod")}</p>
                     )}
                     <h4>Additional Fields</h4>
+                    {formatData(details.testAlsoKnownAs, searchcontent, pattern, "testAlsoKnownAs") && (
+                        <p><strong>Test Also Known As: </strong> {formatData(details.testAlsoKnownAs)}</p>
+                    )} 
                     {formatData(details.alt1) && (
-                        <p><strong>Alt1:</strong> {formatData(details.alt1)}</p>
+                        <p><strong>Alternative Method 1:</strong> {formatData(details.alt1)}</p>
                     )}
                     {formatData(details.alt2) && (
-                        <p><strong>Alt2:</strong> {formatData(details.alt2)}</p>
+                        <p><strong>Alternative Method 2:</strong> {formatData(details.alt2)}</p>
                     )}
                     {formatData(details.alt3) && (
-                        <p><strong>Alt3:</strong> {formatData(details.alt3)}</p>
+                        <p><strong>Alternative Method 3:</strong> {formatData(details.alt3)}</p>
                     )}
                     {formatData(details.sampleType) && (
-                        <p><strong>Sample Type:</strong> {formatData(details.sampleType)}</p>
+                        <p><strong>Sample Condition:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass:</strong> {formatData(details.fieldSampleMass)}</p>
+                        <p><strong>Field Sample Mass Required(kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
-                        <p><strong>Specimen Type:</strong> {formatData(details.specimenType)}</p>
+                        <p><strong>Specimen Condition:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass:</strong> {formatData(details.specimenMass)}</p>
+                        <p><strong>Specimen Mass required(kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
-                        <p><strong>Specimen Numbers:</strong> {formatData(details.specimenNumbers)}</p>
+                        <p><strong>Number of specimens required:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen D:</strong> {formatData(details.specimenD)}</p>
+                        <p><strong>Specimen Diameter(mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen L:</strong> {formatData(details.specimenL)}</p>
+                        <p><strong>Specimen Length(mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen W:</strong> {formatData(details.specimenW)}</p>
+                        <p><strong>Specimen Width(mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen H:</strong> {formatData(details.specimenH)}</p>
+                        <p><strong>Specimen Height(mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Specimen Max Grain Size:</strong> {formatData(details.specimenMaxGrainSize)}</p>
+                        <p><strong>Maximum Particle Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
-                        <p><strong>Specimen Max Grain Fraction:</strong> {formatData(details.specimenMaxGrainFraction)}</p>
+                        <p><strong>Particle Size Fractions used in test(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
+                    )}
+                    {formatData(details.schedulingNotes) && (
+                        <p><strong>Scheduling Notes:</strong> {formatData(details.schedulingNotes)}</p>
+                    )}
+                    {formatData(details.materials) && (
+                        <p><strong>Materials:</strong> {formatData(details.materials)}</p>
+                    )}
+                    {formatData(details.applications) && (
+                        <p><strong>Applications:</strong> {formatData(details.applications)}</p>
+                    )}
+                    {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
+                    <div>
+                        <strong>Test Description:</strong>
+                        {formatData(details.testDescription)
+                            .split(/\r?\n+/) // split on line breaks
+                            .filter(para => para.trim() !== '') // skip empty lines
+                            .map((para, index) => (
+                                <span key={index} style={{ display: 'block', marginBottom: '1em', textAlign: 'left' }}>
+                                    {para}
+                                </span>
+                            ))}
+                    </div>
+                )}
+
+                    {details.imagePath && (
+                    <div>
+                        <p><strong>Image:</strong></p>
+                        <p><strong>Resolved Path:</strong> /{details.imagePath.replace(/^public[\\/]+/, '')}</p>
+                        <img
+                        src={`/${details.imagePath.replace(/^public[\\/]+/, '')}`}
+                        alt="Uploaded"
+                        style={{ width: '150px', height: '150px', objectFit: 'cover'}}
+                        />
+                    </div>
                     )}
 
                 </div>
-            </ResizableBox>
+            </div>
         </Draggable>
-    
     );
 };
 
@@ -241,12 +497,14 @@ const PaginatedBoxes = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const isLoggedIn = !!token;
 
-    // Paging and data state
+
+    // State initialization
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [sortOrder, setSortOrder] = useState('default');
     const [selectedBoxes, setSelectedBoxes] = useState([]);
+    const [tests, setTests] = useState([]);
 
     // Group filter state
     const [groups, setGroups] = useState([]);
@@ -268,19 +526,207 @@ const PaginatedBoxes = () => {
     // viewMode: true displays search results, false displays complete test list
     const [viewMode, setViewMode] = useState(!!initialSearchContent);
 
+    const [mergedData, setMergedData] = useState([]);
+
     // Database type state
     const [databaseType, setDatabaseType] = useState(passedDB || 'soil');
 
     // State to control search sorting
     const [searchSort, setSearchSort] = useState(false);
 
+    // Effective search content
+    const [effectiveSearchContent, setEffectiveSearchContent] = useState(initialSearchContent || '');
+
+    // Headers for fetch requests
+    const [headers, setHeaders] = useState({
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem('token')}` // Retrieve the token from localStorage
+    });
+
+    // Sorting mode (e.g., 'default' or 'classification')
+    const [sortMode, setSortMode] = useState('default');
+
+
+    const alphanumericCompare = (a, b) => {
+        const regex = /([a-zA-Z]+)(\d+)/;
+    
+        const matchA = a.match(regex);
+        const matchB = b.match(regex);
+    
+        console.log(`Comparing: ${a} vs ${b}`);
+    
+        if (!matchA || !matchB) return a.localeCompare(b); // safer fallback
+    
+        const alphaA = matchA[1];
+        const numA = parseInt(matchA[2], 10);
+    
+        const alphaB = matchB[1];
+        const numB = parseInt(matchB[2], 10);
+    
+        if (alphaA < alphaB) return -1;
+        if (alphaA > alphaB) return 1;
+    
+        return numA - numB;
+    };
+    
+    
+    const sortDataByClassification = (data, sortOrder = 'ascending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataByClassification: data is not an array", data);
+            return [];
+        }
+    
+        const classifiedItems = data.filter(item => item.classification?.trim());
+        const unclassifiedItems = data.filter(item => !item.classification?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.classification.trim();
+            const bClass = b.classification.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
+        });
+    
+        // Return sorted classified items first, then unclassified items last
+        return [...sortedClassified, ...unclassifiedItems];
+    };
+
+    const sortDataByTestMethod = (data, sortOrder = 'ascending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataBytestMethod: data is not an array", data);
+            return [];
+        }
+    
+        const classifiedItems = data.filter(item => item.testMethod?.trim());
+        const unclassifiedItems = data.filter(item => !item.testMethod?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.testMethod.trim();
+            const bClass = b.testMethod.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
+        });
+    
+        // Return sorted classified items first, then unclassified items last
+        return [...sortedClassified, ...unclassifiedItems];
+    };
+    
+    const sortDataByParameter = (data, sortOrder = 'ascending') => {
+        if (!Array.isArray(data)) {
+            console.error("sortDataBytestMethod: data is not an array", data);
+            return [];
+        }
+    
+        const classifiedItems = data.filter(item => item.parameters?.trim());
+        const unclassifiedItems = data.filter(item => !item.parameters?.trim());
+    
+        const sortedClassified = classifiedItems.sort((a, b) => {
+            const aClass = a.parameters.trim();
+            const bClass = b.parameters.trim();
+            return sortOrder === 'ascending'
+                ? alphanumericCompare(aClass, bClass)
+                : alphanumericCompare(bClass, aClass);
+        });
+    
+        // Return sorted classified items first, then unclassified items last
+        return [...sortedClassified, ...unclassifiedItems];
+    };
+    
+        
+    // Function to toggle sort order in search mode (ascending/descending)
+    const toggleSearchSortOrder = () => {
+        setSearchSort(prevSort => !prevSort); // Toggle searchSort state
+    };
+
+    // Ensure that you handle the sort order in the page render or data fetching
+    useEffect(() => {
+        if (viewMode && effectiveSearchContent) {
+            // Adjust sorting based on the current search mode
+            const sortedData = sortDataByClassification(data, searchSort ? 'ascending' : 'descending');
+            setData(sortedData);
+        }
+    }, [searchSort, viewMode, effectiveSearchContent]);  // Re-run whenever the searchSort or search content changes
+    
+
     // API base URL based on database type
-    const baseUrl = databaseType === "rock" ? "http://localhost:8080/rocks" : "http://localhost:8080/database";
+    const baseUrl = (databaseType === "aggregate")
+        ? "http://localhost:8080/aggregate"
+        : (databaseType === "rocks")
+        ? "http://localhost:8080/rocks"
+        : (databaseType === "concrete")
+        ? "http://localhost:8080/concrete"
+        : (databaseType === "inSituTest")
+        ? "http://localhost:8080/inSituTest"
+        : (databaseType === "earthworks")
+        ? "http://localhost:8080/earthworks"
+        : "http://localhost:8080/database";
+
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
 
+    const getBaseUrl = (type) => {
+        switch (type) {
+            case 'soil': return '/soil';
+            case 'aggregate': return '/aggregate';
+            case 'rocks': return '/rocks';
+            case 'concrete': return '/concrete';
+            case 'inSituTest': return '/inSituTest';
+            case 'earthworks': return '/earthworks';
+            default: return '/soil'; // Fallback to prevent undefined
+        }
+    };
+    let url = ""; 
+    useEffect(() => {
+    const fetchData = async () => {
+        setData([]); // Clear previous data
+
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        };
+
+        // Add token only if it exists
+
+        const effectiveSearchContent = viewMode ? lastSearchContent : "";
+        const encodedSearch = encodeURIComponent(effectiveSearchContent);
+        let url = `${baseUrl}/all`;
+
+        if (effectiveSearchContent) {
+            url = `${baseUrl}/search?query=${encodedSearch}`;
+        }
+
+        try {
+            const response = await fetch(url, { method: "GET", headers });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+            }
+
+            let result = await response.json();
+
+            if (selectedGroup) {
+                result = result.filter(item =>
+                    item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            const sortedData = sortOrder(result, sortOrder);
+            setData(sortedData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setData([]); // Optionally clear data or keep stale data
+        }
+    };
+
+    fetchData();
+}, [viewMode, lastSearchContent, sortOrder, selectedGroup, baseUrl]);
+
+    
+    
     useEffect(() => {
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 768);
@@ -332,80 +778,145 @@ const PaginatedBoxes = () => {
 
     // Fetch group data
     const fetchGroups = async () => {
-        try {
-            const headers = getAuthHeaders();
-            const response = await fetch(`${baseUrl}/groups`, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include",
-                headers
-            });
-            if (response.status === 401 || response.status === 403) {
-                alert("You are not authorized to view group data. Please login.");
-                return;
-            }
-            if (!response.ok) throw new Error("Failed to fetch groups");
-            const result = await response.json();
-            console.log("Fetched groups:", result);
-            if (Array.isArray(result)) {
-                setGroups(result);
-            } else if (result.groups) {
-                setGroups(result.groups);
-            } else if (Array.isArray(result.data)) {
-                setGroups(result.data.map(g => g.group));
-            } else {
-                console.error("Unexpected response format:", result);
-                setGroups([]);
-            }
-        } catch (error) {
-            console.error("Error fetching groups:", error);
+    try {
+        const headers = {};
+
+        const response = await fetch(`${baseUrl}/groups`, {
+            method: "GET",
+            headers,
+        });
+
+        const result = await response.json();
+        console.log("Fetched groups:", result);
+
+        if (Array.isArray(result)) {
+            setGroups(result);
+        } else if (result.groups) {
+            setGroups(result.groups);
+        } else if (Array.isArray(result.data)) {
+            setGroups(result.data.map(g => g.group));
+        } else {
+            console.error("Unexpected response format:", result);
             setGroups([]);
         }
-    };
+    } catch (error) {
+        console.error("Error fetching groups:", error);
+        setGroups([]);
+    }
+};
 
     useEffect(() => {
         fetchGroups();
     }, [baseUrl, token]);
+    
+    const getSortedData = (data, sortOrder) => {
+        if (!Array.isArray(data)) {
+            console.error("Expected array data but got:", data);
+            return []; // Return empty array if data is not an array
+        }
 
-    // Fetch test data based on viewMode (search results or full test list)
-    const fetchData = async () => {
-        if (!token) {
-            setData([]);
-            return;
-          }
-        console.log("fetchData() triggered");
+    function debounce(fn, delay) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn(...args), delay);
+        };
+    }
+    
+        const sortFunctions = {
+            default: (a, b) => (a.id ?? 0) - (b.id ?? 0),
+            
+            test: (a, b) => {
+                const aVal = a.test?.trim();
+                const bVal = b.test?.trim();
+        
+                const aHas = !!aVal;
+                const bHas = !!bVal;
+        
+                if (aHas && bHas) return aVal.localeCompare(bVal);
+                if (aHas) return -1;
+                if (bHas) return 1;
+                return 0;
+            },
+        
+            name: (a, b) => (a.group ?? '').localeCompare(b.group ?? ''),
+            testMethod: (a, b) => {
+                const aClass = a.testMethod?.trim();
+                const bClass = b.testMethod?.trim();
+        
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+        
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass);
+                }
+        
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+        
+                return 0;
+            },          
+        
+            parameters: (a, b) => {
+                const aClass = a.parameters?.trim();
+                const bClass = b.parameters?.trim();
+        
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+        
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass);
+                }
+        
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+        
+                return 0;
+            },
+        
+            classification: (a, b) => {
+                const aClass = a.classification?.trim();
+                const bClass = b.classification?.trim();
+        
+                const aHasClass = !!aClass;
+                const bHasClass = !!bClass;
+        
+                if (aHasClass && bHasClass) {
+                    return alphanumericCompare(aClass, bClass);
+                }
+        
+                if (aHasClass) return -1;
+                if (bHasClass) return 1;
+        
+                return 0;
+            },
+        };
+            
+    
+        const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
+        return data.sort(sortFunction);
+    };
+    
+    const fetchFullData = async () => {
+    
+        console.log("fetchFullData() triggered");
         setData([]);
         const headers = getAuthHeaders();
-        // Determine effective search content and pattern based on viewMode
         const effectiveSearchContent = viewMode ? lastSearchContent : "";
         const effectivePattern = viewMode ? lastPattern : "";
         const encodedSearch = encodeURIComponent(effectiveSearchContent);
-        let url = "";
         let urls = [];
-
-        // If no search content is provided, fetch all tests or filter by group
+        let url = "";
+    
         if (!effectiveSearchContent) {
             if (selectedGroup) {
                 url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
                 console.log(`Group filter active. GET ${url}`);
                 try {
-                    const response = await fetch(url, {
-                        method: "GET",
-                        mode: "cors",
-                        credentials: "include",
-                        headers
-                    });
-                    if (response.status === 401 || response.status === 403) {
-                        alert("You are not authorized or your token is invalid.");
-                        return;
-                    }
+                    const response = await fetch(url, { testMethod: "GET", headers });
                     if (!response.ok) throw new Error(`Failed to fetch group data. HTTP Status: ${response.status}`);
                     const result = await response.json();
-                    console.log("Group data result:", result);
-                    const filteredResult = result.filter(item =>
-                        item.group &&
-                        item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                    );
+                    const filteredResult = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
                     setData(filteredResult);
                     return;
                 } catch (error) {
@@ -413,26 +924,37 @@ const PaginatedBoxes = () => {
                     return;
                 }
             }
+    
             url = `${baseUrl}/all`;
             if (sortOrder !== "default") {
                 url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
             }
+    
             console.log(`Fetching data from: ${url}`);
             try {
-                const response = await fetch(url, {
-                    method: "GET",
-                    mode: "cors",
-                    credentials: "include",
-                    headers
-                });
-                if (response.status === 401 || response.status === 403) {
-                    alert("You are not authorized or your token is invalid.");
-                    return;
-                }
+                const response = await fetch(url, { testMethod: "GET", headers });
                 if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+                
                 let result = await response.json();
-                if (sortOrder === "default") {
-                    result.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+
+                if (selectedGroup) {
+                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
+                }
+            
+                if (sortOrder === 'classification') {
+                    result = sortDataByClassification(result, 'ascending');
+                    setTests(result);
+                } else if (sortOrder === 'testMethod'){
+                    result = sortDataByTestMethod(result, 'ascending');
+                    setTests(result);
+                }
+                  else if(sortOrder === 'parameters'){
+                    result = sortDataByParameter(result, 'ascending');
+                    setTests(result);
+                  }
+                else {
+                    result = getSortedData(result, sortOrder);
+                    setTests(result);
                 }
                 setData(result);
             } catch (error) {
@@ -440,161 +962,109 @@ const PaginatedBoxes = () => {
             }
             return;
         }
-
-        // When search content is provided
+    
+        // Handle search queries for specific patterns
         if (effectivePattern === "Quick Search") {
-            if (databaseType === "rock") {
-                urls = [
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                    `${baseUrl}/symbol?symbol=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
-                ];
-            } else {
-                urls = [
-                    `${baseUrl}/test?test=${encodedSearch}`,
-                    `${baseUrl}/id?id=${encodedSearch}`,
-                    `${baseUrl}/testMethod?testMethod=${encodedSearch}`,
-                    `${baseUrl}/parameters?parameters=${encodedSearch}`,
-                    `${baseUrl}/group?group=${encodedSearch}`,
-                ];
-            }
+            const searchUrls = [
+                `${baseUrl}/test?test=${encodedSearch}`,
+                `${baseUrl}/id?id=${encodedSearch}`,
+                `${baseUrl}/classification?classification=${encodedSearch}`,
+                `${baseUrl}/group?group=${encodedSearch}`,
+                `${baseUrl}/symbol?symbol=${encodedSearch}`,
+                `${baseUrl}/parameters?parameters=${encodedSearch}`,
+            ];
+    
             try {
-                const responses = await Promise.all(
-                    urls.map(u => fetch(u, {
-                        method: "GET",
-                        mode: "cors",
-                        credentials: "include",
-                        headers
-                    }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`)))
-                );
+                const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
                 console.log("All parallel requests done:", responses);
-                let mergedData = [];
-                const seenIds = new Set();
-                responses.forEach(result => {
-                    result.forEach(item => {
-                        if (!seenIds.has(item.id)) {
-                            seenIds.add(item.id);
-                            mergedData.push(item);
-                        }
-                    });
+                
+            let mergedData = [];
+            const seenIds = new Set();
+            responses.forEach(result => {
+                result.forEach(item => {
+                    if (!seenIds.has(item.id)) {
+                        seenIds.add(item.id);
+                        mergedData.push(item);
+                    }
                 });
-                if (sortOrder !== "default") {
-                    mergedData.sort((a, b) => {
-                        if (sortOrder === "test") {
-                            return (a.test ?? '').localeCompare(b.test ?? '');
-                        }
-                        if (sortOrder === "name") {
-                            return (a.group ?? '').localeCompare(b.group ?? '');
-                        }
-                        if (sortOrder === "method") {
-                            return (a.testMethod ?? '').localeCompare(b.testMethod ?? '');
-                        }
-                        if (sortOrder === "parameter") {
-                            return (a.parameters ?? '').localeCompare(b.parameters ?? '');
-                        }
-                        return (a.id ?? 0) - (b.id ?? 0);
-                    });
-                }
-                if (selectedGroup) {
-                    mergedData = mergedData.filter(item =>
-                        item.group &&
-                        item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                    );
-                }
-                setData(mergedData);
-                return;
+            });
+
+            mergedData = getSortedData(mergedData, sortOrder);
+
+            if (selectedGroup) {
+                mergedData = mergedData.filter(
+                    item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+                );
+            }
+
+            setMergedData(mergedData); 
+            setData(mergedData);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
-                return;
             }
+            return;
         }
-
+    
+        // Default behavior for search
         if (effectiveSearchContent) {
             if (effectivePattern === "Test method") {
                 url = `${baseUrl}/testMethod?testMethod=${encodedSearch}`;
             } else if (effectivePattern === "Test parameters") {
                 url = `${baseUrl}/parameters?parameters=${encodedSearch}`;
-            } else if (effectivePattern === "Test ID") {
-                url = `${baseUrl}/id?id=${encodedSearch}`;
+            } else if (effectivePattern === "Classification") {
+                url = `${baseUrl}/classification?classification=${encodedSearch}`;
             } else if (effectivePattern === "Test group") {
                 url = `${baseUrl}/group?group=${encodedSearch}`;
             } else if (effectivePattern === "Test name") {
-                if (databaseType === "rock") {
-                    console.warn("Rock does not have 'test' endpoint for 'Test name'. Returning empty.");
-                    setData([]);
-                    return;
-                } else {
-                    url = `${baseUrl}/test?test=${encodedSearch}`;
-                }
+                url = `${baseUrl}/test?test=${encodedSearch}`;
             }
         }
-
+    
         if (sortOrder !== "default" && sortOrder !== "search") {
             url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
         }
-
+    
         console.log(`Final fetch from: ${url}`);
         try {
-            const response = await fetch(url, {
-                method: "GET",
-                mode: "cors",
-                credentials: "include",
-                headers
-            });
-            if (response.status === 401 || response.status === 403) {
-                alert("You are not authorized or your token is invalid.");
-                return;
-            }
+            const response = await fetch(url, { method: "GET", headers });
             if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
             let result = await response.json();
-            if (sortOrder === "test") {
-                result.sort((a, b) => (a.test ?? '').localeCompare(b.test ?? ''));
-            } else if (sortOrder === "name") {
-                result.sort((a, b) => (a.group ?? '').localeCompare(b.group ?? ''));
-            } else if (sortOrder === "method") {
-                result.sort((a, b) => (a.testMethod ?? '').localeCompare(b.testMethod ?? ''));
-            } else if (sortOrder === "parameter") {
-                result.sort((a, b) => (a.parameters ?? '').localeCompare(b.parameters ?? ''));
-            } else if (sortOrder === "default") {
-                result.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-            }
+            result = getSortedData(result, sortOrder);
+    
             if (selectedGroup) {
-                result = result.filter(item =>
-                    item.group &&
-                    item.group.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                );
+                result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
             }
             setData(result);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
-
+    
     useEffect(() => {
-        fetchData();
+        fetchFullData();
         // eslint-disable-next-line
-    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup, token]);
-
+    }, [viewMode, lastSearchContent, lastPattern, sortOrder, baseUrl, selectedGroup]);
+    
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(data.length / itemsPerPage);
-
+    
     const nextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
             window.scrollTo(0, 0);
         }
     };
-
+    
     const prevPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
             window.scrollTo(0, 0);
         }
     };
+    
 
     const handleJump = () => {
         const page = parseInt(jumpPage, 10);
@@ -606,16 +1076,15 @@ const PaginatedBoxes = () => {
 
     const handleSortChange = (order) => {
         setSortOrder(order);
-        setCurrentPage(1);
-        window.scrollTo(0, 0);
+        setCurrentPage(1); // Reset to the first page when sorting changes
+        window.scrollTo(0, 0); // Scroll to the top of the page when sorting changes
+    
+        // Reset search sorting when switching away from 'search' order
         if (order !== 'search') {
             setSearchSort(false);
         }
-        if (order === "name") {
-            setSelectedGroup(selectedGroup);
-        }
     };
-
+    
     // Handler for toggling the canvas nest animation
     const handleAnimationToggle = () => {
         if (animationEnabled) {
@@ -713,7 +1182,7 @@ const PaginatedBoxes = () => {
             )}
             <div className="container">
                 <div className={`sidebar ${isSmallScreen ? (isSidebarOpen ? 'open' : 'closed') : ''}`}>
-                    <h3>Search Order</h3>
+                <h3 className="page-header" style={{ marginTop: '60px' }}>Search Order</h3>
                     <div className="db-switch">
                         <button
                             className={`db-button ${databaseType === "soil" ? "active" : ""}`}
@@ -722,10 +1191,34 @@ const PaginatedBoxes = () => {
                             Soil
                         </button>
                         <button
-                            className={`db-button ${databaseType === "rock" ? "active" : ""}`}
-                            onClick={() => setDatabaseType("rock")}
+                            className={`db-button ${databaseType === "aggregate" ? "active" : ""} `}
+                            onClick={() => setDatabaseType("aggregate")}
+                        >
+                            <p style={{ fontSize: '12px', margin: 0 }}>Aggregate</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "rocks" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("rocks")}
                         >
                             Rock
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "concrete" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("concrete")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>Concrete</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("inSituTest")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>In-Situ</p>
+                        </button>
+                        <button
+                            className={`db-button ${databaseType === "earthworks" ? "active" : ""}`}
+                            onClick={() => setDatabaseType("earthworks")}
+                        >
+                        <p style={{ fontSize: '12px', margin: 0 }}>Earthworks</p>
                         </button>
                     </div>
                     {/* Toggle button to switch between full testlist and search results (only displayed if an initial search exists) */}
@@ -747,32 +1240,32 @@ const PaginatedBoxes = () => {
                         </button>
                     )}
                     <button
-                        className={sortOrder === 'default' ? 'active' : ''}
-                        onClick={() => handleSortChange('default')}
-                    >
-                        Id Arrangement
-                    </button>
-                    <button
                         className={sortOrder === 'test' ? 'active' : ''}
                         onClick={() => handleSortChange('test')}
                     >
                         Name Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'name' ? 'active' : ''}
-                        onClick={() => handleSortChange('name')}
+                        className={sortOrder === 'group' ? 'active' : ''}
+                        onClick={() => handleSortChange('group')}
                     >
                         Group Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'method' ? 'active' : ''}
-                        onClick={() => handleSortChange('method')}
+                        className={sortOrder === 'classification' ? 'active' : ''}
+                        onClick={() => handleSortChange('classification')}
+                    >
+                        AGS Code Arrangement
+                    </button>
+                    <button
+                        className={sortOrder === 'testMethod' ? 'active' : ''}
+                        onClick={() => handleSortChange('testMethod')}
                     >
                         Method Arrangement
                     </button>
                     <button
-                        className={sortOrder === 'parameter' ? 'active' : ''}
-                        onClick={() => handleSortChange('parameter')}
+                        className={sortOrder === 'parameters' ? 'active' : ''}
+                        onClick={() => handleSortChange('parameters')}
                     >
                         Parameter Arrangement
                     </button>
@@ -804,15 +1297,6 @@ const PaginatedBoxes = () => {
                         <option value="50">50</option>
                         <option value="100">All Tests</option>
                     </select>
-                    {/* Animation Control Toggle */}
-                    <h3>Animation Control</h3>
-                    <button
-                        onClick={handleAnimationToggle}
-                        style={{ marginTop: '10px', width: '100%' }}
-                    >
-                        {animationEnabled ? "Stop Animation" : "Start Animation"}
-                    </button>
-                    <div style={{ height: "250px" }}></div>
                 </div>
 
                 <div className="box-container">
@@ -825,12 +1309,7 @@ const PaginatedBoxes = () => {
                         </div>
                     ) : (
 
-                        !isLoggedIn ? (
-                            <div className="fixed-placeholder" style={{ position: 'relative', textAlign: 'center' }}>
-                            <img src={lockIcon} alt="Locked" style={{ width: '120px', marginBottom: '20px' }} />
-                            <h2>You are currently logged out. Please log in again to view tests.</h2>
-                            </div>
-                        ) : (
+                         (
                         
                         <div className="fixed-placeholder" style={{ position: 'relative' }}>
                             <h2>Testlist</h2>
@@ -859,6 +1338,8 @@ const PaginatedBoxes = () => {
                             isActive={selectedBoxes.some(selectedBox => selectedBox.id === item.id)}
                             searchcontent={viewMode ? lastSearchContent : ""}
                             pattern={viewMode ? lastPattern : ""}
+                            {...currentItems.length === 0 && <p>No results found.</p>}
+
                         />
                     ))}
                 </div>
@@ -900,11 +1381,12 @@ const PaginatedBoxes = () => {
                         position={box.position}
                         searchcontent={viewMode ? lastSearchContent : ""}
                         pattern={viewMode ? lastPattern : ""}
+                        tests={tests}
+                        mergedData={mergedData}
                     />
                 ))}
             </div>
         </div>
     );
 };
-
 export default PaginatedBoxes;

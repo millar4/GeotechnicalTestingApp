@@ -12,19 +12,25 @@ public class GeotechnicalEntry {
     @JsonProperty
     private Long id;
 
-    @Column(name = "test", nullable = false, unique = false)
+    @Column(name = "test", nullable = true, unique = false)
     private String test;
 
-    @Column(name = "myGroup", nullable = false, unique = false)
+    @Column(name = "testAlsoKnownAs", nullable = true, unique = false)
+    private String testAlsoKnownAs;
+
+    @Column(name = "myGroup", nullable = true, unique = false)
     private String group;
 
-    @Column(name = "symbol", nullable = false, unique = true)
+    @Column(name = "classification", nullable = true, unique = false)
+    private String classification;
+
+    @Column(name = "symbol", nullable = true, unique = true)
     private String symbol;
 
-    @Column(name = "parameters", nullable = false, unique = false)
+    @Column(name = "parameters", nullable = true, unique = false)
     private String parameters;
 
-    @Column(name = "testMethod", nullable = false, unique = false)
+    @Column(name = "testMethod", nullable = true, unique = false)
     private String testMethod;
 
     @Column(name = "alt1", nullable = true, unique = false)
@@ -39,7 +45,7 @@ public class GeotechnicalEntry {
     @Column(name = "sampleType", nullable = true, unique = false)
     private String sampleType;
 
-    @Column(name = "fieldSampleMass", nullable = false, unique = false)
+    @Column(name = "fieldSampleMass", nullable = true, unique = false)
     private String fieldSampleMass;
 
     @Column(name = "specimenType", nullable = true, unique = false)
@@ -69,14 +75,29 @@ public class GeotechnicalEntry {
     @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
     private String specimenMaxGrainFraction;
 
+    @Column(name = "databaseBelongsTo", nullable = true, unique = false)
+    private String databaseBelongsTo;
+
+    @Column(name = "imagePath", nullable = true, unique = false)
+    private String imagePath;
+
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public String getTest() { return test; }
     public void setTest(String test) { this.test = test; }
 
+    public String getTestAlsoKnownAs() { return testAlsoKnownAs; }
+    public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs = testAlsoKnownAs; }
+
     public String getGroup() { return group; }
     public void setGroup(String group) { this.group = group; }
+
+    public String getClassification() { return classification; }
+    public void setClassification(String classification) { this.classification = classification; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
@@ -128,4 +149,13 @@ public class GeotechnicalEntry {
 
     public String getSpecimenMaxGrainFraction() { return specimenMaxGrainFraction; }
     public void setSpecimenMaxGrainFraction(String specimenMaxGrainFraction) { this.specimenMaxGrainFraction = specimenMaxGrainFraction; }
+
+    public String getDatabaseBelongsTo() { return databaseBelongsTo; }
+    public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo;}
+
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath= imagePath;}
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription= testDescription;}
 }

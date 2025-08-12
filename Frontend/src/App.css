@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'AvenirLTStd-Medium';
+  src: url('./assets/Avenir-Font-Family/AvenirLTStd-Medium.otf') format('opentype');
+}
+
+html, body, * {
+  font-family: 'AvenirLTStd-Medium', Arial, sans-serif !important;
+}
+
+
 .App {
   text-align: center;
 }
@@ -22,12 +32,13 @@
   overflow: hidden;
 }
 
+
 /* Floating island */
 .floating-island {
   background-color: white;
   padding: 5% 6%;
   border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px #1D1D1D1B;
   display: inline-block;
   text-align: center;
   z-index: 10;
@@ -67,7 +78,7 @@
   padding: 2% 5% 2% 8%;
   font-size: 1rem;
   border-radius: 8px;
-  border: 1px solid #dfe1e5;
+  border: 1px solid #E7E7E8;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -87,7 +98,6 @@
   background-color: white; 
   color: black; 
 }
-
 
 /* Search icon */
 .search-icon {
@@ -118,9 +128,6 @@
   .account-button {
     display: none;
   }
-  .stop-button {
-    display: none;
-  }
 
   .search-bar-form {
     display: none !important;
@@ -133,7 +140,7 @@
   left: 0;
   width: 100%;
   background-color: white;
-  border: 1px solid #ccc;
+  border: 1px solid #E7E7E8;
   max-height: 300px;
   overflow-y: auto;
   z-index: 11;
@@ -165,18 +172,21 @@
     font-weight: bold;
     border: 2px solid white; 
     border-radius: 8px; 
-    background-color: black;
+    background-color: #1D1D1D1B;
     color: white;
     cursor: pointer;
     margin-left: 5px; 
+    margin-top: 15px;
 }
 
 
 .quick-search-button:hover {
   background-color: white;
   color: black;
-  border: 2px solid black; 
+  border: 2px solid #1D1D1D1B; 
   outline: 2px solid white;
+  margin-left: 5px; 
+  margin-top: 15px;
 }
 
 .search-bar-form {
@@ -191,7 +201,7 @@
   border-radius: 8px;
   align-items: center;
   background-color: transparent;
-  border: 1px solid black;
+  border: 1px solid 9c0c0c;
   z-index: 1000;
 }
 
@@ -199,10 +209,11 @@
   flex: 1;
   padding: 8px;
   font-size: 0.9rem;
-  border: 1px solid black;
+  border: 1px solid #1D1D1D1B;
   border-radius: 8px;
   outline: none;
   background-color: white;
+  margin-top: 15px;
 }
 
 .quick-search-button {
@@ -211,7 +222,7 @@
   border-radius: 8px;
   height: auto;
   cursor: pointer;
-  background-color: black;
+  background-color: #8d1d1c;
   color: white;
   border: 2px solid white;
   transition: background-color 0.3s, color 0.3s;
@@ -226,8 +237,8 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
+  background-color: #e7e7e8;
+  border: 1px solid #E7E7E8;
   border-radius: 8px;
   max-height: 200px;
   overflow-y: auto;
@@ -244,17 +255,17 @@
 }
 
 .history-item:hover {
-  background-color: #f0f0f0;
+  background-color: #E7E7E8;
 }
 
 .history-mode {
   font-size: 0.8rem;
-  color: gray;
+  color: 737373;
   margin-left: 8px;
 }
 
 .delete-icon {
-  color: red;
+  color: #8d1d1c;
   margin-left: 10px;
   cursor: pointer;
 }
@@ -269,7 +280,6 @@
   margin: 40px auto;
   padding: 20px;
   text-align: left;
-  font-family: Arial, sans-serif;
 }
 
 .about-title {
@@ -315,7 +325,7 @@
   font-size: 14px;
   font-weight: bold;
   color: black;
-  background-color: white;
+  background-color: #8d1d1c;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -323,7 +333,7 @@
 }
 
 .login-button.logged-in {
-  background-color: red;
+  background-color: #8d1d1c;
 }
 
 .login-modal {
@@ -343,7 +353,7 @@
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 6px #1D1D1D1B;
 }
 
 .login-modal-content input {
@@ -351,7 +361,7 @@
   width: 80%;
   padding: 10px;
   margin: 10px auto;
-  border: 1px solid #ccc;
+  border: 1px solid #E7E7E8;
   border-radius: 5px;
 }
 
@@ -364,7 +374,7 @@
 }
 
 .login-modal-content button:first-of-type {
-  background-color: #000000;
+  background-color: #1D1D1B;
   color: white;
 }
 
@@ -374,12 +384,12 @@
 }
 
 .login-modal-content button:last-of-type {
-  background-color: #ccc;
+  background-color: #e7e7e8;
   color: black;
 }
 
 .login-modal-content button:last-of-type:hover {
-  background-color: #aaa;
+  background-color: #e7e7e8;
 }
 
 .about-section {
@@ -415,29 +425,104 @@
 .left-buttons {
   position: fixed;
   top: 10px;
-  left: 10px;
+  left: 60px;
   display: flex;
   align-items: center;
   gap: 8px; 
+  z-index:1001;
 }
 
-.account-button,
-.stop-button {
-  padding: 8px 15px;         
-  font-size: 0.9rem;         
+/* Make account button always clickable and on top */
+.account-button {
+  padding: 8px 15px;
+  font-size: 0.9rem;
   font-weight: bold;
-  border: 2px solid white;  
+  border: 2px solid white;
   border-radius: 8px;
-  background-color: black;    
-  color: white;               
+  background-color: #8d1d1c;
+  color: white;
   cursor: pointer;
-  margin-left: 5px;          
+  margin-left: 5px;
   transition: background-color 0.3s, color 0.3s;
+  position: relative;
+  z-index: 999999 !important;         /* ensure it's on top of all layers */
+  pointer-events: auto !important;   /* ensure it can always be clicked */
 }
 
-.account-button:hover,
-.stop-button:hover {
-  background-color: white;    
-  color: black;               
-  border: 2px solid black;   
+.account-button:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+}
+
+
+.logo-container {
+  padding: 10px 20px; 
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  top: 15px; 
+  left: 10px; 
+  background: none;  
+}
+
+.company-logo {
+  width: 90px;     
+  height: auto;     
+  object-fit: contain;
+  background: none; 
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-start;  
+  align-items: center;
+  padding-left: -30px;  
+}
+
+.centered-nav {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  padding: 40px 0;
+  background-color: transparent;
+  position: relative;
+  width: 100%;
+  height: auto;
+  transform: translateX(-8%);
+}
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  color: white;
+  font-size: 20px;
+  font-family: inherit;
+  font-weight: 500;
+  padding-bottom: 5px;
+  transition: color 0.3s ease;
+  display: inline-block;
+  margin: 0;
+}
+
+.nav-underline {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0%;
+  background-color: white;
+  transition: width 0.3s ease;
+}
+
+.nav-underline.active {
+  width: 100%;
 }

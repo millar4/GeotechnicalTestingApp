@@ -74,7 +74,7 @@ function Theupperbar({
           window.location.reload();
         });
     }, 5000);
-  
+
     return () => clearInterval(interval);
   }, []);
 
@@ -133,23 +133,6 @@ function Theupperbar({
     }
   };
 
-  // Handle "Close Program" - calls /api/stop
-  const handleCloseProgram = async () => {
-    const confirmClose = window.confirm("Are you sure you want to stop the containers?");
-    if (!confirmClose) return;
-    
-    try {
-      const response = await fetch("http://localhost:8080/api/stop", {
-        method: "POST"
-      });
-      const result = await response.text();
-      alert(result); // e.g. "Stop request recorded."
-    } catch (err) {
-      console.error("Failed to request stop:", err);
-      alert("Error: failed to request container stop.");
-    }
-  };
-
   // Manage accounts
   const handleManageAccounts = () => {
     const role = localStorage.getItem('role');
@@ -170,8 +153,8 @@ function Theupperbar({
     padding: '0 4%',
     textDecoration: 'none',
     display: 'inline-block',
-    height: '10vh',
-    lineHeight: '10vh',
+    height: '10vh', // Height of the links
+    lineHeight: '10vh', // Vertical alignment within the height of the links
     boxSizing: 'border-box',
   };
 
@@ -181,71 +164,72 @@ function Theupperbar({
   };
 
   return (
-  
     <nav
       style={{
         position: 'fixed',
-        backgroundColor: 'black',
+        backgroundColor: '#8d1d1c',
         top: 0,
         left: 0,
         width: '100%',
-        height: '10%',
+        height: '100px', // Increased navbar height
         zIndex: 20,
-        justifyContent: 'space-between'
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start', // Keeps the links at the top
+        padding: '10px 20px', // Adjust padding to give some space inside
       }}
     >
-<button
-      className="login-button"
-      onClick={isLoggedIn ? handleLogout : () => setShowLogin(true)}
-      style={{
-        position: 'fixed',
-        top: '10px',
-        left: '10px',
-        zIndex: 1000,
-        backgroundColor: isLoggedIn ? 'red' : 'white',
-        color: isLoggedIn ? 'white' : 'black'
-      }}
-    >
-      {isLoggedIn ? 'Logout' : 'Login'}
-    </button>
-
-    <div className="left-buttons" style={{ marginLeft: '120px' }}>
-    {isLoggedIn && (
-      <button onClick={handleManageAccounts} className="account-button">
-        Account Management
+      <button
+        className="login-button"
+        onClick={isLoggedIn ? handleLogout : () => setShowLogin(true)}
+        style={{
+          position: 'fixed',
+          top: '55px',
+          left: '187px',
+          zIndex: 1000,
+          backgroundColor: isLoggedIn ? 'red' : 'white',
+          color: isLoggedIn ? 'white' : 'black'
+        }}
+      >
+        {isLoggedIn ? 'Logout' : 'Login'}
       </button>
-    )}
-    <button onClick={handleCloseProgram} className="stop-button">
-      Stop and log out
-    </button>
-  </div>
 
-      {/* Center navigation links */}
-      <div>
-        <Link
-          to="/"
-          style={hovered === 'Home' ? { ...addline, ...buttonhover } : addline}
-          onMouseEnter={() => setHovered('Home')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Home
-        </Link>
-        <Link
-          to="/AllTestListPage"
-          style={hovered === 'TestList' ? { ...addline, ...buttonhover } : addline}
-          onMouseEnter={() => setHovered('TestList')}
-          onMouseLeave={() => setHovered('')}
-        >
-          Test List
-        </Link>
-        <Link
-          to="/about"
-          style={hovered === 'About' ? { ...addline, ...buttonhover } : addline}
-          onMouseEnter={() => setHovered('About')}
-          onMouseLeave={() => setHovered('')}
-        >
-          About
-        </Link>
+      <div className="logo-container">
+        <img src="/LogoNB.png" alt="Company Logo" className="company-logo" />
+      </div>
+
+      <div className="left-buttons" style={{ marginLeft: '120px' }}>
+        {isLoggedIn && (
+          <button onClick={handleManageAccounts} className="account-button">
+            Account Management
+          </button>
+        )}
+      </div>
+
+      <div className="centered-nav">
+        {['Home', 'Search', 'Test List', 'About'].map((label) => {
+          const routeMap = {
+            'Home': 'https://soils.co.uk/',
+            'Search': '/',
+            'Test List': '/AllTestListPage',
+            'About': '/about',
+          };
+
+          const isHovered = hovered === label;
+
+          return (
+            <Link
+              key={label}
+              to={routeMap[label]}
+              onMouseEnter={() => setHovered(label)}
+              onMouseLeave={() => setHovered('')}
+              className="nav-link"
+            >
+              {label}
+              <span className={`nav-underline ${isHovered ? 'active' : ''}`} />
+            </Link>
+          );
+        })}
       </div>
 
       {/* Search form */}
@@ -275,10 +259,10 @@ function Theupperbar({
             className="history-dropdown"
             onMouseDown={(e) => e.preventDefault()}
           >
-            {[...searchhistory]
+            {[...new Set(searchhistory.map(item => item.content))] // Remove duplicates by content
               .sort((a, b) => {
-                const startsWithA = a.content.startsWith(searchcontent);
-                const startsWithB = b.content.startsWith(searchcontent);
+                const startsWithA = a.startsWith(searchcontent);
+                const startsWithB = b.startsWith(searchcontent);
                 if (startsWithA && !startsWithB) return -1;
                 if (!startsWithA && startsWithB) return 1;
                 return 0;
@@ -289,8 +273,8 @@ function Theupperbar({
                   className="history-item"
                   onClick={() => handleClickHistory(item)}
                 >
-                  {item.content}{' '}
-                  <span className="history-mode">({item.mode})</span>
+                  {item}{' '}
+                  <span className="history-mode">({searchhistory.find(i => i.content === item)?.mode})</span>
                   <span
                     className="delete-icon"
                     onClick={(e) => {

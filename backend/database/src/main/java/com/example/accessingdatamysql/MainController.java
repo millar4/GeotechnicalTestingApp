@@ -71,16 +71,17 @@ public class MainController {
             return Collections.emptyList();
         }
     }
-
-    @PostMapping(path = "/add")
+        
+    @GetMapping("/classification")
     @ResponseBody
-    public ResponseEntity<GeotechnicalEntry> addUser(@RequestBody GeotechnicalEntry newEntry) {
-        try {
-            GeotechnicalEntry savedEntry = userRepository.save(newEntry);
-            return ResponseEntity.ok(savedEntry);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+    public List<GeotechnicalEntry> getUserByClassification(@RequestParam String classification) {
+        return userRepository.findByClassificationContaining(classification);
+    }
+
+    @PostMapping("/add")
+    @ResponseBody
+    public GeotechnicalEntry addGeotechnicalEntry (@RequestBody GeotechnicalEntry GeotechnicalEntry) {
+        return userRepository.save(GeotechnicalEntry);
     }
 
     @DeleteMapping(path = "/delete/{id}")
@@ -127,6 +128,7 @@ public class MainController {
         existing.setSpecimenH(updatedEntry.getSpecimenH());
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
+        existing.setTestDescription(updatedEntry.getTestDescription());
         // ... More fields can be assigned here as well.
 
         // 3. Preservation of updated entities
@@ -152,6 +154,12 @@ public class MainController {
     @ResponseBody
     public List<GeotechnicalEntry> getUsersByTest(@RequestParam String test) {
         return userRepository.findByTestContaining(test);
+    }
+
+    @GetMapping(path = "/testAlsoKnownAs")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
+        return userRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs);
     }
 
     @GetMapping(path = "/symbol")
@@ -254,5 +262,23 @@ public class MainController {
     @ResponseBody
     public List<GeotechnicalEntry> getUsersBySpecimenMaxGrainFraction(@RequestParam String fraction) {
         return userRepository.findBySpecimenMaxGrainFractionContaining(fraction);
+    }
+
+    @GetMapping(path = "/databaseBelongsTo")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) {
+        return userRepository.findByDatabaseBelongsToContaining(databaseBelongsTo);
+    }
+
+    @GetMapping(path = "/imagePath")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByImagepath(@RequestParam String imagePath) {
+        return userRepository.findByImagePathContaining(imagePath);
+    }
+
+   @GetMapping(path = "/testDescription")
+    @ResponseBody
+    public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String testDescription) {
+        return userRepository.findByTestDescriptionContaining(testDescription);
     }
 }

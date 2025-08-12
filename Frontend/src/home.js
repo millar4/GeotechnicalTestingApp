@@ -106,8 +106,8 @@ function Home() {
       case 'Test name':
         updatePlaceholder('Please enter test name to search');
         break;
-      case 'Test ID':
-        updatePlaceholder('Please enter test ID to search');
+      case 'Classification':
+        updatePlaceholder('Please enter AGS to search');
         break;
       case 'Test group':
         updatePlaceholder('Please enter test group to search');
@@ -132,13 +132,13 @@ function Home() {
     <div>
       <header className="App-header">
         <div className="floating-island">
-          <p>GeoTest Finder</p>
+          <p>Geotechincal Test Finder</p>
+          <small>Use this search engine to look up parameters, test methods and AGS values</small>
           <div className="search-container">
             <div className="selectorbox">
               <select className="selector" value={pattern} onChange={handlePatternChange}>
                 <option value="Quick Search">Quick Search</option>
-                <option value="Test name">Test name</option>
-                <option value="Test ID">Test ID</option>
+                <option value="Classification">AGS Value</option>
                 <option value="Test group">Test group</option>
                 <option value="Test parameters">Test parameters</option>
                 <option value="Test method">Test method</option>
@@ -146,7 +146,11 @@ function Home() {
               {/* NEW: Database type selection */}
               <select className="selector" value={databaseType} onChange={handleDatabaseChange}>
                 <option value="soil">Soil</option>
-                <option value="rock">Rock</option>
+                <option value="aggregate">Aggregate</option>
+                <option value="rocks">Rock</option>
+                <option value="concrete">Concrete</option>
+                <option value="inSituTest">In Situ</option>
+                <option value="earthworks">Earthworks</option>
               </select>
             </div>
             <div className="input-wrapper">

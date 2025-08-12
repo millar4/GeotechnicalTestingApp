@@ -29,7 +29,7 @@ beforeEach(() => {
         json: () => Promise.resolve({ token: 'fake_token' }),
       });
     }
-    if (url.includes('/database/add') || url.includes('/rocks/add')) {
+    if (url.includes('/database/add') || url.includes('/aggregate/add') || url.includes('/rocks/add')) {
       return Promise.resolve({
         ok: true,
         status: 200,

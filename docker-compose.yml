@@ -1,20 +1,34 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  mysql:
-    container_name: GeoTechnicalDatabase
+  restore:
     image: mysql:8
+    container_name: RestoreBackup
+    volumes:
+      - mysql_data:/var/lib/mysql       # Target volume
+      - ./local_backups:/backup         # Where backups live on host
+      - ./backend/database/src/backups/restore_backup.sh:/restore.sh:ro
+    entrypoint: [ "sh", "-c", "sleep 3 && sh /restore.sh" ]
+    restart: "no"
+
+
+  mysql:
+    image: mysql:8
+    container_name: GeoTechnicalDatabase
     environment:
       MYSQL_DATABASE: GeotechnicalTests
       MYSQL_USER: myuser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: rootpassword
     ports:
-      - "4000:3306"  # Map MySQL container port 3306 to host 3307
+      - "4000:3306"
     volumes:
-      - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql
-      - ./backend/database/parameters2.csv:/var/lib/mysql-files/parameters2.csv
-      - ./backend/database/rockParameters2.csv:/var/lib/mysql-files/rockParameters2.csv
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+      - ./backend/database/src/csv:/var/lib/mysql-files
+    depends_on:
+      restore:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -25,7 +39,6 @@ services:
     container_name: GeoTechnicalApp
     build:
       context: .
-      # Dockerfile backend/database/Dockerfile
       dockerfile: ./backend/database/Dockerfile
     depends_on:
       mysql:
@@ -34,21 +47,19 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://GeoTechnicalDatabase:3306/GeotechnicalTests
       SPRING_DATASOURCE_USERNAME: myuser
       SPRING_DATASOURCE_PASSWORD: secret
-    volumes:
-      - ./backend/database/target/database-0.0.1-snapshot.jar:/app/app.jar
-      - ./backend/database/parameters2.csv:/app/parameters2.csv
-      - ./backend/database/rockParameters2.csv:/app/rockParameters2.csv
     ports:
       - "8080:8080"
-    command: ["java", "-jar", "/app/app.jar"]
 
   frontend:
     container_name: GeoTechnicalFrontend
     build:
       context: ./frontend
     ports:
-      - "3100:3000" 
+      - "3100:3000"
     environment:
-      - REACT_APP_API_URL=http://GeoTechnicalApp:8080  
+      - REACT_APP_API_URL=http://GeoTechnicalApp:8080
     depends_on:
       - app
+
+volumes:
+  mysql_data:
