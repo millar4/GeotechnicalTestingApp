@@ -46,4 +46,12 @@ public interface AggregateUserRepository extends JpaRepository<AggregateUser, Lo
 
     List<AggregateUser> findByImagePathContainingIgnoreCase(String imagePath);
 
+    List<AggregateUser> findByTestDescriptionContainingIgnoreCase(String testDescription);
+
+
+    List<AggregateUser> findAllByOrderByIdAsc();
+    List<AggregateUser> findAllByOrderByGroupAsc();
+    List<AggregateUser> findAllByOrderByTestMethodAsc();
+    List<AggregateUser> findAllByOrderByParametersAsc();
+
 }

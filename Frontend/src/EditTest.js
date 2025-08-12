@@ -36,6 +36,10 @@ const EditTest = () => {
   });
 
   const testId = initialData.id;
+  const [imageFile, setImageFile] = useState(null);
+  const [imageURL, setImageURL] = useState(
+    initialData.imagePath ? `http://localhost:8080/${initialData.imagePath}` : ''
+  );
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
   const [actionType, setActionType] = useState('');
@@ -44,6 +48,12 @@ const EditTest = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    setImageURL(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e) => {
@@ -71,13 +81,16 @@ const EditTest = () => {
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
       if (actionType === 'update') {
-        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update/${testId}`, {
+        const formDataToSend = new FormData();
+        formDataToSend.append('data', JSON.stringify(formData));
+        if (imageFile) formDataToSend.append('image', imageFile);
+
+        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update-with-image/${testId}`, {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(formData)
+          body: formDataToSend
         });
 
         if (!updateResponse.ok) {
@@ -242,6 +255,19 @@ const EditTest = () => {
             )}
           </div>
         ))}
+
+        {imageURL && (
+          <div className="form-row">
+            <label>Current Image:</label>
+            <img src={imageURL} alt="Current" style={{ width: '200px', height: 'auto' }} />
+          </div>
+        )}
+
+        <div className="form-row">
+          <label htmlFor="image">Upload Image (optional):</label>
+          <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
+        </div>
+
         <div className="button-group">
           <button type="submit">Update</button>
           <button type="button" onClick={handleDelete}>Delete</button>

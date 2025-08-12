@@ -1,39 +1,41 @@
 version: "3.8"
 
 services:
-  restore:
-    image: mysql:8
-    container_name: RestoreBackup
-    volumes:
-      - mysql_data:/var/lib/mysql       # Target volume
-      - ./local_backups:/backup         # Where backups live on host
-      - ./backend/database/src/backups/restore_backup.sh:/restore.sh:ro
-    entrypoint: [ "sh", "-c", "sleep 3 && sh /restore.sh" ]
-    restart: "no"
-
-
   mysql:
     image: mysql:8
     container_name: GeoTechnicalDatabase
+    command: --secure-file-priv=/var/lib/mysql-files
     environment:
       MYSQL_DATABASE: GeotechnicalTests
       MYSQL_USER: myuser
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: rootpassword
+      command: --innodb-force-recovery=6
     ports:
       - "4000:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/database/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
       - ./backend/database/src/csv:/var/lib/mysql-files
-    depends_on:
-      restore:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  restore:
+    image: mysql:8
+    container_name: RestoreBackup
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - mysql_data:/var/lib/mysql                     # Target volume for MySQL data
+      - ./local_backups:/backup                       # Backups directory on host
+      - ./backend/database/src/backups/restore_backup.sh:/restore.sh:ro
+      - ./backend/database/src/csv:/var/lib/mysql-files  # For CSV import
+    entrypoint: ["sh", "/restore.sh"]
+    restart: "no"
 
   app:
     container_name: GeoTechnicalApp
@@ -41,8 +43,8 @@ services:
       context: .
       dockerfile: ./backend/database/Dockerfile
     depends_on:
-      mysql:
-        condition: service_healthy
+      restore:
+        condition: service_completed_successfully
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://GeoTechnicalDatabase:3306/GeotechnicalTests
       SPRING_DATASOURCE_USERNAME: myuser

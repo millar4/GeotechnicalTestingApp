@@ -1,10 +1,12 @@
 package com.example.accessingdatamysql;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
 @Entity 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "RocksTable")
 public class RocksUser {
     @Id
@@ -159,8 +161,8 @@ public class RocksUser {
     public String getDatabaseBelongsTo() { return databaseBelongsTo; }
     public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
 
-    public String getImagePath() { return databaseBelongsTo; }
-    public void setImagePath(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
     public String getTestDescription() { return testDescription; }
     public void setTestDescription(String testDescription) { this.testDescription= testDescription; }

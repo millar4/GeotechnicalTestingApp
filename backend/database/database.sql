@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS RocksTable(
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription TEXT
+    testDescription VARCHAR(5000)
 );
 
 -- ============================================
@@ -216,15 +216,9 @@ INTO TABLE RocksTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(
-    myGroup, classification, test, testAlsoKnownAs, symbol, parameters, testMethod,
-    alt1, alt2, alt3, sampleType, fieldSampleMass,
-    specimenType, specimenMass, specimenNumbers,
-    specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction,
-    schedulingNotes, databaseBelongsTo, imagePath, testDescription
-)
+IGNORE 1 ROWS
+(myGroup, Classification, Test, testAlsoKnownAs, Symbol, parameters, TestMethod, Alt1, Alt2, Alt3, SampleType, FieldSampleMass, SpecimenType, SpecimenMass, SpecimenNumbers, SpecimenD, SpecimenL, SpecimenW, SpecimenH, SpecimenMaxGrainSize, SpecimenMaxGrainFraction, SchedulingNotes, databaseBelongsTo, imagePath, testDescription)
+
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
     classification = NULLIF(classification, 'NULL'),
@@ -250,7 +244,10 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(testDescription, '');
+    
+
+
 
 
 -- ============================================
@@ -260,8 +257,8 @@ LOAD DATA INFILE '/var/lib/mysql-files/parameters2.csv'
 INTO TABLE GeotechnicalTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
+LINES TERMINATED BY '\r\n'
+IGNORE 1 ROWS
 (
     myGroup, classification, test, testAlsoKnownAs, symbol, parameters, testMethod,
     alt1, alt2, alt3, sampleType, fieldSampleMass,
@@ -345,7 +342,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/inSituParameters.csv'
 INTO TABLE InSituTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES
 (
     myGroup, test, testAlsoKnownAs, symbol, parameters, testMethod,

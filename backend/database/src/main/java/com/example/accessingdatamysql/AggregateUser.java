@@ -1,5 +1,6 @@
 package com.example.accessingdatamysql;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -11,6 +12,7 @@ import jakarta.persistence.Table;
 
 
 @Entity 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "AggregateTable")
 public class AggregateUser {
 
@@ -28,7 +30,7 @@ public class AggregateUser {
     @Column(name = "test", nullable = true, unique = false)
     private String test;
 
-     @Column(name = "testAlsoKnownAs", nullable = true, unique = false)
+    @Column(name = "testAlsoKnownAs", nullable = true, unique = false)
     private String testAlsoKnownAs;
 
     @Column(name = "symbol", nullable = true, unique = true)
@@ -69,6 +71,9 @@ public class AggregateUser {
 
     @Column(name = "imagePath", nullable = true, unique = false)
     private String imagePath;
+
+    @Column(name = "testDescription", nullable = true, unique = false)
+    private String testDescription;
 
     // Getters and setters for all fields
     public Long getId() {return id;}
@@ -121,7 +126,10 @@ public class AggregateUser {
     public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
 
     public String getImagePath() { return imagePath; }
-    public void setImagePatho(String imagePath) { this.imagePath = imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription = testDescription; }
 
 }
 

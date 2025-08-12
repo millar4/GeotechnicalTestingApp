@@ -2,24 +2,59 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './additem.css';
 
+const dynamicFields = {
+  aggregate: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+    'specimenMaxGrainFraction', 'testDescription'
+  ],
+  rock: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+    'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
+  ],
+  concrete: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+    'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
+  ],
+  database: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
+    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
+    'specimenMaxGrainFraction', 'testDescription'
+  ],
+  inSituTest: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'materials', 'applications', 'testDescription'
+  ],
+  earthworks: [
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
+    'sampleType', 'materials', 'applications', 'testDescription'
+  ]
+};
+
 const AddItem = () => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    test: '', classification: '', group: '', symbol: '', parameters: '', testMethod: '',
-    alt1: '', alt2: '', alt3: '', sampleType: '', fieldSampleMass: '',
-    specimenType: '', specimenMass: '', specimenNumbers: '', specimenD: '',
-    specimenL: '', specimenW: '', specimenH: '', specimenMaxGrainSize: '',
-    specimenMaxGrainFraction: '', schedulingNotes: ''
+  const allPossibleFields = Array.from(new Set(Object.values(dynamicFields).flat()));
+  const initialFormData = {};
+  allPossibleFields.forEach(field => {
+    initialFormData[field] = '';
   });
 
+  const [formData, setFormData] = useState(initialFormData);
   const [databaseTarget, setDatabaseTarget] = useState('database');
   const [showConfirm, setShowConfirm] = useState(false);
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [password, setPassword] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imageURL, setImageURL] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(null);
 
-  // Authorization check
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return setIsAuthorized(false);
@@ -38,12 +73,24 @@ const AddItem = () => {
     }
   }, []);
 
-  // If not authorized, show 403 message
+  useEffect(() => {
+    const fieldsForTarget = dynamicFields[databaseTarget] || [];
+    setFormData(prevFormData => {
+      const newFormData = { ...prevFormData };
+      fieldsForTarget.forEach(f => {
+        newFormData[f] = '';
+      });
+      return newFormData;
+    });
+    setImageFile(null);
+    setImageURL('');
+  }, [databaseTarget]);
+
   if (isAuthorized === false) {
     return (
       <div className="edit-item-container">
         <h2>403 Forbidden</h2>
-        <p>You do not have permission to add an item to this database.</p>
+        <p>You are not allowed to add an item to this database.</p>
         <p>If you believe this is an error, please contact an administrator.</p>
       </div>
     );
@@ -52,6 +99,12 @@ const AddItem = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    setImageURL(file ? URL.createObjectURL(file) : '');
   };
 
   const handleSubmit = (e) => {
@@ -83,13 +136,16 @@ const AddItem = () => {
       localStorage.setItem('token', token);
 
       const url = `http://localhost:8080/${databaseTarget}/add`;
+      const formDataToSend = new FormData();
+      formDataToSend.append('data', JSON.stringify({ ...formData, databaseBelongsTo: databaseTarget }));
+      if (imageFile) formDataToSend.append('image', imageFile);
+
       const addResponse = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...formData, databaseBelongsTo: databaseTarget })
+        body: formDataToSend
       });
 
       if (!addResponse.ok) {
@@ -109,17 +165,12 @@ const AddItem = () => {
     }
   };
 
-  const fields = [
-    "test", "classification", "group", "symbol", "parameters", "testMethod",
-    "alt1", "alt2", "alt3", "sampleType", "fieldSampleMass", "specimenType",
-    "specimenMass", "specimenNumbers", "specimenD", "specimenL",
-    "specimenW", "specimenH", "specimenMaxGrainSize", "specimenMaxGrainFraction", "schedulingNotes"
-  ];
-
   const formatLabel = (label) =>
     label.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
   if (isAuthorized === null) return null;
+
+  const fields = dynamicFields[databaseTarget] || [];
 
   return (
     <div className="add-item-container">
@@ -134,7 +185,7 @@ const AddItem = () => {
           >
             <option value="database">Soil</option>
             <option value="aggregate">Aggregate</option>
-            <option value="rocks">Rock</option>
+            <option value="rock">Rock</option>
             <option value="concrete">Concrete</option>
             <option value="inSituTest">In Situ</option>
             <option value="earthworks">Earthworks</option>
@@ -147,13 +198,25 @@ const AddItem = () => {
             <input
               id={field}
               name={field}
-              value={formData[field]}
+              value={formData[field] || ''}
               placeholder="None"
               onChange={handleChange}
               autoFocus={idx === 0}
             />
           </div>
         ))}
+
+        {imageURL && (
+          <div className="form-row">
+            <label>Image Preview:</label>
+            <img src={imageURL} alt="Preview" style={{ maxWidth: '200px', maxHeight: '200px' }} />
+          </div>
+        )}
+
+        <div className="form-row">
+          <label htmlFor="image">Upload Image (optional):</label>
+          <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
+        </div>
 
         <div className="button-group">
           <button type="submit">Submit</button>
@@ -173,6 +236,12 @@ const AddItem = () => {
                     <td>{formData[f]}</td>
                   </tr>
                 ))}
+                {imageFile && (
+                  <tr>
+                    <td><strong>Image File:</strong></td>
+                    <td>{imageFile.name}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
             <div className="modal-buttons">
@@ -186,12 +255,12 @@ const AddItem = () => {
       {showPasswordPrompt && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>Please enter your password to confirm</h3>
+            <h3>Enter password to confirm addition</h3>
             <input
               type="password"
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
             <div className="modal-buttons">
               <button onClick={handleFinalSubmit}>Submit</button>

@@ -73,12 +73,10 @@ public class SecurityConfig {
             .requestMatchers("/edititem/**").hasRole("ADMIN")
             .requestMatchers("/additem", "/additem/**").hasRole("ADMIN")
 
-
             // User + Admin read access
             .requestMatchers(HttpMethod.GET, "/database/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/aggregate/**").hasAnyRole("USER", "ADMIN")
             .requestMatchers(HttpMethod.GET, "/rocks/**").hasAnyRole("USER", "ADMIN")
-
 
             // Admin routes
             .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -1,31 +1,33 @@
 package com.example.accessingdatamysql;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "http://localhost:3100")
-@Controller
+@RestController
 @RequestMapping(path = "/database")
 public class MainController {
 
     @Autowired
     private GeotechnicalEntryRepository userRepository;
+
+    private final String uploadDir = "testImages/";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping(path = "/all/table")
     public String getAllUsersByTable(Model model) {
@@ -57,32 +59,51 @@ public class MainController {
     @GetMapping("/id")
     @ResponseBody
     public List<GeotechnicalEntry> getUserById(@RequestParam String id) {
-        Long longId;
         try {
-            longId = Long.valueOf(id);
+            Long longId = Long.valueOf(id);
+            return userRepository.findById(longId).map(Collections::singletonList).orElse(Collections.emptyList());
         } catch (NumberFormatException e) {
-            return Collections.emptyList();
-        }
-
-        Optional<GeotechnicalEntry> userOpt = userRepository.findById(longId);
-        if (userOpt.isPresent()) {
-            return Collections.singletonList(userOpt.get());
-        } else {
+            System.err.println("Invalid ID format: " + id);
             return Collections.emptyList();
         }
     }
-        
+
     @GetMapping("/classification")
     @ResponseBody
     public List<GeotechnicalEntry> getUserByClassification(@RequestParam String classification) {
         return userRepository.findByClassificationContaining(classification);
     }
 
-    @PostMapping("/add")
+   @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public GeotechnicalEntry addGeotechnicalEntry (@RequestBody GeotechnicalEntry GeotechnicalEntry) {
-        return userRepository.save(GeotechnicalEntry);
+    public ResponseEntity<GeotechnicalEntry> addGeotechnicalEntryWithImage(
+        @RequestPart("data") String geotechnicalEntryJson,
+        @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        try {
+            GeotechnicalEntry entry = objectMapper.readValue(geotechnicalEntryJson, GeotechnicalEntry.class);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir, fileName);
+                Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                entry.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                imagePath.toFile().setReadable(true, false);
+                imagePath.toFile().setWritable(true, false);
+            }
+
+            GeotechnicalEntry savedEntry = userRepository.save(entry);
+            return ResponseEntity.ok(savedEntry);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
+
 
     @DeleteMapping(path = "/delete/{id}")
     @ResponseBody
@@ -101,14 +122,82 @@ public class MainController {
     public ResponseEntity<GeotechnicalEntry> updateGeotechnicalEntry(
             @PathVariable Long id,
             @RequestBody GeotechnicalEntry updatedEntry) {
-        // 1. Find an existing record in the database based on the primary key id.
+
         Optional<GeotechnicalEntry> existingOpt = userRepository.findById(id);
         if (existingOpt.isEmpty()) {
-           // Returns 404 if the corresponding record is not found.
             return ResponseEntity.notFound().build();
         }
-        // 2. Synchronize the updated fields passed by the front-end into the database.
+
         GeotechnicalEntry existing = existingOpt.get();
+        updateFields(existing, updatedEntry);
+
+        GeotechnicalEntry saved = userRepository.save(existing);
+        return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<GeotechnicalEntry> updateGeotechnicalEntryWithImage(
+            @PathVariable Long id,
+            @RequestPart("data") String updatedEntryJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        System.out.println("=== [DEBUG] Received update-with-image request for ID: " + id + " ===");
+
+        Optional<GeotechnicalEntry> existingOpt = userRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            GeotechnicalEntry updatedEntry = objectMapper.readValue(updatedEntryJson, GeotechnicalEntry.class);
+            GeotechnicalEntry existing = existingOpt.get();
+            updateFields(existing, updatedEntry);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = image.getOriginalFilename();
+                Path newImagePath = Paths.get(uploadDir, fileName);
+
+                // Delete old image if it exists
+                String oldImagePath = existing.getImagePath();
+                if (oldImagePath != null && !oldImagePath.isEmpty()) {
+                    try {
+                        Path oldPath = Paths.get(uploadDir, Paths.get(oldImagePath).getFileName().toString()).normalize();
+                        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
+
+                        if (!oldPath.toAbsolutePath().startsWith(basePath)) {
+                            System.err.println("[WARN] Attempted to delete image outside of upload directory: " + oldPath);
+                        } else if (Files.exists(oldPath)) {
+                            Files.delete(oldPath);
+                            System.out.println("[DEBUG] Deleted old image: " + oldPath);
+                        }
+                    } catch (IOException ex) {
+                        System.err.println("[WARN] Failed to delete old image: " + ex.getMessage());
+                    }
+                }
+
+
+                // Save new image
+                Files.copy(image.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
+                existing.setImagePath(Paths.get(uploadDir).resolve(fileName).toString());
+                newImagePath.toFile().setReadable(true, false);
+                newImagePath.toFile().setWritable(true, false);
+                System.out.println("[DEBUG] Saved new image: " + newImagePath);
+            }
+
+            GeotechnicalEntry saved = userRepository.save(existing);
+            return ResponseEntity.ok(saved);
+
+        } catch (Exception e) {
+            System.err.println("[ERROR] Failed to update entry with image: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    private void updateFields(GeotechnicalEntry existing, GeotechnicalEntry updatedEntry) {
         existing.setTest(updatedEntry.getTest());
         existing.setGroup(updatedEntry.getGroup());
         existing.setSymbol(updatedEntry.getSymbol());
@@ -129,15 +218,9 @@ public class MainController {
         existing.setSpecimenMaxGrainSize(updatedEntry.getSpecimenMaxGrainSize());
         existing.setSpecimenMaxGrainFraction(updatedEntry.getSpecimenMaxGrainFraction());
         existing.setTestDescription(updatedEntry.getTestDescription());
-        // ... More fields can be assigned here as well.
-
-        // 3. Preservation of updated entities
-        GeotechnicalEntry saved = userRepository.save(existing);
-
-    // 4. Return the updated entity to the front end
-        return ResponseEntity.ok(saved);
     }
 
+    // --- Remaining filters ---
     @GetMapping(path = "/group")
     @ResponseBody
     public List<GeotechnicalEntry> getUsersByGroup(@RequestParam String group) {
@@ -276,7 +359,7 @@ public class MainController {
         return userRepository.findByImagePathContaining(imagePath);
     }
 
-   @GetMapping(path = "/testDescription")
+    @GetMapping(path = "/testDescription")
     @ResponseBody
     public List<GeotechnicalEntry> getUsersByTestDescripton(@RequestParam String testDescription) {
         return userRepository.findByTestDescriptionContaining(testDescription);
