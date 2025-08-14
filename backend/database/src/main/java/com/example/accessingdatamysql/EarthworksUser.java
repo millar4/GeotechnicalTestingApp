@@ -1,5 +1,6 @@
 package com.example.accessingdatamysql;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -11,6 +12,7 @@ import jakarta.persistence.Table;
 
 
 @Entity 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "EarthworksTable")
 public class EarthworksUser {
 
@@ -81,11 +83,11 @@ public class EarthworksUser {
     public String getTest() { return test; }
     public void setTest(String test) { this.test= test; }
 
-    public String getAlsoKnownAs() { return test; }
+    public String getAlsoKnownAs() { return testAlsoKnownAs; }
     public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs= testAlsoKnownAs; }
 
     public String getClassification() { return classification; }
-    public void setClassification(String classification) { this.test= classification; }
+    public void setClassification(String classification) { this.classification= classification; }
 
     public String getSymbol() { return symbol; }
     public void setSymbol(String symbol) { this.symbol = symbol; }
@@ -120,15 +122,14 @@ public class EarthworksUser {
     public String getSchedulingNotes() { return schedulingNotes; }
     public void setSchedulingNotes(String schedulingNotes) { this.schedulingNotes = schedulingNotes; }
 
-
     public String getDatabaseBelongsTo() { return databaseBelongsTo; }
     public void setDatabaseBelongsTo(String databaseBelongsTo) { this.databaseBelongsTo = databaseBelongsTo; }
 
     public String getImagePath() { return imagePath; }
     public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public String getTestDescription() { return imagePath; }
-    public void setTestDescription(String imagePath) { this.imagePath = imagePath; }
+    public String getTestDescription() { return testDescription; }
+    public void setTestDescription(String testDescription) { this.testDescription = testDescription; }
 
 }
 

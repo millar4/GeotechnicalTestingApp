@@ -155,11 +155,11 @@ const EditTest = () => {
   }, []);
 
   const dynamicFields = {
-    aggregate: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
-      'specimenMaxGrainFraction', 'testDescription'
+      aggregate: [
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
+      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
+      'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+      'schedulingNotes', 'testDescription'
     ],
     rock: [
       'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
@@ -184,8 +184,10 @@ const EditTest = () => {
       'sampleType', 'materials', 'applications', 'testDescription'
     ],
     earthworks: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'materials', 'applications', 'testDescription'
+      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
+      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
+      'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+      'schedulingNotes', 'testDescription'
     ]
   };
 

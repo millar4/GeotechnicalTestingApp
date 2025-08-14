@@ -4,10 +4,10 @@ import './additem.css';
 
 const dynamicFields = {
   aggregate: [
-    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-    'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
-    'specimenMaxGrainFraction', 'testDescription'
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
+    'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+    'schedulingNotes', 'testDescription'
   ],
   rock: [
     'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
@@ -32,8 +32,10 @@ const dynamicFields = {
     'sampleType', 'materials', 'applications', 'testDescription'
   ],
   earthworks: [
-    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'materials', 'applications', 'testDescription'
+    'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
+    'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
+    'schedulingNotes', 'testDescription'
   ]
 };
 
@@ -135,9 +137,19 @@ const AddItem = () => {
       const token = authData.token;
       localStorage.setItem('token', token);
 
+      // Filter only relevant fields with non-empty values
+      const fieldsForTarget = dynamicFields[databaseTarget] || [];
+      const filteredData = {};
+      fieldsForTarget.forEach(f => {
+        if (formData[f] !== '' && formData[f] != null) {
+          filteredData[f] = formData[f];
+        }
+      });
+      filteredData.databaseBelongsTo = databaseTarget;
+
       const url = `http://localhost:8080/${databaseTarget}/add`;
       const formDataToSend = new FormData();
-      formDataToSend.append('data', JSON.stringify({ ...formData, databaseBelongsTo: databaseTarget }));
+      formDataToSend.append('data', JSON.stringify(filteredData));
       if (imageFile) formDataToSend.append('image', imageFile);
 
       const addResponse = await fetch(url, {
@@ -255,12 +267,11 @@ const AddItem = () => {
       {showPasswordPrompt && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>Enter password to confirm addition</h3>
+            <h3>Enter Password to Confirm</h3>
             <input
               type="password"
-              placeholder="Password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <div className="modal-buttons">
               <button onClick={handleFinalSubmit}>Submit</button>
