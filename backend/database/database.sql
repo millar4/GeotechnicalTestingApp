@@ -205,7 +205,7 @@ SET
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
     
 
 -- ============================================
@@ -215,7 +215,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/rockParameters.csv'
 INTO TABLE RocksTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
 (myGroup, Classification, Test, testAlsoKnownAs, Symbol, parameters, TestMethod, Alt1, Alt2, Alt3, SampleType, FieldSampleMass, SpecimenType, SpecimenMass, SpecimenNumbers, SpecimenD, SpecimenL, SpecimenW, SpecimenH, SpecimenMaxGrainSize, SpecimenMaxGrainFraction, SchedulingNotes, databaseBelongsTo, imagePath, testDescription)
 
@@ -244,7 +244,9 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, '');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
+
+
     
 
 
@@ -333,7 +335,7 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 -- ============================================
 -- 5 Load CSV data into InSituTable
@@ -362,7 +364,7 @@ SET
     applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath,'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -404,7 +406,7 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,

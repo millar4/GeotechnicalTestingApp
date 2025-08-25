@@ -23,7 +23,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfig(UserDetailsService userDetailsService,
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -47,51 +47,49 @@ public class SecurityConfig {
         http
             .cors().and()
             .csrf().disable()
-            .authorizeRequests()
+            .authorizeHttpRequests(auth -> auth
+                // ===== Public authentication endpoints =====
+                .requestMatchers("/api/auth/login", "/api/version", "/api/stop", "/api/stop/status").permitAll()
 
-            // Public authentication-related endpoints
-            .requestMatchers("/api/auth/login", "/api/version", "/api/stop", "/api/stop/status").permitAll()
+                // ===== Public GET requests =====
+                .requestMatchers(HttpMethod.GET,
+                    "/database/**",
+                    "/rocks/**",
+                    "/aggregate/**",
+                    "/inSituTest/**",
+                    "/concrete/**",
+                    "/earthworks/**"
+                ).permitAll()
 
-            // Public endpoints for database and tests
-            .requestMatchers(HttpMethod.GET, "/database/all").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/database/search").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/database/test").permitAll() 
-            .requestMatchers(HttpMethod.GET, "/database/groups").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/rocks/all").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/aggregate/all").permitAll() 
-            .requestMatchers(HttpMethod.GET, "/inSituTest/all").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/concrete/all").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/earthworks/all").permitAll() 
-            .requestMatchers(HttpMethod.GET, "/database/groups").permitAll()  
-            .requestMatchers(HttpMethod.GET, "/database/id", "/database/group", "/database/classification", "/database/symbol", "/database/parameters").permitAll()
+                // ===== Admin-only write operations =====
+                // ===== Admin-only write operations =====
+                .requestMatchers(
+                    "/database/add", "/database/delete/**", "/database/update/**", "/database/update-with-image/**",
+                    "/rocks/add", "/rocks/delete/**", "/rocks/update/**", "/rocks/update-with-image/**",
+                    "/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**", "/aggregate/update-with-image/**",
+                    "/inSituTest/add", "/inSituTest/delete/**", "/inSituTest/update/**", "/inSituTest/update-with-image/**",
+                    "/concrete/add", "/concrete/delete/**", "/concrete/update/**", "/concrete/update-with-image/**",
+                    "/earthworks/add", "/earthworks/delete/**", "/earthworks/update/**", "/earthworks/update-with-image/**",
+                    "/edititem/**", "/additem", "/additem/**"
+                ).hasRole("ADMIN")
 
-            // Admin-only for write operations
-            .requestMatchers("/database/add", "/database/delete/**", "/database/update/**").hasRole("ADMIN")
-            .requestMatchers("/aggregate/add", "/aggregate/delete/**", "/aggregate/update/**").hasRole("ADMIN")
-            .requestMatchers("/rocks/add", "/rocks/delete/**", "/rocks/update/**").hasRole("ADMIN")
-            // Add this under the admin-only section
-            .requestMatchers("/edititem/**").hasRole("ADMIN")
-            .requestMatchers("/additem", "/additem/**").hasRole("ADMIN")
+                // NOTE: use hasAuthority("ADMIN") if your JWT doesn't include ROLE_ prefix
+   
 
-            // User + Admin read access
-            .requestMatchers(HttpMethod.GET, "/database/**").hasAnyRole("USER", "ADMIN")
-            .requestMatchers(HttpMethod.GET, "/aggregate/**").hasAnyRole("USER", "ADMIN")
-            .requestMatchers(HttpMethod.GET, "/rocks/**").hasAnyRole("USER", "ADMIN")
+                // ===== Admin routes =====
+                .requestMatchers("/admin/**").hasRole("ADMIN")
 
-            // Admin routes
-            .requestMatchers("/admin/**").hasRole("ADMIN")
+                // ===== User routes =====
+                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
 
-            // User routes
-            .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-
-            // Catch-all
-            .anyRequest().authenticated()
-            .and()
-
-            // Add JWT filter before UsernamePasswordAuthenticationFilter
+                // ===== Catch-all =====
+                .anyRequest().authenticated()
+            )
+            // ===== JWT filter =====
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
     }
 }
+

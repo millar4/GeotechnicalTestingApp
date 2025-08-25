@@ -74,8 +74,6 @@ public class ConcreteUserController{
         if (sort == null || sort.isEmpty()) {
             return (List<ConcreteUser>) ConcreteUserRepository.findAll();
         }
-
-
         switch (sort) {
             case "default":
                 return ConcreteUserRepository.findAllByOrderByIdAsc();

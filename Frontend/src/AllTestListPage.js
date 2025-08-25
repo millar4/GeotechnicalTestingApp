@@ -114,7 +114,7 @@ const Box = ({
                 <p>Test Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
-                <p>UKSGI (3rd ed). BOQ. No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
+                <p>UKSGI (3rd ed). No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
                 <p> Test Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
@@ -123,7 +123,7 @@ const Box = ({
                 <p>Primary Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
             )}
             {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
-                <p>Field Sample Mass required (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+                <p>Field Sample Mass required  (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
             )}
             {formatData(sampleType, searchcontent, pattern, "sampleType") && (
                 <p>Sample Condition: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
@@ -239,7 +239,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
             printWindow.document.write(`<p><strong>Test Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
         }
         if (formatData(details.classification, searchcontent, pattern, "classification")) {
-            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) BOQ No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
         }
         if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
             printWindow.document.write(`<p><strong>Test Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
@@ -394,7 +394,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong>Test Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
-                        <p><strong>UKSGI (3rd ed.). BOQ No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
+                        <p><strong>UKSGI (3rd ed.). No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
                         <p><strong> Test Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
@@ -419,31 +419,31 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong>Sample Condition:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass Required(kg):</strong> {formatData(details.fieldSampleMass)}</p>
+                        <p><strong>Field Sample Mass Required (kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
                         <p><strong>Specimen Condition:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass required(kg):</strong> {formatData(details.specimenMass)}</p>
+                        <p><strong>Specimen Mass required (kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
                         <p><strong>Number of specimens required:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen Diameter(mm):</strong> {formatData(details.specimenD)}</p>
+                        <p><strong>Specimen Diameter (mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen Length(mm):</strong> {formatData(details.specimenL)}</p>
+                        <p><strong>Specimen Length (mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen Width(mm):</strong> {formatData(details.specimenW)}</p>
+                        <p><strong>Specimen Width (mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen Height(mm):</strong> {formatData(details.specimenH)}</p>
+                        <p><strong>Specimen Height (mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Maximum Particle Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
+                        <p><strong>Maximum Particle Size (mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
                         <p><strong>Particle Size Fractions used in test(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
@@ -457,19 +457,25 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     {formatData(details.applications) && (
                         <p><strong>Applications:</strong> {formatData(details.applications)}</p>
                     )}
-                    {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
+                   {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
                     <div>
                         <strong>Test Description:</strong>
                         {formatData(details.testDescription)
-                            .split(/\r?\n+/) // split on line breaks
-                            .filter(para => para.trim() !== '') // skip empty lines
-                            .map((para, index) => (
-                                <span key={index} style={{ display: 'block', marginBottom: '1em', textAlign: 'left' }}>
-                                    {para}
-                                </span>
-                            ))}
+                        // detect type: soil uses \n, rock uses \x
+                        .replace(/\\n/g, "\n")       // convert literal "\n" to real newlines
+                        .replace(/\\x/g, "\n")       // convert literal "\x" to actual character (if needed)
+                        .split(details.databaseType === "soil" ? /\r\n|\r|\n/ : /\x/) // split based on type
+                        .filter(para => para.trim() !== '') // skip empty lines
+                        .map((para, index) => (
+                            <div key={index} style={{ marginBottom: "1em", textAlign: "left" }}>
+                            {para}
+                            </div>
+                        ))}
                     </div>
-                )}
+                    )}
+
+
+
 
                     {details.imagePath && (
                     <div>
@@ -897,114 +903,242 @@ const PaginatedBoxes = () => {
         return data.sort(sortFunction);
     };
     
-    const fetchFullData = async () => {
-    
-        console.log("fetchFullData() triggered");
-        setData([]);
-        const headers = getAuthHeaders();
-        const effectiveSearchContent = viewMode ? lastSearchContent : "";
-        const effectivePattern = viewMode ? lastPattern : "";
-        const encodedSearch = encodeURIComponent(effectiveSearchContent);
-        let urls = [];
-        let url = "";
-    
-        if (!effectiveSearchContent) {
-            if (selectedGroup) {
-                url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
-                console.log(`Group filter active. GET ${url}`);
-                try {
-                    const response = await fetch(url, { testMethod: "GET", headers });
-                    if (!response.ok) throw new Error(`Failed to fetch group data. HTTP Status: ${response.status}`);
-                    const result = await response.json();
-                    const filteredResult = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                    setData(filteredResult);
-                    return;
-                } catch (error) {
-                    console.error("Error fetching group data:", error);
-                    return;
-                }
-            }
-    
-            url = `${baseUrl}/all`;
-            if (sortOrder !== "default") {
-                url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
-            }
-    
-            console.log(`Fetching data from: ${url}`);
-            try {
-                const response = await fetch(url, { testMethod: "GET", headers });
-                if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-                
-                let result = await response.json();
+const fetchFullData = async () => {
+    console.log("fetchFullData() triggered");
+    console.log("Database type:", databaseType);
 
-                if (selectedGroup) {
-                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-            
-                if (sortOrder === 'classification') {
-                    result = sortDataByClassification(result, 'ascending');
-                    setTests(result);
-                } else if (sortOrder === 'testMethod'){
-                    result = sortDataByTestMethod(result, 'ascending');
-                    setTests(result);
-                }
-                  else if(sortOrder === 'parameters'){
-                    result = sortDataByParameter(result, 'ascending');
-                    setTests(result);
-                  }
-                else {
-                    result = getSortedData(result, sortOrder);
-                    setTests(result);
-                }
-                setData(result);
-            } catch (error) {
-                console.error("Error fetching data:", error);
+    setData([]);
+
+    // Determine if this is a "public GET" request
+    const isPublicAllRequest = databaseType === "all";
+
+    // Only add auth headers if it's not a public GET
+    const headers = isPublicAllRequest ? {} : getAuthHeaders();
+
+    const effectiveSearchContent = viewMode ? lastSearchContent : "";
+    const effectivePattern = viewMode ? lastPattern : "";
+    const encodedSearch = encodeURIComponent(effectiveSearchContent);
+
+    const fetchOptions = { 
+    method: "GET", 
+    headers: isPublicAllRequest ? {} : getAuthHeaders()
+};
+
+// Helper: normalize string for search
+const clean = str => str?.toString().trim().toLowerCase() || "";
+
+// Fetch all databases like individual fetches
+
+
+// Fetch all databases like individual fetches
+async function fetchAllDatabases() {
+    const dbTypes = ["database", "aggregate", "rocks", "concrete", "inSituTest", "earthworks"];
+    let mergedData = [];
+
+    for (const type of dbTypes) {
+        try {
+            const response = await fetch(`http://localhost:8080/${type}/all`, { headers });
+            if (!response.ok) {
+                console.warn(`Skipping ${type}: ${response.status}`);
+                continue;
             }
-            return;
+            const data = await response.json();
+
+            // Only include valid test entries
+            const validTests = data.filter(item =>
+                item.name || item.parameters || item.testMethod || item.classification
+            );
+
+            mergedData.push(...validTests);
+        } catch (err) {
+            console.warn(`Error fetching ${type}:`, err);
         }
+    }
+
+    return mergedData;
+}
+
+// Main fetch logic
+try {
+    let result = [];
+
+    if (databaseType === "all") {
+        // Merge all databases
+        result = await fetchAllDatabases();
+    } else {
+        // Single database fetch
+        let url = `${baseUrl}/all`;
+        if (sortOrder !== "default") {
+            url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
+        }
+
+        console.log(`Fetching data from: ${url}`);
+        const response = await fetch(url, { method: "GET", headers });
+        if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
+
+        result = await response.json();
+        // Filter only valid test entries
+        result = result.filter(item =>
+            item.name || item.parameters || item.testMethod || item.classification
+        );
+    }
+
+    // Apply group filter
+    if (selectedGroup) {
+        const g = selectedGroup.trim().toLowerCase();
+        result = result.filter(item => clean(item.group) === g);
+    }
+
+    // Apply search filter
+    if (effectiveSearchContent && effectiveSearchContent.trim() !== "") {
+        const query = effectiveSearchContent.trim().toLowerCase();
+        result = result.filter(item =>
+            clean(item.name).includes(query) ||
+            clean(item.group).includes(query) ||
+            clean(item.parameters).includes(query) ||
+            clean(item.testMethod).includes(query) ||
+            clean(item.classification).includes(query)
+        );
+    }
+
+    // Apply sorting
+    switch (sortOrder) {
+        case 'classification':
+            result = sortDataByClassification(result, 'ascending');
+            break;
+        case 'testMethod':
+            result = sortDataByTestMethod(result, 'ascending');
+            break;
+        case 'parameters':
+            result = sortDataByParameter(result, 'ascending');
+            break;
+        default:
+            result = getSortedData(result, sortOrder);
+    }
+
+    setTests(result);
+    setData(result);
+} catch (error) {
+    console.error("Error fetching data:", error);
+
+        return;
+    }
+
+        const databaseEndpoints = {
+
+        all: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "classification", param: "classification" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    soil: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "classification", param: "classification" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    rocks: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "classification", param: "classification" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    aggregate: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "classification", param: "classification" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    concrete: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    earthworks: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "classification", param: "classification" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+    inSituTest: [
+        { endpoint: "test", param: "test" },
+        { endpoint: "id", param: "id" },
+        { endpoint: "group", param: "group" },
+        { endpoint: "symbol", param: "symbol" },
+        { endpoint: "parameters", param: "parameters" },
+    ],
+};
+    const dbType = databaseType;
     
-        // Handle search queries for specific patterns
         if (effectivePattern === "Quick Search") {
-            const searchUrls = [
-                `${baseUrl}/test?test=${encodedSearch}`,
-                `${baseUrl}/id?id=${encodedSearch}`,
-                `${baseUrl}/classification?classification=${encodedSearch}`,
-                `${baseUrl}/group?group=${encodedSearch}`,
-                `${baseUrl}/symbol?symbol=${encodedSearch}`,
-                `${baseUrl}/parameters?parameters=${encodedSearch}`,
-            ];
-    
-            try {
-                const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
-                console.log("All parallel requests done:", responses);
-                
-            let mergedData = [];
-            const seenIds = new Set();
-            responses.forEach(result => {
-                result.forEach(item => {
-                    if (!seenIds.has(item.id)) {
-                        seenIds.add(item.id);
-                        mergedData.push(item);
-                    }
-                });
-            });
-
-            mergedData = getSortedData(mergedData, sortOrder);
-
-            if (selectedGroup) {
-                mergedData = mergedData.filter(
-                    item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                );
-            }
-
-            setMergedData(mergedData); 
-            setData(mergedData);
-
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
+    try {
+        // Get the endpoints for the current database type
+        const endpoints = databaseEndpoints[dbType]; // e.g., 'concrete', 'inSituTest', 'rocks', etc.
+        if (!endpoints) {
+            console.warn(`No endpoints defined for dbType: ${dbType}`);
             return;
         }
+
+        // Build search URLs dynamically based on available endpoints
+        const searchUrls = endpoints.map(ep =>
+            `${baseUrl}/${ep.endpoint}?${ep.param}=${encodedSearch}`
+        );
+
+        // Fetch all endpoints in parallel
+        const responses = await Promise.all(
+            searchUrls.map(u =>
+                fetch(u, { method: "GET", headers })
+                    .then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u} (HTTP ${res.status})`))
+            )
+        );
+
+        console.log("All parallel requests done:", responses);
+
+        // Merge results and remove duplicates by ID
+        let mergedData = [];
+        const seenIds = new Set();
+        responses.forEach(result => {
+            result.forEach(item => {
+                if (item?.id && !seenIds.has(item.id)) {
+                    seenIds.add(item.id);
+                    mergedData.push(item);
+                }
+            });
+        });
+
+        // Sort data
+        mergedData = getSortedData(mergedData, sortOrder);
+
+        // Filter by selected group if applicable
+        if (selectedGroup) {
+            mergedData = mergedData.filter(
+                item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
+            );
+        }
+
+        // Update state
+        setMergedData(mergedData);
+        setData(mergedData);
+
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+    return;
+}
+
     
         // Default behavior for search
         if (effectiveSearchContent) {
@@ -1212,7 +1346,7 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
                             onClick={() => setDatabaseType("inSituTest")}
                         >
-                        <p style={{ fontSize: '12px', margin: 0 }}>In-Situ</p>
+                        <p style={{ fontSize: '12px', margin: 0 }}>In Situ</p>
                         </button>
                         <button
                             className={`db-button ${databaseType === "earthworks" ? "active" : ""}`}
@@ -1255,7 +1389,7 @@ const PaginatedBoxes = () => {
                         className={sortOrder === 'classification' ? 'active' : ''}
                         onClick={() => handleSortChange('classification')}
                     >
-                        AGS Code Arrangement
+                        UKSGI (3rd ed). No.
                     </button>
                     <button
                         className={sortOrder === 'testMethod' ? 'active' : ''}

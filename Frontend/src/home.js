@@ -31,6 +31,10 @@ function Home() {
     p.preventDefault();
     savethehistory({ content: searchcontent, mode: pattern });
     // NEW: Pass databaseType in state
+    let databasesToSearch = databaseType === 'all'
+    ? ['soil', 'aggregate', 'rocks', 'concrete', 'inSituTest', 'earthworks']
+    : [databaseType];
+
     navigate('/AllTestListPage', { state: { pattern, searchcontent, databaseType } });
   };
 
@@ -151,6 +155,7 @@ function Home() {
                 <option value="concrete">Concrete</option>
                 <option value="inSituTest">In Situ</option>
                 <option value="earthworks">Earthworks</option>
+                 <option value="all">All</option>
               </select>
             </div>
             <div className="input-wrapper">
