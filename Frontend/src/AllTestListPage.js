@@ -456,25 +456,26 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     )}
                     {formatData(details.applications) && (
                         <p><strong>Applications:</strong> {formatData(details.applications)}</p>
+
                     )}
-                   {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
+                    {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
                     <div>
                         <strong>Test Description:</strong>
-                        {formatData(details.testDescription)
-                        // detect type: soil uses \n, rock uses \x
-                        .replace(/\\n/g, "\n")       // convert literal "\n" to real newlines
-                        .replace(/\\x/g, "\n")       // convert literal "\x" to actual character (if needed)
-                        .split(details.databaseType === "soil" ? /\r\n|\r|\n/ : /\x/) // split based on type
-                        .filter(para => para.trim() !== '') // skip empty lines
-                        .map((para, index) => (
+                        {(() => {
+                        let text = formatData(details.testDescription);
+                        text = text.replace(/\\n/g, "\n"); 
+                        text = text.replace(/x(?=[A-Z])/g, "\n");
+                        return text
+                            .split(/\n/)
+                            .filter(para => para.trim() !== "")
+                            .map((para, index) => (
                             <div key={index} style={{ marginBottom: "1em", textAlign: "left" }}>
-                            {para}
+                                {para}
                             </div>
-                        ))}
+                            ));
+                        })()}
                     </div>
                     )}
-
-
 
 
                     {details.imagePath && (
@@ -676,13 +677,13 @@ const PaginatedBoxes = () => {
 
     const getBaseUrl = (type) => {
         switch (type) {
-            case 'soil': return '/soil';
+            case 'soil': return '/database';
             case 'aggregate': return '/aggregate';
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
             case 'inSituTest': return '/inSituTest';
             case 'earthworks': return '/earthworks';
-            default: return '/soil'; // Fallback to prevent undefined
+            default: return '/database'; // Fallback to prevent undefined
         }
     };
     let url = ""; 
@@ -902,6 +903,7 @@ const PaginatedBoxes = () => {
         const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
         return data.sort(sortFunction);
     };
+
     
 const fetchFullData = async () => {
     console.log("fetchFullData() triggered");
@@ -909,235 +911,125 @@ const fetchFullData = async () => {
 
     setData([]);
 
-    // Determine if this is a "public GET" request
-    const isPublicAllRequest = databaseType === "all";
-
-    // Only add auth headers if it's not a public GET
-    const headers = isPublicAllRequest ? {} : getAuthHeaders();
-
+    const headers = databaseType === "all" ? {} : getAuthHeaders();
     const effectiveSearchContent = viewMode ? lastSearchContent : "";
     const effectivePattern = viewMode ? lastPattern : "";
     const encodedSearch = encodeURIComponent(effectiveSearchContent);
 
-    const fetchOptions = { 
-    method: "GET", 
-    headers: isPublicAllRequest ? {} : getAuthHeaders()
-};
+    const clean = str => str?.toString().trim().toLowerCase() || "";
 
-// Helper: normalize string for search
-const clean = str => str?.toString().trim().toLowerCase() || "";
-
-// Fetch all databases like individual fetches
-
-
-// Fetch all databases like individual fetches
-async function fetchAllDatabases() {
-    const dbTypes = ["database", "aggregate", "rocks", "concrete", "inSituTest", "earthworks"];
-    let mergedData = [];
-
-    for (const type of dbTypes) {
-        try {
-            const response = await fetch(`http://localhost:8080/${type}/all`, { headers });
-            if (!response.ok) {
-                console.warn(`Skipping ${type}: ${response.status}`);
-                continue;
-            }
-            const data = await response.json();
-
-            // Only include valid test entries
-            const validTests = data.filter(item =>
-                item.name || item.parameters || item.testMethod || item.classification
-            );
-
-            mergedData.push(...validTests);
-        } catch (err) {
-            console.warn(`Error fetching ${type}:`, err);
-        }
+    function normalizeItem(item) {
+        return {
+            test: item.test || "",
+            group: item.group || "",
+            parameters: item.parameters || item.testParameters || "",
+            testMethod: item.testMethod || "",
+            classification: item.classification || "",
+            alsoKnownAs: item.testAlsoKnownAs || ""
+        };
     }
 
-    return mergedData;
+    async function fetchAllDatabases() {
+        const dbTypes = ["database", "aggregate", "rocks", "concrete", "inSituTest", "earthworks"];
+        let mergedData = [];
+        for (const type of dbTypes) {
+            try {
+                const response = await fetch(`http://localhost:8080/${type}/all`, { headers });
+                if (!response.ok) continue;
+                const data = await response.json();
+                mergedData.push(...data.filter(item => item));
+            } catch (err) {
+                console.warn(`Error fetching ${type}:`, err);
+            }
+        }
+        return mergedData;
+    }
+
+    try {
+        let result = [];
+
+        if (!effectiveSearchContent?.trim()) {
+            // === DISPLAY ALL ENTRIES OF THE SELECTED DATABASE ===
+            const fetchDbType = databaseType === "soil" ? "database" : databaseType;
+            const response = await fetch(`http://localhost:8080/${fetchDbType}/all`, { headers });
+            if (!response.ok) throw new Error(`Failed to fetch: ${fetchDbType}/all (HTTP ${response.status})`);
+            result = await response.json();
+
+        } else if (databaseType === "all") {
+            // === CLIENT-SIDE SEARCH ACROSS ALL DATABASES ===
+            result = await fetchAllDatabases();
+            const terms = effectiveSearchContent.trim().toLowerCase().split(/\s+/);
+            result = result.filter(item => {
+                const normalized = normalizeItem(item);
+                const searchable = Object.values(normalized).map(clean).join(" ");
+                return terms.every(term => searchable.includes(term));
+            });
+
+        } else if (effectivePattern === "Quick Search") {
+    // === SERVER-SIDE QUICK SEARCH FOR SINGLE DATABASE ===
+    // Map soil to database
+    const searchDbType = databaseType === "soil" ? "database" : databaseType;
+
+    const databaseEndpoints = {
+        database: ["test", "id", "classification", "group", "symbol", "parameters"],
+        rocks: ["test", "id", "classification", "group", "symbol", "parameters"],
+        aggregate: ["test", "id", "classification", "group", "symbol", "parameters"],
+        concrete: ["test", "id", "group", "symbol", "parameters"],
+        earthworks: ["test", "id", "classification", "group", "symbol", "parameters"],
+        inSituTest: ["test", "id", "group", "symbol", "parameters"],
+    };
+
+    const endpoints = databaseEndpoints[searchDbType];
+    if (!endpoints) throw new Error(`No endpoints for databaseType: ${searchDbType}`);
+
+    const searchUrls = endpoints.map(ep => `${baseUrl}/${ep}?${ep}=${encodedSearch}`);
+    const responses = await Promise.all(
+        searchUrls.map(u =>
+            fetch(u, { method: "GET", headers })
+                .then(res => res.ok ? res.json() : Promise.reject(`Failed: ${u} (HTTP ${res.status})`))
+        )
+    );
+
+    const seenIds = new Set();
+    result = [];
+    responses.forEach(res => res.forEach(item => {
+        if (item?.id && !seenIds.has(item.id)) {
+            seenIds.add(item.id);
+            result.push(item);
+        }
+    }));
 }
 
-// Main fetch logic
-try {
-    let result = [];
 
-    if (databaseType === "all") {
-        // Merge all databases
-        result = await fetchAllDatabases();
-    } else {
-        // Single database fetch
-        let url = `${baseUrl}/all`;
-        if (sortOrder !== "default") {
-            url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
+        // === GROUP FILTER ===
+        if (selectedGroup?.trim()) {
+            const g = selectedGroup.trim().toLowerCase();
+            result = result.filter(item => clean(item.group) === g);
         }
 
-        console.log(`Fetching data from: ${url}`);
-        const response = await fetch(url, { method: "GET", headers });
-        if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-
-        result = await response.json();
-        // Filter only valid test entries
-        result = result.filter(item =>
-            item.name || item.parameters || item.testMethod || item.classification
-        );
-    }
-
-    // Apply group filter
-    if (selectedGroup) {
-        const g = selectedGroup.trim().toLowerCase();
-        result = result.filter(item => clean(item.group) === g);
-    }
-
-    // Apply search filter
-    if (effectiveSearchContent && effectiveSearchContent.trim() !== "") {
-        const query = effectiveSearchContent.trim().toLowerCase();
-        result = result.filter(item =>
-            clean(item.name).includes(query) ||
-            clean(item.group).includes(query) ||
-            clean(item.parameters).includes(query) ||
-            clean(item.testMethod).includes(query) ||
-            clean(item.classification).includes(query)
-        );
-    }
-
-    // Apply sorting
-    switch (sortOrder) {
-        case 'classification':
-            result = sortDataByClassification(result, 'ascending');
-            break;
-        case 'testMethod':
-            result = sortDataByTestMethod(result, 'ascending');
-            break;
-        case 'parameters':
-            result = sortDataByParameter(result, 'ascending');
-            break;
-        default:
-            result = getSortedData(result, sortOrder);
-    }
-
-    setTests(result);
-    setData(result);
-} catch (error) {
-    console.error("Error fetching data:", error);
-
-        return;
-    }
-
-        const databaseEndpoints = {
-
-        all: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "classification", param: "classification" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    soil: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "classification", param: "classification" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    rocks: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "classification", param: "classification" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    aggregate: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "classification", param: "classification" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    concrete: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    earthworks: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "classification", param: "classification" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-    inSituTest: [
-        { endpoint: "test", param: "test" },
-        { endpoint: "id", param: "id" },
-        { endpoint: "group", param: "group" },
-        { endpoint: "symbol", param: "symbol" },
-        { endpoint: "parameters", param: "parameters" },
-    ],
-};
-    const dbType = databaseType;
-    
-        if (effectivePattern === "Quick Search") {
-    try {
-        // Get the endpoints for the current database type
-        const endpoints = databaseEndpoints[dbType]; // e.g., 'concrete', 'inSituTest', 'rocks', etc.
-        if (!endpoints) {
-            console.warn(`No endpoints defined for dbType: ${dbType}`);
-            return;
+        // === SORTING ===
+        switch (sortOrder) {
+            case 'classification':
+                result = sortDataByClassification(result, 'ascending');
+                break;
+            case 'testMethod':
+                result = sortDataByTestMethod(result, 'ascending');
+                break;
+            case 'parameters':
+                result = sortDataByParameter(result, 'ascending');
+                break;
+            default:
+                result = getSortedData(result, sortOrder);
         }
 
-        // Build search URLs dynamically based on available endpoints
-        const searchUrls = endpoints.map(ep =>
-            `${baseUrl}/${ep.endpoint}?${ep.param}=${encodedSearch}`
-        );
-
-        // Fetch all endpoints in parallel
-        const responses = await Promise.all(
-            searchUrls.map(u =>
-                fetch(u, { method: "GET", headers })
-                    .then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u} (HTTP ${res.status})`))
-            )
-        );
-
-        console.log("All parallel requests done:", responses);
-
-        // Merge results and remove duplicates by ID
-        let mergedData = [];
-        const seenIds = new Set();
-        responses.forEach(result => {
-            result.forEach(item => {
-                if (item?.id && !seenIds.has(item.id)) {
-                    seenIds.add(item.id);
-                    mergedData.push(item);
-                }
-            });
-        });
-
-        // Sort data
-        mergedData = getSortedData(mergedData, sortOrder);
-
-        // Filter by selected group if applicable
-        if (selectedGroup) {
-            mergedData = mergedData.filter(
-                item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-            );
-        }
-
-        // Update state
-        setMergedData(mergedData);
-        setData(mergedData);
+        setTests(result);
+        setData(result);
 
     } catch (error) {
         console.error("Error fetching data:", error);
     }
-    return;
-}
+
+
 
     
         // Default behavior for search

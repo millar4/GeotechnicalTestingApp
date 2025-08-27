@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS EarthworksTable (
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription VARCHAR(5000)
+    testDescription VARCHAR(10000)
 );
 
 -- ============================================
@@ -179,7 +179,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/aggregate.csv'
 INTO TABLE AggregateTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES
 (
     myGroup, classification, test, testAlsoKnownAs, symbol, parameters, testMethod,
@@ -247,11 +247,6 @@ SET
     testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 
-    
-
-
-
-
 -- ============================================
 -- 5 Load CSV data into GeotechnicalTable
 -- ============================================
@@ -266,7 +261,7 @@ IGNORE 1 ROWS
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath,testDescription
+    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath, testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
