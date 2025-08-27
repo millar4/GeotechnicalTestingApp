@@ -1,135 +1,162 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
-  const [searchcontent, updatecontent] = useState('');
-  const [placeholder, updatePlaceholder] = useState('Please select a search mode to search');
-  const [pattern, updatePattern] = useState('Quick Search');
-  const [databaseType, setDatabaseType] = useState('all'); // NEW: Database type selection
-  const [searchhistory, updatesearchhistory] = useState([]);
-  const [showhistory, updateshowhistory] = useState(false);
+  const [searchContent, setSearchContent] = useState('');
+  const [placeholder, setPlaceholder] = useState('Please select a search mode to search');
+  const [pattern, setPattern] = useState('Quick Search');
+  const [databaseType, setDatabaseType] = useState('all');
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [allDatabaseData, setAllDatabaseData] = useState({});
+  const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
-  const getTransformedHistory = () => {
-    const storedHistory = JSON.parse(localStorage.getItem('searchhistory')) || [];
-    const thehistory = storedHistory
-      .map((item) => {
-        if (typeof item === 'string') {
-          return { content: item, mode: 'Unknown' };
-        } else if (item && typeof item.content === 'string') {
-          return item;
-        } else {
-          return { content: '', mode: 'Unknown' };
+  const headers = {}; // Add auth headers if needed
+
+  // === Fetch selected database data for predictive search ===
+  useEffect(() => {
+    const fetchDatabase = async () => {
+      let dbTypes =
+        databaseType === 'all'
+          ? ['database', 'aggregate', 'rocks', 'concrete', 'inSituTest', 'earthworks']
+          : [databaseType === 'soil' ? 'database' : databaseType];
+
+      const dbData = {};
+      for (let db of dbTypes) {
+        try {
+          const res = await fetch(`http://localhost:8080/${db}/all`, { headers });
+          if (res.ok) {
+            const data = await res.json();
+            dbData[db] = data;
+          }
+        } catch (err) {
+          console.warn(`Failed to fetch ${db}:`, err);
         }
-      })
-
-      .filter((item) => item.content.trim() !== '');
-    return thehistory;
-  };
-
-  const searchfunction = (p) => {
-    p.preventDefault();
-    savethehistory({ content: searchcontent, mode: pattern });
-
-    let databasesToSearch = databaseType === 'all'
-    ? ['soil', 'aggregate', 'rocks', 'concrete', 'inSituTest', 'earthworks']
-    : [databaseType];
-
-    navigate('/AllTestListPage', { state: { pattern, searchcontent, databaseType } });
-  };
-
-  const pressEnter = (p) => {
-    if (p.key === 'Enter') {
-      searchfunction(p);
-    }
-  };
-
-  const savethehistory = (searchItem) => {
-  let thehistory = JSON.parse(localStorage.getItem('searchhistory')) || [];
-  thehistory = thehistory.filter(item => item.content !== searchItem.content);
-  thehistory.unshift(searchItem);
-  localStorage.setItem('searchhistory', JSON.stringify(thehistory));
-  };
-
-  const deletehistoryitem = (deleteditem) => {
-    let thehistory = JSON.parse(localStorage.getItem('searchhistory')) || [];
-    thehistory = thehistory.filter(item => {
-      if (typeof item === 'string') {
-        return item !== deleteditem.content;
-      } else if (item && typeof item.content === 'string') {
-        return item.content !== deleteditem.content;
       }
-      return false;
+      setAllDatabaseData(dbData);
+    };
+
+    fetchDatabase();
+  }, [databaseType]);
+
+  // === Predictive search suggestions ===
+useEffect(() => {
+  if (!searchContent) {
+    setSuggestions([]);
+    return;
+  }
+
+  const lowerQuery = searchContent.toLowerCase();
+  let filteredData = [];
+
+  if (databaseType === 'all') {
+    Object.values(allDatabaseData).forEach(arr => {
+      filteredData.push(...arr);
     });
-    localStorage.setItem('searchhistory', JSON.stringify(thehistory));
-    const newHistory = getTransformedHistory();
-    updatesearchhistory(newHistory);
-    updateshowhistory(true);
+  } else {
+    const dbKey = databaseType === 'soil' ? 'database' : databaseType;
+    filteredData = allDatabaseData[dbKey] || [];
+  }
+
+  // Split into two arrays: startsWith and contains
+  const startsWithMatches = [];
+  const containsMatches = [];
+
+  filteredData.forEach(item => {
+    const searchable = [item.test, item.group, item.parameters, item.testMethod, item.classification]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    if (searchable.startsWith(lowerQuery)) {
+      startsWithMatches.push(item);
+    } else if (searchable.includes(lowerQuery)) {
+      containsMatches.push(item);
+    }
+  });
+
+  const matches = [...startsWithMatches, ...containsMatches].slice(0, 5);
+  setSuggestions(matches);
+}, [searchContent, allDatabaseData, databaseType]);
+
+  // === Search history functions ===
+  const saveHistory = item => {
+    let history = JSON.parse(localStorage.getItem('searchhistory')) || [];
+    history = history.filter(h => h.content !== item.content);
+    history.unshift(item);
+    localStorage.setItem('searchhistory', JSON.stringify(history));
   };
 
-
+  const deleteHistoryItem = item => {
+    let history = JSON.parse(localStorage.getItem('searchhistory')) || [];
+    history = history.filter(h => h.content !== item.content);
+    localStorage.setItem('searchhistory', JSON.stringify(history));
+    setSearchHistory(JSON.parse(localStorage.getItem('searchhistory')) || []);
+  };
 
   const handleFocus = () => {
-    const storedHistory = JSON.parse(localStorage.getItem('searchhistory')) || [];  
-    const thehistory = storedHistory.map((item, idx) => {
-      if (typeof item === 'string') {
-        return { content: item, mode: 'Unknown' };
-      } else if (item && typeof item.content === 'string') {
-        return item;
-      } else {
-        return { content: '', mode: 'Unknown' };
-      }
-    })
-    .filter((item, idx) => item.content); 
-    updatesearchhistory(thehistory);
-    updateshowhistory(true);
+    const storedHistory = JSON.parse(localStorage.getItem('searchhistory')) || [];
+    setSearchHistory(storedHistory);
+    setShowHistory(true);
   };
 
-
-  const handleClickHistory = (item) => {
-    updatecontent(item.content);
-    updatePattern(item.mode); 
-    handlePatternChange({ target: { value: item.mode } }); 
-    updateshowhistory(false);
+  const handleClickHistory = item => {
+    setSearchContent(item.content);
+    setPattern(item.mode);
+    setShowHistory(false);
   };
-  
 
-  const handleBlur = (e) => {
+  const handleBlur = e => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      updateshowhistory(false);
+      setShowHistory(false);
     }
   };
 
-  const handlePatternChange = (e) => {
-    const selectedPattern = e.target.value;
-    updatePattern(selectedPattern);
-    switch (selectedPattern) {
+  // === Pattern & database change handlers ===
+  const handlePatternChange = e => {
+    const value = e.target.value;
+    setPattern(value);
+    switch (value) {
       case 'Quick Search':
-        updatePlaceholder('Quick Search');
+        setPlaceholder('Quick Search');
         break;
       case 'Test name':
-        updatePlaceholder('Please enter test name to search');
+        setPlaceholder('Please enter test name to search');
         break;
       case 'Classification':
-        updatePlaceholder('Please enter AGS to search');
+        setPlaceholder('Please enter AGS to search');
         break;
       case 'Test group':
-        updatePlaceholder('Please enter test group to search');
+        setPlaceholder('Please enter test group to search');
         break;
       case 'Test parameters':
-        updatePlaceholder('Please enter test parameters to search');
+        setPlaceholder('Please enter test parameters to search');
         break;
       case 'Test method':
-        updatePlaceholder('Please enter test method to search');
+        setPlaceholder('Please enter test method to search');
         break;
       default:
-        updatePlaceholder('Please select a search mode on the left');
+        setPlaceholder('Please select a search mode on the left');
     }
   };
 
-  // NEW: Handle database type change
-  const handleDatabaseChange = (e) => {
-    setDatabaseType(e.target.value);
+  const handleDatabaseChange = e => setDatabaseType(e.target.value);
+
+  // === Search function ===
+  const performSearch = e => {
+    e.preventDefault();
+    if (!searchContent.trim()) return;
+
+    saveHistory({ content: searchContent, mode: pattern });
+
+    navigate('/AllTestListPage', {
+      state: { pattern, searchcontent: searchContent, databaseType }
+    });
+  };
+
+  const pressEnter = e => {
+    if (e.key === 'Enter') performSearch(e);
   };
 
   return (
@@ -147,57 +174,65 @@ function Home() {
                 <option value="Test parameters">Test parameters</option>
                 <option value="Test method">Test method</option>
               </select>
-              {/* NEW: Database type selection */}
               <select className="selector" value={databaseType} onChange={handleDatabaseChange}>
                 <option value="all">All</option>
                 <option value="soil">Soil</option>
-                <option value="aggregate">Aggregate</option>
                 <option value="rocks">Rock</option>
-                <option value="concrete">Concrete</option>
-                <option value="inSituTest">In Situ</option>
                 <option value="earthworks">Earthworks</option>
+                <option value="inSituTest">In Situ</option>
+                <option value="aggregate">Aggregate</option>
+                <option value="concrete">Concrete</option>
               </select>
             </div>
+
             <div className="input-wrapper">
               <span className="search-icon">🔍</span>
               <input
                 type="text"
                 className="search-box"
                 placeholder={placeholder}
-                value={searchcontent}
-                onChange={(e) => updatecontent(e.target.value)}
+                value={searchContent}
+                onChange={e => setSearchContent(e.target.value)}
                 onKeyDown={pressEnter}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
               />
-              <button className="search-button" onClick={searchfunction}>
+              <button className="search-button" onClick={performSearch}>
                 Search
               </button>
-              {showhistory && searchhistory.length > 0 && (
-                <div className="history-dropdown" onMouseDown={(e) => e.preventDefault()}>
-                  {[...searchhistory]
-                    // .filter(item => typeof item === 'string')
-                    .sort((a, b) => {
-                      const startsWithA = a.content.startsWith(searchcontent);
-                      const startsWithB = b.content.startsWith(searchcontent);
-                      if (startsWithA && !startsWithB) return -1;
-                      if (!startsWithA && startsWithB) return 1;
-                      return 0;
-                    })
-                    .map((item, index) => (
-                      <div key={index} className="history-item" onClick={() => handleClickHistory(item)}>
-                        {item.content} <span className="history-mode">({item.mode})</span>
-                        <span
-                          className="delete-icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deletehistoryitem(item);
+
+              {/* === Predictive search suggestions & history === */}
+              {(showHistory || suggestions.length > 0) && (
+                <div className="history-dropdown" onMouseDown={e => e.preventDefault()}>
+                  {searchContent
+                    ? suggestions.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="history-item"
+                          onClick={() => {
+                            setSearchContent(item.test);
+                            navigate('/AllTestListPage', {
+                              state: { pattern: 'Quick Search', searchcontent: item.test, databaseType }
+                            });
                           }}
                         >
-                          ×
-                        </span>
-                      </div>
-                    ))}
+                          {item.test} <span className="history-mode">({item.group})</span>
+                        </div>
+                      ))
+                    : searchHistory.map((item, idx) => (
+                        <div key={idx} className="history-item" onClick={() => handleClickHistory(item)}>
+                          {item.content} <span className="history-mode">({item.mode})</span>
+                          <span
+                            className="delete-icon"
+                            onClick={e => {
+                              e.stopPropagation();
+                              deleteHistoryItem(item);
+                            }}
+                          >
+                            ×
+                          </span>
+                        </div>
+                      ))}
                 </div>
               )}
             </div>

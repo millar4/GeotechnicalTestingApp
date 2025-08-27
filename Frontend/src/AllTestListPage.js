@@ -328,13 +328,14 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                 top: position.y,
                 left: position.x,
                 width: '500',
-                height: 'auto', // Let content dictate height
-                maxHeight: '80vh', // Prevent it from growing too large
-                overflowY: 'auto', // Allow scrolling if content exceeds max height
-                backgroundColor: '#fff',  // White background
-                border: '1px solid #ccc', // Optional border
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional shadow
-                zIndex: 1000, // Ensure it sits on top of other elements
+                height: 'auto', 
+                maxHeight: '80vh', 
+                overflowY: 'auto', 
+                padding: '16px', 
+                backgroundColor: '#fff', 
+                border: '1px solid #ccc',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
+                zIndex: 1000, 
             }}
             >
                 <button aria-label="Close Details" className="close-button"
