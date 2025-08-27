@@ -1,10 +1,12 @@
 package com.example.accessingdatamysql;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
 @Entity 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "InSituTable")
 public class InSituUser {
     @Id

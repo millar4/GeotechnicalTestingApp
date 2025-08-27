@@ -9,9 +9,9 @@ const dynamicFields = {
     'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
     'schedulingNotes', 'testDescription'
   ],
-  rock: [
+  rocks: [
     'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-    'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
+    'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
     'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
     'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
   ],
@@ -197,7 +197,7 @@ const AddItem = () => {
           >
             <option value="database">Soil</option>
             <option value="aggregate">Aggregate</option>
-            <option value="rock">Rock</option>
+            <option value="rocks">Rock</option>
             <option value="concrete">Concrete</option>
             <option value="inSituTest">In Situ</option>
             <option value="earthworks">Earthworks</option>

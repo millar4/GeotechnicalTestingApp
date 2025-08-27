@@ -1,207 +1,186 @@
 package com.example.accessingdatamysql;
 
-import java.util.Collections;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+@RestController
 @CrossOrigin(origins = "http://localhost:3100")
-@Controller
-@RequestMapping(path = "/inSituTest")
-public class InSituUserController{
+@RequestMapping("/inSituTest")
+public class InSituUserController {
+
+    private final String uploadDir = "testImages/";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private InSituUserRepository InSituUserRepository;
 
-    @GetMapping(path = "/all/table")
-    public String getAllUsersByTable(Model model) {
-        Iterable<InSituUser> users = InSituUserRepository.findAll();
-        model.addAttribute("users", users);
-        return "users";
+    private void updateFields(InSituUser existing, InSituUser updated) {
+        if (updated.getTest() != null && !updated.getTest().isEmpty())
+            existing.setTest(updated.getTest());
+        if (updated.getmyGroup() != null && !updated.getmyGroup().isEmpty())
+            existing.setmyGroup(updated.getmyGroup());
+        if (updated.getSymbol() != null && !updated.getSymbol().isEmpty())
+            existing.setSymbol(updated.getSymbol());
+        if (updated.getParameters() != null)
+            existing.setParameters(updated.getParameters());
+        if (updated.getTestMethod() != null)
+            existing.setTestMethod(updated.getTestMethod());
+        if (updated.getAlt1() != null)
+            existing.setAlt1(updated.getAlt1());
+        if (updated.getAlt2() != null)
+            existing.setAlt2(updated.getAlt2());
+        if (updated.getAlt3() != null)
+            existing.setAlt3(updated.getAlt3());
+        if (updated.getDatabaseBelongsTo() != null)
+            existing.setDatabaseBelongsTo(updated.getDatabaseBelongsTo());
+        if (updated.getTestDescription() != null)
+            existing.setTestDescription(updated.getTestDescription());
+        if (updated.getApplications() != null)
+            existing.setApplications(updated.getApplications());
+         if (updated.getMaterials() != null)
+            existing.setMaterials(updated.getMaterials());
+
     }
 
-    @GetMapping(path = "/all")
-    public @ResponseBody List<InSituUser> getAllUsers(@RequestParam(required = false) String sort) {
-        if (sort == null || sort.isEmpty()) {
-            return (List<InSituUser>) InSituUserRepository.findAll();
-        }
-
-
-        switch (sort) {
-            case "default":
-                return InSituUserRepository.findAllByOrderByIdAsc();
-            case "name":
-                return InSituUserRepository.findAllByOrderByMyGroupAsc();
-            case "method":
-                return InSituUserRepository.findAllByOrderByTestMethodAsc();
-            case "parameter":
-                return InSituUserRepository.findAllByOrderByParametersAsc();
-            default:
-                return (List<InSituUser>) InSituUserRepository.findAll();
-        }
-    }
-
-    @GetMapping("/id")
-    @ResponseBody
-    public List<InSituUser> getUserById(@RequestParam String id) {
-        Long longId;
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<InSituUser> addInSituUser(
+            @RequestPart("data") String InSituEntryJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
-            longId = Long.valueOf(id);
-        } catch (NumberFormatException e) {
-            return Collections.emptyList();
-        }
+            InSituUser entry = objectMapper.readValue(InSituEntryJson, InSituUser.class);
 
-        Optional<InSituUser> userOpt = InSituUserRepository.findById(longId);
-        if (userOpt.isPresent()) {
-            return Collections.singletonList(userOpt.get());
-        } else {
-            return Collections.emptyList();
-        }
-    }
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+                String fileName = image.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir, fileName);
+                Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                entry.setImagePath(imagePath.toString());
+                imagePath.toFile().setReadable(true, false);
+                imagePath.toFile().setWritable(true, false);
+            }
 
-    @PostMapping(path = "/add")
-    @ResponseBody
-    public ResponseEntity<InSituUser> addUser(@RequestBody InSituUser newEntry) {
-        try {
-            InSituUser savedEntry = InSituUserRepository.save(newEntry);
-            return ResponseEntity.ok(savedEntry);
+            InSituUser saved = InSituUserRepository.save(entry);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
 
-    @DeleteMapping(path = "/delete/{id}")
-    @ResponseBody
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        Optional<InSituUser> entryOpt = InSituUserRepository.findById(id);
-        if (entryOpt.isPresent()) {
-            InSituUserRepository.delete(entryOpt.get());
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    @PutMapping(value = "/update-with-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<InSituUser> updateInSituUserWithImage(
+            @PathVariable Long id,
+            @RequestPart("data") String updatedEntryJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        Optional<InSituUser> existingOpt = InSituUserRepository.findById(id);
+        if (existingOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        try {
+            InSituUser updated = objectMapper.readValue(updatedEntryJson, InSituUser.class);
+            InSituUser existing = existingOpt.get();
+
+            updateFields(existing, updated);
+
+            if (image != null && !image.isEmpty()) {
+                Files.createDirectories(Paths.get(uploadDir));
+                if (existing.getImagePath() != null && !existing.getImagePath().isEmpty()) {
+                    Path oldPath = Paths.get(existing.getImagePath()).normalize();
+                    if (Files.exists(oldPath)) Files.delete(oldPath);
+                }
+                Path newImagePath = Paths.get(uploadDir, image.getOriginalFilename());
+                Files.copy(image.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
+                existing.setImagePath(newImagePath.toString());
+            }
+
+            InSituUser saved = InSituUserRepository.save(existing);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
         }
     }
 
     @PutMapping("/update/{id}")
-    @ResponseBody
     public ResponseEntity<InSituUser> updateInSituUser(
             @PathVariable Long id,
             @RequestBody InSituUser updatedEntry) {
-        // 1. Find an existing record in the database based on the primary key id.
         Optional<InSituUser> existingOpt = InSituUserRepository.findById(id);
-        if (existingOpt.isEmpty()) {
-           // Returns 404 if the corresponding record is not found.
-            return ResponseEntity.notFound().build();
-        }
-        // 2. Synchronize the updated fields passed by the front-end into the database.
-        InSituUser existing = existingOpt.get();
-        existing.setTest(updatedEntry.getTest());
-        existing.setmyGroup(updatedEntry.getmyGroup());
-        existing.setSymbol(updatedEntry.getSymbol());
-        existing.setParameters(updatedEntry.getParameters());
-        existing.setTestMethod(updatedEntry.getTestMethod());
-        existing.setAlt1(updatedEntry.getAlt1());
-        existing.setAlt2(updatedEntry.getAlt2());
-        existing.setAlt3(updatedEntry.getAlt3());
-        existing.setDatabaseBelongsTo(updatedEntry.getDatabaseBelongsTo());
-        // ... More fields can be assigned here as well.
+        if (existingOpt.isEmpty()) return ResponseEntity.notFound().build();
 
-        // 3. Preservation of updated entities
+        InSituUser existing = existingOpt.get();
+        updateFields(existing, updatedEntry);
         InSituUser saved = InSituUserRepository.save(existing);
 
-    // 4. Return the updated entity to the front end
         return ResponseEntity.ok(saved);
     }
 
-    @GetMapping(path = "/group")
-    @ResponseBody
-    public List<InSituUser> getUsersByGroup(@RequestParam String group) {
-        return InSituUserRepository.findByMyGroupContaining(group);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteInSituUser(@PathVariable Long id) {
+        Optional<InSituUser> existingOpt = InSituUserRepository.findById(id);
+        if (existingOpt.isPresent()) {
+            InSituUserRepository.delete(existingOpt.get());
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(path = "/groups")
-    @ResponseBody
+    @GetMapping("/all")
+    public List<InSituUser> getAllInSituUsers(@RequestParam(required = false) String sort) {
+        if (sort == null || sort.isEmpty()) return InSituUserRepository.findAll();
+        switch (sort) {
+            case "default":
+                return InSituUserRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+            case "name":
+                return InSituUserRepository.findAll(Sort.by(Sort.Direction.ASC, "myGroup"));
+            case "method":
+                return InSituUserRepository.findAll(Sort.by(Sort.Direction.ASC, "testMethod"));
+            case "parameter":
+                return InSituUserRepository.findAll(Sort.by(Sort.Direction.ASC, "parameters"));
+            default:
+                return InSituUserRepository.findAll();
+        }
+    }
+
+    @GetMapping("/groups")
     public List<String> getAllGroups() {
         return InSituUserRepository.findAllGroups();
     }
 
-    @GetMapping(path = "/test")
-    @ResponseBody
-    public List<InSituUser> getUsersByTest(@RequestParam String test) {
-        return InSituUserRepository.findByTestContaining(test);
+    @GetMapping("/id")
+    public List<InSituUser> getById(@RequestParam String id) {
+        try {
+            Long longId = Long.parseLong(id);
+            return InSituUserRepository.findById(longId).map(List::of).orElse(List.of());
+        } catch (NumberFormatException e) {
+            return List.of();
+        }
     }
 
-    @GetMapping(path = "/testAlsoKnownAs")
-    @ResponseBody
-    public List<InSituUser> getUsersByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) {
-        return InSituUserRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs);
-    }
-
-    @GetMapping(path = "/symbol")
-    @ResponseBody
-    public List<InSituUser> getUsersBySymbol(@RequestParam String symbol) {
-        return InSituUserRepository.findBySymbolContaining(symbol);
-    }
-
-    @GetMapping(path = "/parameters")
-    @ResponseBody
-    public List<InSituUser> getUsersByParameters(@RequestParam String parameters) {
-        return InSituUserRepository.findByParametersContaining(parameters);
-    }
-
-    @GetMapping(path = "/testMethod")
-    @ResponseBody
-    public List<InSituUser> getInSituUsersByTestMethod(@RequestParam String testMethod) {
-        return InSituUserRepository.findByTestMethodContaining(testMethod);
-    }
-
-    @GetMapping(path = "/alt1")
-    @ResponseBody
-    public List<InSituUser> getUsersByAlt1(@RequestParam String alt1) {
-        return InSituUserRepository.findByAlt1Containing(alt1);
-    }
-
-    @GetMapping(path = "/alt2")
-    @ResponseBody
-    public List<InSituUser> getUsersByAlt2(@RequestParam String alt2) {
-        return InSituUserRepository.findByAlt2Containing(alt2);
-    }
-
-    @GetMapping(path = "/alt3")
-    @ResponseBody
-    public List<InSituUser> getUsersByAlt3(@RequestParam String alt3) {
-        return InSituUserRepository.findByAlt3Containing(alt3);
-    }
-
-    @GetMapping("/databaseBelongsTo")
-    public List<InSituUser> getByDatabaseBelongsTo(@RequestParam String schedulingNotes) {
-        return InSituUserRepository.findByDatabaseBelongsToContainingIgnoreCase(schedulingNotes);
-    }
-
-    @GetMapping("/imagePath")
-    public List<InSituUser> getByImagePathBelongsTo(@RequestParam String imagePath) {
-        return InSituUserRepository.findByImagePathContaining(imagePath);
-    }
-
-
-    @GetMapping("/testDescription")
-    public List<InSituUser> getByTestDescription(@RequestParam String imagePath) {
-        return InSituUserRepository.findByTestDescriptionContaining(imagePath);
-    }
-    
-
+    // Fuzzy search endpoints
+    @GetMapping("/group") public List<InSituUser> getByGroup(@RequestParam String group) { return InSituUserRepository.findByMyGroupContaining(group); }
+    @GetMapping("/test") public List<InSituUser> getByTest(@RequestParam String test) { return InSituUserRepository.findByTestContaining(test); }
+    @GetMapping("/testAlsoKnownAs") public List<InSituUser> getByTestAlsoKnownAs(@RequestParam String testAlsoKnownAs) { return InSituUserRepository.findByTestAlsoKnownAsContaining(testAlsoKnownAs); }
+    @GetMapping("/symbol") public List<InSituUser> getBySymbol(@RequestParam String symbol) { return InSituUserRepository.findBySymbolContaining(symbol); }
+    @GetMapping("/parameters") public List<InSituUser> getByParameters(@RequestParam String parameters) { return InSituUserRepository.findByParametersContaining(parameters); }
+    @GetMapping("/testMethod") public List<InSituUser> getByTestMethod(@RequestParam String testMethod) { return InSituUserRepository.findByTestMethodContaining(testMethod); }
+    @GetMapping("/alt1") public List<InSituUser> getByAlt1(@RequestParam String alt1) { return InSituUserRepository.findByAlt1Containing(alt1); }
+    @GetMapping("/alt2") public List<InSituUser> getByAlt2(@RequestParam String alt2) { return InSituUserRepository.findByAlt2Containing(alt2); }
+    @GetMapping("/alt3") public List<InSituUser> getByAlt3(@RequestParam String alt3) { return InSituUserRepository.findByAlt3Containing(alt3); }
+    @GetMapping("/databaseBelongsTo") public List<InSituUser> getByDatabaseBelongsTo(@RequestParam String databaseBelongsTo) { return InSituUserRepository.findByDatabaseBelongsToContaining(databaseBelongsTo); }
+    @GetMapping("/imagePath") public List<InSituUser> getByImagePath(@RequestParam String imagePath) { return InSituUserRepository.findByImagePathContaining(imagePath); }
+    @GetMapping("/testDescription") public List<InSituUser> getByTestDescription(@RequestParam String testDescription) { return InSituUserRepository.findByTestDescriptionContaining(testDescription); }
+    @GetMapping("/materials") public List<InSituUser> getByMaterials(@RequestParam String materials) { return InSituUserRepository.findByMaterialsContaining(materials); }
+    @GetMapping("/applications") public List<InSituUser> getByApplications(@RequestParam String applications) { return InSituUserRepository.findByMaterialsContaining(applications); }
 }

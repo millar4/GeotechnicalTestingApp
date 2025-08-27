@@ -2,17 +2,17 @@ package com.example.accessingdatamysql;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
-public interface GeotechnicalEntryRepository extends CrudRepository<GeotechnicalEntry, Long> {
 
-    @Query("SELECT DISTINCT g.group FROM GeotechnicalEntry g ORDER BY g.group ASC")
+public interface GeotechnicalEntryRepository extends JpaRepository<GeotechnicalEntry, Long> {
+
+    @Query("SELECT DISTINCT g.myGroup FROM GeotechnicalEntry g ORDER BY g.myGroup ASC")
     List<String> findAllGroups();
 
      // The following methods all use fuzzy queries
-
-    List<GeotechnicalEntry> findByGroupContaining(String group);
+    List<GeotechnicalEntry> findByMyGroupContaining(String myGroup);
     List<GeotechnicalEntry> findByTestContaining(String test);
     List<GeotechnicalEntry> findByTestAlsoKnownAsContaining(String test);
     List<GeotechnicalEntry> findByClassificationContaining(String classification);
@@ -37,11 +37,9 @@ public interface GeotechnicalEntryRepository extends CrudRepository<Geotechnical
 
     // ORDER BY
     List<GeotechnicalEntry> findAllByOrderByIdAsc();
-    List<GeotechnicalEntry> findAllByOrderByGroupAsc();
+    List<GeotechnicalEntry> findAllByOrderByMyGroupAsc();
     List<GeotechnicalEntry> findAllByOrderByTestMethodAsc();
     List<GeotechnicalEntry> findAllByOrderByParametersAsc();
-    List<GeotechnicalEntry> findAllByOrderByClassificationAsc();
-
     List<GeotechnicalEntry> findByDatabaseBelongsToContaining(String databaseBelongsTo);
     List<GeotechnicalEntry> findByImagePathContaining(String imagePath);
     List<GeotechnicalEntry> findByTestDescriptionContaining(String testDescription);

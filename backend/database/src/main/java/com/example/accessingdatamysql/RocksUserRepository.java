@@ -1,10 +1,11 @@
 package com.example.accessingdatamysql;
 
 import java.util.List;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
-public interface RocksUserRepository extends CrudRepository<RocksUser, Long> {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface RocksUserRepository extends JpaRepository<RocksUser, Long> {
 
     @Query("SELECT DISTINCT r.myGroup FROM RocksUser r WHERE r.myGroup IS NOT NULL AND r.myGroup <> 'NULL' ORDER BY r.myGroup ASC")
     List<String> findAllGroups();

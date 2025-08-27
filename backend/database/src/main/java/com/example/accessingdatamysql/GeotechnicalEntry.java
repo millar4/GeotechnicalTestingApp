@@ -21,7 +21,7 @@ public class GeotechnicalEntry {
     private String testAlsoKnownAs;
 
     @Column(name = "myGroup", nullable = true, unique = false)
-    private String group;
+    private String myGroup;
 
     @Column(name = "classification", nullable = true, unique = false)
     private String classification;
@@ -73,6 +73,7 @@ public class GeotechnicalEntry {
 
     @Column(name = "specimenMaxGrainSize", nullable = true, unique = false)
     private String specimenMaxGrainSize;
+    
 
     @Column(name = "specimenMaxGrainFraction", nullable = true, unique = false)
     private String specimenMaxGrainFraction;
@@ -95,8 +96,8 @@ public class GeotechnicalEntry {
     public String getTestAlsoKnownAs() { return testAlsoKnownAs; }
     public void setTestAlsoKnownAs(String testAlsoKnownAs) { this.testAlsoKnownAs = testAlsoKnownAs; }
 
-    public String getGroup() { return group; }
-    public void setGroup(String group) { this.group = group; }
+    public String getGroup() { return myGroup; }
+    public void setGroup(String myGroup) { this.myGroup = myGroup; }
 
     public String getClassification() { return classification; }
     public void setClassification(String classification) { this.classification = classification; }

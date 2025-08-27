@@ -251,7 +251,7 @@ public class AccessingDataMysqlApplicationTests {
         entry.setFieldSampleMass("100kg");
         geotechnicalEntryRepository.save(entry);
 
-        List<GeotechnicalEntry> users = geotechnicalEntryRepository.findByGroupContaining("Electrochemical");
+        List<GeotechnicalEntry> users = geotechnicalEntryRepository.findByMyGroupContaining("Electrochemical");
         assertThat(users).isNotEmpty();
     }
 

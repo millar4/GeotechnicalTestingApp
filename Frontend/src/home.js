@@ -5,7 +5,7 @@ function Home() {
   const [searchcontent, updatecontent] = useState('');
   const [placeholder, updatePlaceholder] = useState('Please select a search mode to search');
   const [pattern, updatePattern] = useState('Quick Search');
-  const [databaseType, setDatabaseType] = useState('soil'); // NEW: Database type selection
+  const [databaseType, setDatabaseType] = useState('all'); // NEW: Database type selection
   const [searchhistory, updatesearchhistory] = useState([]);
   const [showhistory, updateshowhistory] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +30,11 @@ function Home() {
   const searchfunction = (p) => {
     p.preventDefault();
     savethehistory({ content: searchcontent, mode: pattern });
-    // NEW: Pass databaseType in state
+
+    let databasesToSearch = databaseType === 'all'
+    ? ['soil', 'aggregate', 'rocks', 'concrete', 'inSituTest', 'earthworks']
+    : [databaseType];
+
     navigate('/AllTestListPage', { state: { pattern, searchcontent, databaseType } });
   };
 
@@ -145,6 +149,7 @@ function Home() {
               </select>
               {/* NEW: Database type selection */}
               <select className="selector" value={databaseType} onChange={handleDatabaseChange}>
+                <option value="all">All</option>
                 <option value="soil">Soil</option>
                 <option value="aggregate">Aggregate</option>
                 <option value="rocks">Rock</option>

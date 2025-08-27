@@ -114,7 +114,7 @@ const Box = ({
                 <p>Test Group: {formatData(group, searchcontent, pattern, "group")}</p>
             )}
              {formatData(classification, searchcontent, pattern, "classification") && (
-                <p>UKSGI (3rd ed). BOQ. No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
+                <p>UKSGI (3rd ed). No.: {formatData(classification, searchcontent, pattern, "classification")}</p>
             )}
             {formatData(parameters, searchcontent, pattern, "parameters") && (
                 <p> Test Parameters: {formatData(parameters, searchcontent, pattern, "parameters")}</p>
@@ -123,7 +123,7 @@ const Box = ({
                 <p>Primary Test Method: {formatData(testMethod, searchcontent, pattern, "testMethod")}</p>
             )}
             {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass") && (
-                <p>Field Sample Mass required (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
+                <p>Field Sample Mass required  (kg): {formatData(fieldSampleMass, searchcontent, pattern, "fieldSampleMass")}</p>
             )}
             {formatData(sampleType, searchcontent, pattern, "sampleType") && (
                 <p>Sample Condition: {formatData(sampleType, searchcontent, pattern, "sampleType")}</p>
@@ -239,7 +239,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
             printWindow.document.write(`<p><strong>Test Group:</strong> ${formatData(details.group, searchcontent, pattern, "group")}</p>`);
         }
         if (formatData(details.classification, searchcontent, pattern, "classification")) {
-            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) BOQ No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
+            printWindow.document.write(`<p><strong>UKSGI (3rd ed.) No.:</strong> ${formatData(details.classification, searchcontent, pattern, "classification")}</p>`);
         }
         if (formatData(details.parameters, searchcontent, pattern, "parameters")) {
             printWindow.document.write(`<p><strong>Test Parameters:</strong> ${formatData(details.parameters, searchcontent, pattern, "parameters")}</p>`);
@@ -394,7 +394,7 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong>Test Group:</strong> {formatData(details.group, searchcontent, pattern, "group")}</p>
                     )}
                     {formatData(details.classification, searchcontent, pattern, "classification") && (
-                        <p><strong>UKSGI (3rd ed.). BOQ No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
+                        <p><strong>UKSGI (3rd ed.). No:</strong> {formatData(details.classification, searchcontent, pattern, "classification")}</p>
                     )}
                     {formatData(details.parameters, searchcontent, pattern, "parameters") && (
                         <p><strong> Test Parameters:</strong> {formatData(details.parameters, searchcontent, pattern, "parameters")}</p>
@@ -419,31 +419,31 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                         <p><strong>Sample Condition:</strong> {formatData(details.sampleType)}</p>
                     )}
                     {formatData(details.fieldSampleMass) && (
-                        <p><strong>Field Sample Mass Required(kg):</strong> {formatData(details.fieldSampleMass)}</p>
+                        <p><strong>Field Sample Mass Required (kg):</strong> {formatData(details.fieldSampleMass)}</p>
                     )}
                     {formatData(details.specimenType) && (
                         <p><strong>Specimen Condition:</strong> {formatData(details.specimenType)}</p>
                     )}
                     {formatData(details.specimenMass) && (
-                        <p><strong>Specimen Mass required(kg):</strong> {formatData(details.specimenMass)}</p>
+                        <p><strong>Specimen Mass required (kg):</strong> {formatData(details.specimenMass)}</p>
                     )}
                     {formatData(details.specimenNumbers) && (
                         <p><strong>Number of specimens required:</strong> {formatData(details.specimenNumbers)}</p>
                     )}
                     {formatData(details.specimenD) && (
-                        <p><strong>Specimen Diameter(mm):</strong> {formatData(details.specimenD)}</p>
+                        <p><strong>Specimen Diameter (mm):</strong> {formatData(details.specimenD)}</p>
                     )}
                     {formatData(details.specimenL) && (
-                        <p><strong>Specimen Length(mm):</strong> {formatData(details.specimenL)}</p>
+                        <p><strong>Specimen Length (mm):</strong> {formatData(details.specimenL)}</p>
                     )}
                     {formatData(details.specimenW) && (
-                        <p><strong>Specimen Width(mm):</strong> {formatData(details.specimenW)}</p>
+                        <p><strong>Specimen Width (mm):</strong> {formatData(details.specimenW)}</p>
                     )}
                     {formatData(details.specimenH) && (
-                        <p><strong>Specimen Height(mm):</strong> {formatData(details.specimenH)}</p>
+                        <p><strong>Specimen Height (mm):</strong> {formatData(details.specimenH)}</p>
                     )}
                     {formatData(details.specimenMaxGrainSize) && (
-                        <p><strong>Maximum Particle Size(mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
+                        <p><strong>Maximum Particle Size (mm):</strong> {formatData(details.specimenMaxGrainSize)}</p>
                     )}
                     {formatData(details.specimenMaxGrainFraction) && (
                         <p><strong>Particle Size Fractions used in test(d/D):</strong> {formatData(details.specimenMaxGrainFraction)}</p>
@@ -456,20 +456,27 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
                     )}
                     {formatData(details.applications) && (
                         <p><strong>Applications:</strong> {formatData(details.applications)}</p>
+
                     )}
                     {formatData(details.testDescription, searchcontent, pattern, "testDescription") && (
                     <div>
                         <strong>Test Description:</strong>
-                        {formatData(details.testDescription)
-                            .split(/\r?\n+/) // split on line breaks
-                            .filter(para => para.trim() !== '') // skip empty lines
+                        {(() => {
+                        let text = formatData(details.testDescription);
+                        text = text.replace(/\\n/g, "\n"); 
+                        text = text.replace(/x(?=[A-Z])/g, "\n");
+                        return text
+                            .split(/\n/)
+                            .filter(para => para.trim() !== "")
                             .map((para, index) => (
-                                <span key={index} style={{ display: 'block', marginBottom: '1em', textAlign: 'left' }}>
-                                    {para}
-                                </span>
-                            ))}
+                            <div key={index} style={{ marginBottom: "1em", textAlign: "left" }}>
+                                {para}
+                            </div>
+                            ));
+                        })()}
                     </div>
-                )}
+                    )}
+
 
                     {details.imagePath && (
                     <div>
@@ -670,13 +677,13 @@ const PaginatedBoxes = () => {
 
     const getBaseUrl = (type) => {
         switch (type) {
-            case 'soil': return '/soil';
+            case 'soil': return '/database';
             case 'aggregate': return '/aggregate';
             case 'rocks': return '/rocks';
             case 'concrete': return '/concrete';
             case 'inSituTest': return '/inSituTest';
             case 'earthworks': return '/earthworks';
-            default: return '/soil'; // Fallback to prevent undefined
+            default: return '/database'; // Fallback to prevent undefined
         }
     };
     let url = ""; 
@@ -896,115 +903,134 @@ const PaginatedBoxes = () => {
         const sortFunction = sortFunctions[sortOrder] || sortFunctions.default;
         return data.sort(sortFunction);
     };
-    
-    const fetchFullData = async () => {
-    
-        console.log("fetchFullData() triggered");
-        setData([]);
-        const headers = getAuthHeaders();
-        const effectiveSearchContent = viewMode ? lastSearchContent : "";
-        const effectivePattern = viewMode ? lastPattern : "";
-        const encodedSearch = encodeURIComponent(effectiveSearchContent);
-        let urls = [];
-        let url = "";
-    
-        if (!effectiveSearchContent) {
-            if (selectedGroup) {
-                url = `${baseUrl}/group?group=${encodeURIComponent(selectedGroup)}`;
-                console.log(`Group filter active. GET ${url}`);
-                try {
-                    const response = await fetch(url, { testMethod: "GET", headers });
-                    if (!response.ok) throw new Error(`Failed to fetch group data. HTTP Status: ${response.status}`);
-                    const result = await response.json();
-                    const filteredResult = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                    setData(filteredResult);
-                    return;
-                } catch (error) {
-                    console.error("Error fetching group data:", error);
-                    return;
-                }
-            }
-    
-            url = `${baseUrl}/all`;
-            if (sortOrder !== "default") {
-                url += (url.includes("?") ? "&" : "?") + `sort=${encodeURIComponent(sortOrder)}`;
-            }
-    
-            console.log(`Fetching data from: ${url}`);
-            try {
-                const response = await fetch(url, { testMethod: "GET", headers });
-                if (!response.ok) throw new Error(`Failed to fetch data. HTTP Status: ${response.status}`);
-                
-                let result = await response.json();
 
-                if (selectedGroup) {
-                    result = result.filter(item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase());
-                }
-            
-                if (sortOrder === 'classification') {
-                    result = sortDataByClassification(result, 'ascending');
-                    setTests(result);
-                } else if (sortOrder === 'testMethod'){
-                    result = sortDataByTestMethod(result, 'ascending');
-                    setTests(result);
-                }
-                  else if(sortOrder === 'parameters'){
-                    result = sortDataByParameter(result, 'ascending');
-                    setTests(result);
-                  }
-                else {
-                    result = getSortedData(result, sortOrder);
-                    setTests(result);
-                }
-                setData(result);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-            return;
-        }
     
-        // Handle search queries for specific patterns
-        if (effectivePattern === "Quick Search") {
-            const searchUrls = [
-                `${baseUrl}/test?test=${encodedSearch}`,
-                `${baseUrl}/id?id=${encodedSearch}`,
-                `${baseUrl}/classification?classification=${encodedSearch}`,
-                `${baseUrl}/group?group=${encodedSearch}`,
-                `${baseUrl}/symbol?symbol=${encodedSearch}`,
-                `${baseUrl}/parameters?parameters=${encodedSearch}`,
-            ];
-    
+const fetchFullData = async () => {
+    console.log("fetchFullData() triggered");
+    console.log("Database type:", databaseType);
+
+    setData([]);
+
+    const headers = databaseType === "all" ? {} : getAuthHeaders();
+    const effectiveSearchContent = viewMode ? lastSearchContent : "";
+    const effectivePattern = viewMode ? lastPattern : "";
+    const encodedSearch = encodeURIComponent(effectiveSearchContent);
+
+    const clean = str => str?.toString().trim().toLowerCase() || "";
+
+    function normalizeItem(item) {
+        return {
+            test: item.test || "",
+            group: item.group || "",
+            parameters: item.parameters || item.testParameters || "",
+            testMethod: item.testMethod || "",
+            classification: item.classification || "",
+            alsoKnownAs: item.testAlsoKnownAs || ""
+        };
+    }
+
+    async function fetchAllDatabases() {
+        const dbTypes = ["database", "aggregate", "rocks", "concrete", "inSituTest", "earthworks"];
+        let mergedData = [];
+        for (const type of dbTypes) {
             try {
-                const responses = await Promise.all(searchUrls.map(u => fetch(u, { testMethod: "GET", headers }).then(res => res.ok ? res.json() : Promise.reject(`Failed to fetch: ${u}`))));
-                console.log("All parallel requests done:", responses);
-                
-            let mergedData = [];
-            const seenIds = new Set();
-            responses.forEach(result => {
-                result.forEach(item => {
-                    if (!seenIds.has(item.id)) {
-                        seenIds.add(item.id);
-                        mergedData.push(item);
-                    }
-                });
+                const response = await fetch(`http://localhost:8080/${type}/all`, { headers });
+                if (!response.ok) continue;
+                const data = await response.json();
+                mergedData.push(...data.filter(item => item));
+            } catch (err) {
+                console.warn(`Error fetching ${type}:`, err);
+            }
+        }
+        return mergedData;
+    }
+
+    try {
+        let result = [];
+
+        if (!effectiveSearchContent?.trim()) {
+            // === DISPLAY ALL ENTRIES OF THE SELECTED DATABASE ===
+            const fetchDbType = databaseType === "soil" ? "database" : databaseType;
+            const response = await fetch(`http://localhost:8080/${fetchDbType}/all`, { headers });
+            if (!response.ok) throw new Error(`Failed to fetch: ${fetchDbType}/all (HTTP ${response.status})`);
+            result = await response.json();
+
+        } else if (databaseType === "all") {
+            // === CLIENT-SIDE SEARCH ACROSS ALL DATABASES ===
+            result = await fetchAllDatabases();
+            const terms = effectiveSearchContent.trim().toLowerCase().split(/\s+/);
+            result = result.filter(item => {
+                const normalized = normalizeItem(item);
+                const searchable = Object.values(normalized).map(clean).join(" ");
+                return terms.every(term => searchable.includes(term));
             });
 
-            mergedData = getSortedData(mergedData, sortOrder);
+        } else if (effectivePattern === "Quick Search") {
+    // === SERVER-SIDE QUICK SEARCH FOR SINGLE DATABASE ===
+    // Map soil to database
+    const searchDbType = databaseType === "soil" ? "database" : databaseType;
 
-            if (selectedGroup) {
-                mergedData = mergedData.filter(
-                    item => item.group?.trim().toLowerCase() === selectedGroup.trim().toLowerCase()
-                );
-            }
+    const databaseEndpoints = {
+        database: ["test", "id", "classification", "group", "symbol", "parameters"],
+        rocks: ["test", "id", "classification", "group", "symbol", "parameters"],
+        aggregate: ["test", "id", "classification", "group", "symbol", "parameters"],
+        concrete: ["test", "id", "group", "symbol", "parameters"],
+        earthworks: ["test", "id", "classification", "group", "symbol", "parameters"],
+        inSituTest: ["test", "id", "group", "symbol", "parameters"],
+    };
 
-            setMergedData(mergedData); 
-            setData(mergedData);
+    const endpoints = databaseEndpoints[searchDbType];
+    if (!endpoints) throw new Error(`No endpoints for databaseType: ${searchDbType}`);
 
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-            return;
+    const searchUrls = endpoints.map(ep => `${baseUrl}/${ep}?${ep}=${encodedSearch}`);
+    const responses = await Promise.all(
+        searchUrls.map(u =>
+            fetch(u, { method: "GET", headers })
+                .then(res => res.ok ? res.json() : Promise.reject(`Failed: ${u} (HTTP ${res.status})`))
+        )
+    );
+
+    const seenIds = new Set();
+    result = [];
+    responses.forEach(res => res.forEach(item => {
+        if (item?.id && !seenIds.has(item.id)) {
+            seenIds.add(item.id);
+            result.push(item);
         }
+    }));
+}
+
+
+        // === GROUP FILTER ===
+        if (selectedGroup?.trim()) {
+            const g = selectedGroup.trim().toLowerCase();
+            result = result.filter(item => clean(item.group) === g);
+        }
+
+        // === SORTING ===
+        switch (sortOrder) {
+            case 'classification':
+                result = sortDataByClassification(result, 'ascending');
+                break;
+            case 'testMethod':
+                result = sortDataByTestMethod(result, 'ascending');
+                break;
+            case 'parameters':
+                result = sortDataByParameter(result, 'ascending');
+                break;
+            default:
+                result = getSortedData(result, sortOrder);
+        }
+
+        setTests(result);
+        setData(result);
+
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+
+
+
     
         // Default behavior for search
         if (effectiveSearchContent) {
@@ -1212,7 +1238,7 @@ const PaginatedBoxes = () => {
                             className={`db-button ${databaseType === "inSituTest" ? "active" : ""}`}
                             onClick={() => setDatabaseType("inSituTest")}
                         >
-                        <p style={{ fontSize: '12px', margin: 0 }}>In-Situ</p>
+                        <p style={{ fontSize: '12px', margin: 0 }}>In Situ</p>
                         </button>
                         <button
                             className={`db-button ${databaseType === "earthworks" ? "active" : ""}`}
@@ -1255,7 +1281,7 @@ const PaginatedBoxes = () => {
                         className={sortOrder === 'classification' ? 'active' : ''}
                         onClick={() => handleSortChange('classification')}
                     >
-                        AGS Code Arrangement
+                        UKSGI (3rd ed). No.
                     </button>
                     <button
                         className={sortOrder === 'testMethod' ? 'active' : ''}

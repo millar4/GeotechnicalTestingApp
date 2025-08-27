@@ -6,9 +6,13 @@ const Footer = () => (
   <footer className="app-footer">
     <p>
       &copy; {new Date().getFullYear()} Structural Soils Limited &nbsp;|&nbsp;
-      <Link to="https://soils.co.uk/contact/" className="footer-link">
-        Contact Us
-      </Link>
+      <a href="https://soils.co.uk/contact/" className="footer-link">
+        Find Us
+      </a>
+      &nbsp;|&nbsp;
+      <a href="mailto:asksoils@soils.co.uk" className="footer-link">
+        Email Us
+      </a>
     </p>
   </footer>
 );

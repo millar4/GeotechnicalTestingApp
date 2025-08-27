@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS EarthworksTable (
     schedulingNotes TEXT(300),
     databaseBelongsTo VARCHAR(100),
     imagePath VARCHAR(100),
-    testDescription VARCHAR(5000)
+    testDescription VARCHAR(10000)
 );
 
 -- ============================================
@@ -179,7 +179,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/aggregate.csv'
 INTO TABLE AggregateTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES
 (
     myGroup, classification, test, testAlsoKnownAs, symbol, parameters, testMethod,
@@ -205,7 +205,7 @@ SET
     specimenMaxGrainFraction = NULLIF(specimenMaxGrainFraction, 'NULL'),
     schedulingNotes = NULLIF(TRIM(schedulingNotes), 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
     
 
 -- ============================================
@@ -215,7 +215,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/rockParameters.csv'
 INTO TABLE RocksTable
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
+LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
 (myGroup, Classification, Test, testAlsoKnownAs, Symbol, parameters, TestMethod, Alt1, Alt2, Alt3, SampleType, FieldSampleMass, SpecimenType, SpecimenMass, SpecimenNumbers, SpecimenD, SpecimenL, SpecimenW, SpecimenH, SpecimenMaxGrainSize, SpecimenMaxGrainFraction, SchedulingNotes, databaseBelongsTo, imagePath, testDescription)
 
@@ -244,10 +244,7 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, '');
-    
-
-
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 
 -- ============================================
@@ -264,7 +261,7 @@ IGNORE 1 ROWS
     alt1, alt2, alt3, sampleType, fieldSampleMass,
     specimenType, specimenMass, specimenNumbers,
     specimenD, specimenL, specimenW, specimenH,
-    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath,testDescription
+    specimenMaxGrainSize, specimenMaxGrainFraction, databaseBelongsTo, imagePath, testDescription
 )
 SET 
     myGroup = NULLIF(myGroup, 'NULL'),
@@ -333,7 +330,7 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 -- ============================================
 -- 5 Load CSV data into InSituTable
@@ -362,7 +359,7 @@ SET
     applications = NULLIF(applications, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath,'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -404,7 +401,7 @@ SET
     schedulingNotes = NULLIF(schedulingNotes, 'NULL'),
     databaseBelongsTo = NULLIF(databaseBelongsTo, 'NULL'),
     imagePath = NULLIF(imagePath, 'NULL'),
-    testDescription = NULLIF(testDescription, 'NULL');
+    testDescription = NULLIF(REGEXP_REPLACE(testDescription, '[[:cntrl:]]', ''), 'NULL');
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT NOT NULL AUTO_INCREMENT,
