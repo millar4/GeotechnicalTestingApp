@@ -72,6 +72,7 @@ const EditTest = () => {
     const currentUsername = localStorage.getItem('username');
 
     try {
+      // Authenticate user
       const authResponse = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,35 +81,38 @@ const EditTest = () => {
 
       if (!authResponse.ok) throw new Error('Authentication failed: incorrect password');
 
+      // Update or delete request
       if (actionType === 'update') {
         const formDataToSend = new FormData();
         formDataToSend.append('data', JSON.stringify(formData));
         if (imageFile) formDataToSend.append('image', imageFile);
 
-        const updateResponse = await fetch(`http://localhost:8080/${targetDatabase}/update-with-image/${testId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: formDataToSend
-        });
+        const updateResponse = await fetch(
+          `http://localhost:8080/${targetDatabase}/update-with-image/${testId}`,
+          {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formDataToSend
+          }
+        );
 
         if (!updateResponse.ok) {
-          if (updateResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to update this resource.');
+          if (updateResponse.status === 403) throw new Error('403 Forbidden: Not authorized.');
           throw new Error(`Failed to update item: ${updateResponse.status}`);
         }
 
         alert('Test updated successfully!');
       } else if (actionType === 'delete') {
-        const deleteResponse = await fetch(`http://localhost:8080/${targetDatabase}/delete/${testId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
+        const deleteResponse = await fetch(
+          `http://localhost:8080/${targetDatabase}/delete/${testId}`,
+          {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
           }
-        });
+        );
 
         if (!deleteResponse.ok) {
-          if (deleteResponse.status === 403) throw new Error('403 Forbidden: You are not authorized to delete this resource.');
+          if (deleteResponse.status === 403) throw new Error('403 Forbidden: Not authorized.');
           throw new Error(`Failed to delete item: ${deleteResponse.status}`);
         }
 
@@ -122,7 +126,12 @@ const EditTest = () => {
         }
       }
 
-      navigate(-1);
+      // ✅ Persist selected database so AllTestListPage fetches correct data
+      const dbType = formData.databaseBelongsTo || targetDatabase;
+      localStorage.setItem('lastDatabase', dbType);
+
+      // Navigate to AllTestListPage
+      navigate('/AllTestListPage');
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -155,40 +164,12 @@ const EditTest = () => {
   }, []);
 
   const dynamicFields = {
-      aggregate: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
-      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
-      'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-      'schedulingNotes', 'testDescription'
-    ],
-    rock: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'fieldSampleType', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
-      'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
-    ],
-    concrete: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
-      'specimenMaxGrainFraction', 'schedulingNotes', 'testDescription'
-    ],
-    database: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass', 'specimenNumbers',
-      'specimenD', 'specimenL', 'specimenW', 'specimenH', 'specimenMaxGrainSize',
-      'specimenMaxGrainFraction', 'testDescription'
-    ],
-    inSituTest: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod', 'alt1', 'alt2', 'alt3',
-      'sampleType', 'materials', 'applications', 'testDescription'
-    ],
-    earthworks: [
-      'test', 'group', 'classification', 'symbol', 'parameters', 'testMethod',
-      'sampleType', 'fieldSampleMass', 'specimenType', 'specimenMass',
-      'specimenNumbers', 'specimenMaxGrainSize', 'specimenMaxGrainFraction',
-      'schedulingNotes', 'testDescription'
-    ]
+    aggregate: ['test','group','classification','symbol','parameters','testMethod','sampleType','fieldSampleMass','specimenType','specimenMass','specimenNumbers','specimenMaxGrainSize','specimenMaxGrainFraction','schedulingNotes','testDescription'],
+    rock: ['test','group','classification','symbol','parameters','testMethod','alt1','alt2','alt3','sampleType','fieldSampleType','specimenType','specimenMass','specimenNumbers','specimenD','specimenL','specimenW','specimenH','specimenMaxGrainSize','specimenMaxGrainFraction','schedulingNotes','testDescription'],
+    concrete: ['test','group','classification','symbol','parameters','testMethod','alt1','alt2','alt3','sampleType','fieldSampleMass','specimenType','specimenMass','specimenNumbers','specimenD','specimenL','specimenW','specimenH','specimenMaxGrainSize','specimenMaxGrainFraction','schedulingNotes','testDescription'],
+    database: ['test','group','classification','symbol','parameters','testMethod','alt1','alt2','alt3','sampleType','fieldSampleMass','specimenType','specimenMass','specimenNumbers','specimenD','specimenL','specimenW','specimenH','specimenMaxGrainSize','specimenMaxGrainFraction','testDescription'],
+    inSituTest: ['test','group','classification','symbol','parameters','testMethod','alt1','alt2','alt3','sampleType','materials','applications','testDescription'],
+    earthworks: ['test','group','classification','symbol','parameters','testMethod','sampleType','fieldSampleMass','specimenType','specimenMass','specimenNumbers','specimenMaxGrainSize','specimenMaxGrainFraction','schedulingNotes','testDescription']
   };
 
   const selectedFields = dynamicFields[targetDatabase] || dynamicFields.aggregate;

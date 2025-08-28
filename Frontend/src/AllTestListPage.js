@@ -273,38 +273,32 @@ const FloatingDetails = ({ details, onClose, position, searchcontent, pattern, t
     };
 };
 
-        const handlePrintClick = () => {
+    const handlePrintClick = () => {
+    const selectedDetails = [];
 
-            const selectedDetails = [];
+    // Use the currently displayed test results
+    const sourceArray = tests;
 
-            // Determine whether to use `mergedData` or `tests`
-            const sourceArray = searchcontent ? mergedData.flat() : tests;
+    // Iterate over the selected test IDs
+    selectedTests.forEach(selectedTestId => {
+        const selectedTest = sourceArray.find(test => test.id === selectedTestId);
+        if (selectedTest) {
+            selectedDetails.push(selectedTest);
+        }
+    });
 
-            // Iterate over the selectedTests array
-            for (let i = 0; i < selectedTests.length; i++) {
-                const selectedTestId = selectedTests[i];
+    if (selectedDetails.length > 0) {
+        console.log("Selected Test Details:", selectedDetails);
+        printTests(selectedDetails, searchcontent, pattern); // Print selected tests
+    } else {
+        alert("No tests selected for printing.");
+    }
 
-                // Find the corresponding test from the chosen array
-                const selectedTest = sourceArray.find(test => test.id === selectedTestId);
+    console.log("searchcontent:", searchcontent);
+    console.log("tests:", tests);
+    console.log("selectedTests:", selectedTests);
+};
 
-                // If a match is found, add it to the selectedDetails array
-                if (selectedTest) {
-                    selectedDetails.push(selectedTest);
-                }
-            }
-
-            // Check if any tests were selected and found
-            if (selectedDetails.length > 0) {
-                console.log("Selected Test Details:", selectedDetails);
-                printTests(selectedDetails, searchcontent, pattern); // Print all selected tests
-            } else {
-                alert("No tests selected for printing."); // Show a message if no tests are selected
-            }
-            console.log("searchcontent:", searchcontent);
-            console.log("mergedData:", mergedData);
-            console.log("tests:", tests);
-            console.log("selectedTests:", selectedTests);
-        };
 
     const handleEditClick = () => {
         const role = localStorage.getItem('role');

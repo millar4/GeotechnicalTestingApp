@@ -12,9 +12,8 @@ function Home() {
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
 
-  const headers = {}; // Add auth headers if needed
+  const headers = {}; 
 
-  // === Fetch selected database data for predictive search ===
   useEffect(() => {
     const fetchDatabase = async () => {
       let dbTypes =
@@ -40,7 +39,6 @@ function Home() {
     fetchDatabase();
   }, [databaseType]);
 
-  // === Predictive search suggestions ===
 useEffect(() => {
   if (!searchContent) {
     setSuggestions([]);
@@ -59,7 +57,7 @@ useEffect(() => {
     filteredData = allDatabaseData[dbKey] || [];
   }
 
-  // Split into two arrays: startsWith and contains
+
   const startsWithMatches = [];
   const containsMatches = [];
 
@@ -80,7 +78,7 @@ useEffect(() => {
   setSuggestions(matches);
 }, [searchContent, allDatabaseData, databaseType]);
 
-  // === Search history functions ===
+
   const saveHistory = item => {
     let history = JSON.parse(localStorage.getItem('searchhistory')) || [];
     history = history.filter(h => h.content !== item.content);
@@ -113,7 +111,7 @@ useEffect(() => {
     }
   };
 
-  // === Pattern & database change handlers ===
+
   const handlePatternChange = e => {
     const value = e.target.value;
     setPattern(value);
@@ -143,7 +141,6 @@ useEffect(() => {
 
   const handleDatabaseChange = e => setDatabaseType(e.target.value);
 
-  // === Search function ===
   const performSearch = e => {
     e.preventDefault();
     if (!searchContent.trim()) return;
@@ -200,8 +197,7 @@ useEffect(() => {
               <button className="search-button" onClick={performSearch}>
                 Search
               </button>
-
-              {/* === Predictive search suggestions & history === */}
+              
               {(showHistory || suggestions.length > 0) && (
                 <div className="history-dropdown" onMouseDown={e => e.preventDefault()}>
                   {searchContent
