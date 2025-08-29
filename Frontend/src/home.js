@@ -197,7 +197,7 @@ useEffect(() => {
               <button className="search-button" onClick={performSearch}>
                 Search
               </button>
-              
+
               {(showHistory || suggestions.length > 0) && (
                 <div className="history-dropdown" onMouseDown={e => e.preventDefault()}>
                   {searchContent
